@@ -1,0 +1,22 @@
+name: Super-Linter
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main] # Run on pull requests to main branch
+
+jobs:
+  super-linter:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run Super-Linter
+        uses: github/super-linter@v4
+        env:
+          VALIDATE_ALL_CODEBASE: true
+          DEFAULT_BRANCH: main # Change to your default branch name
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
