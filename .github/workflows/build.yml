@@ -2,7 +2,7 @@ name: build
 
 on:
   push:
-    branches: [ setting_workflows ]
+    branches: [ main ]
   pull_request:
     branches: [ main ]
 
