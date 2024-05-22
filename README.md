@@ -2,7 +2,7 @@
 # PyGinkgo: Python Binding for Ginkgo
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Build Status](https://github.com/Helmholtz-AI-Energy/pyGinkgo/actions/workflows/build.yml/badge.svg)](https://github.com/Helmholtz-AI-Energy/pyGinkgo//actions)
-[![codecov](https://github.com/Helmholtz-AI-Energy/pyGinkgo/branch/main/graph/badge.svg)](https://codecov.io/gh/Helmholtz-AI-Energy/pyGinkgo)
+
 
 
 PyGinkgo is a Python binding for the Ginkgo framework, providing access to Ginkgo's powerful linear algebra capabilities from Python. Ginkgo is a high-performance numerical linear algebra library for sparse systems, primarily designed for developing efficient iterative solvers on complex HPC architectures.
