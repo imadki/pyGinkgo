@@ -1,3 +1,4 @@
+![pyGinkgo Logo](./logo.svg)
 # PyGinkgo: Python Binding for Ginkgo
 
 PyGinkgo is a Python binding for the Ginkgo framework, providing access to Ginkgo's powerful linear algebra capabilities from Python. Ginkgo is a high-performance numerical linear algebra library for sparse systems, primarily designed for developing efficient iterative solvers on complex HPC architectures.
