@@ -19,7 +19,7 @@ if(NOT pybind11_FOUND)
     FetchContent_Declare(
         pybind11
         GIT_REPOSITORY https://github.com/pybind/pybind11.git
-        GIT_TAG        v2.12.0  # Adjust the version as needed
+        GIT_TAG        v2.12.0 
     )
     FetchContent_MakeAvailable(pybind11)
 endif()
@@ -35,7 +35,7 @@ if(NOT ginkgo_FOUND)
     FetchContent_Declare(
         ginkgo
         GIT_REPOSITORY https://github.com/ginkgo-project/ginkgo.git
-        GIT_TAG        v1.7.0  # Adjust the version as needed
+        GIT_TAG        v1.7.0  
     )
     FetchContent_MakeAvailable(ginkgo)
 
