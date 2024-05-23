@@ -18,9 +18,12 @@ PyGinkgo is a Python binding for the Ginkgo framework, providing access to Ginkg
 
 ### Building the module
 
-1. **Clone the repository**: <git clone>
+1. **Clone the repository**:
+2. ```bash
+   git clone https://github.com/Helmholtz-AI-Energy/pyGinkgo.git
+   ```
 
-2. **Build using CMake**: Y
+3. **Build using CMake**: 
 
 ```bash
 # Make a build directory in the project directory
