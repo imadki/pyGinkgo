@@ -1,4 +1,4 @@
-![pyGinkgo Logo](./pyGinkgo.png)
+[comment]: <> ![pyGinkgo Logo](./pyGinkgo.png)
 ![image](https://github.com/Helmholtz-AI-Energy/pyGinkgo/assets/52911730/4d1d9778-1ec2-46c6-a464-ce50d98eb915)
 
 # PyGinkgo: Python Binding for Ginkgo
