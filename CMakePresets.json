@@ -1,0 +1,38 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 22,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "develop",
+      "hidden": true
+    },
+    {
+      "name": "ninja",
+      "hidden": true,
+      "generator": "Ninja"
+    },
+    {
+      "name": "ninja-develop",
+      "inherits": [
+        "develop",
+        "ninja"
+      ],
+      "displayName": "Build pyGinkgo bindings",
+      "description": "Build pyGinkgo bindings",
+      "binaryDir": "${sourceDir}/build/Develop"
+    }
+
+  ],
+  "buildPresets": [
+    {
+      "name": "ninja-develop",
+      "displayName": "Build for CPUs only with unit tests enabled",
+      "configurePreset": "ninja-develop",
+      "configuration": "ninja-develop"
+    }
+   ]
+}
