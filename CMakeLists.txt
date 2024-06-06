@@ -1,3 +1,7 @@
+# SPDX-License-Identifier: MIT
+#
+# SPDX-FileCopyrightText: 2024 pyGinkgo authors
+
 cmake_minimum_required(VERSION 3.20)
 project(pyGinkgo)
 

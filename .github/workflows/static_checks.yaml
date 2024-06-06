@@ -1,0 +1,33 @@
+name: Static checks
+run-name: Static checks
+
+on:
+    pull_request:
+      types: [opened, synchronize]
+jobs:
+  typos-check:
+    name: Spell check
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Check for typos
+      uses: crate-ci/typos@master
+  check-spdx-headers:
+    name: License header check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout to repository
+        uses: actions/checkout@v4
+      - name: install reuse linter
+        run: |
+          pip3 install reuse
+      - name: Execute reuse linter
+        run: |
+          reuse lint
+  changelog:
+    name: Changelog check
+    runs-on: ubuntu-latest
+    steps:
+    - uses: dangoslen/changelog-enforcer@v3
+      with:
+        changeLogPath: CHANGELOG.md
