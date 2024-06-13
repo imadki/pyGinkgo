@@ -45,7 +45,9 @@ if(NOT ginkgo_FOUND)
   FetchContent_Declare(
     ginkgo
     GIT_REPOSITORY https://github.com/ginkgo-project/ginkgo.git
-    GIT_TAG v1.7.0)
+    GIT_TAG develop # use develop for now until v1.8.0 has been released to
+                    # master
+  )
   FetchContent_MakeAvailable(ginkgo)
 
 endif()
@@ -61,3 +63,6 @@ set_property(TARGET pyGinkgo PROPERTY CXX_STANDARD 14)
 add_test(NAME pyginkgo_import_test
          COMMAND ${PYTHON_EXECUTABLE} -m pytest
                  ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_import.py)
+add_test(NAME pyginkgo_array_test
+         COMMAND ${PYTHON_EXECUTABLE} -m pytest
+                 ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_array.py)

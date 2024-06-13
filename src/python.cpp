@@ -29,6 +29,4 @@ PYBIND11_MODULE(pyGinkgo, m)
     py::class_<gko::ReferenceExecutor, gko::OmpExecutor,
                std::shared_ptr<gko::ReferenceExecutor>>(m, "ReferenceExecutor")
         .def(py::init([]() { return gko::ReferenceExecutor::create(); }));
-
-
 }
