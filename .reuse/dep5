@@ -26,3 +26,7 @@ License: MIT
 Files: *.png
 Copyright: 2024 pyGinkgo authors
 License: MIT
+
+Files: *.json
+Copyright: 2024 pyGinkgo authors
+License: MIT
