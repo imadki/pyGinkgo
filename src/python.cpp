@@ -6,6 +6,8 @@
 
 namespace py = pybind11;
 
+void init_array(py::module_&);
+
 
 PYBIND11_MODULE(pyGinkgo, m)
 {
