@@ -1,3 +1,7 @@
+# SPDX-License-Identifier: MIT
+#
+# SPDX-FileCopyrightText: 2024 pyGinkgo authors
+
 # tests/test_import.py
 
 import sys

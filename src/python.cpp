@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: MIT
+//
+// SPDX-FileCopyrightText: 2024 pyGinkgo authors
+
 #include "python.hpp"
 
 namespace py = pybind11;
