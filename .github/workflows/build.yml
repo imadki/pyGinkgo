@@ -30,13 +30,13 @@ jobs:
         pip install pytest
 
     - name: Configure CMake
-      run: cmake --preset ninja-develop
+      run: cmake --preset ninja-develop -DGINKGO_BUILD_OMP=OFF
 
     - name: Build with CMake
       run: cmake --build --preset ninja-develop
 
     - name: Run specific test
-      run: ctest -R pyginkgo_import_test --test-dir build/Develop
+      run: ctest -R pyginkgo --test-dir build/Develop
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v2
