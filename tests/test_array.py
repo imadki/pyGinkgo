@@ -1,6 +1,6 @@
-# SPDX - License - Identifier : MIT
+# SPDX-License-Identifier: MIT
 #
-# SPDX - FileCopyrightText : 2024 pyGinkgo authors
+# SPDX-FileCopyrightText: 2024 pyGinkgo authors
 
 
 import sys
