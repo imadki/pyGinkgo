@@ -45,9 +45,7 @@ if(NOT ginkgo_FOUND)
   FetchContent_Declare(
     ginkgo
     GIT_REPOSITORY https://github.com/ginkgo-project/ginkgo.git
-    GIT_TAG develop # use develop for now until v1.8.0 has been released to
-                    # master
-  )
+    GIT_TAG v1.8.0)
   FetchContent_MakeAvailable(ginkgo)
 
 endif()
