@@ -36,7 +36,7 @@ jobs:
       run: cmake --build --preset ninja-develop
 
     - name: Run specific test
-      run: ctest -R pyginkgo_import_test --test-dir build
+      run: ctest -R pyginkgo_import_test --test-dir build/Develop
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v2
