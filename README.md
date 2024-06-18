@@ -1,6 +1,6 @@
+# PyGinkgo: Python Binding for Ginkgo
 ![image](https://github.com/Helmholtz-AI-Energy/pyGinkgo/assets/52911730/4d1d9778-1ec2-46c6-a464-ce50d98eb915)
 
-# PyGinkgo: Python Binding for Ginkgo
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Build Status](https://github.com/Helmholtz-AI-Energy/pyGinkgo/actions/workflows/build.yml/badge.svg)](https://github.com/Helmholtz-AI-Energy/pyGinkgo//actions)
 
@@ -13,7 +13,7 @@ PyGinkgo is a Python binding for the Ginkgo framework, providing access to Ginkg
 ### Prerequisites
 
 - Python 3.x
-- Ginkgo 
+- Ginkgo
 - Pybind11
 
 ### Building the module
@@ -23,7 +23,7 @@ PyGinkgo is a Python binding for the Ginkgo framework, providing access to Ginkg
    git clone https://github.com/Helmholtz-AI-Energy/pyGinkgo.git
    ```
 
-3. **Build using CMake**: 
+3. **Build using CMake**:
 
 ```bash
 # Make a build directory in the project directory

@@ -1,3 +1,5 @@
+# pyGinkgo authors
+
 I hereby place all my contributions in this codebase under a MIT
 license, as specified in the repository's LICENSE file.
 

@@ -20,8 +20,8 @@ jobs:
       with:
         python-version: '3.8'
 
-    - name: Install cmake
-      run: sudo apt-get install -y cmake
+    - name: Install build dependencies
+      run: sudo apt-get install -y cmake ninja-build
 
     - name: Install dependencies
       run: |
@@ -30,16 +30,16 @@ jobs:
         pip install pytest
 
     - name: Configure CMake
-      run: cmake -S . -B build
+      run: cmake --preset ninja-develop -DGINKGO_BUILD_OMP=OFF
 
     - name: Build with CMake
-      run: cmake --build build
+      run: cmake --build --preset ninja-develop
+
+    - name: Run specific test
+      run: ctest -R pyginkgo --test-dir build/Develop
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v2
       with:
         name: build
         path: build
-        
-    - name: Run specific test
-      run: ctest -R pyginkgo_import_test --test-dir build

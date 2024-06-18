@@ -45,12 +45,13 @@ if(NOT ginkgo_FOUND)
   FetchContent_Declare(
     ginkgo
     GIT_REPOSITORY https://github.com/ginkgo-project/ginkgo.git
-    GIT_TAG v1.7.0)
+    GIT_TAG v1.8.0)
   FetchContent_MakeAvailable(ginkgo)
 
 endif()
 
-pybind11_add_module(pyGinkgo ${PROJECT_SOURCE_DIR}/src/python.cpp)
+pybind11_add_module(pyGinkgo ${PROJECT_SOURCE_DIR}/src/python.cpp
+                    ${PROJECT_SOURCE_DIR}/src/array.cpp)
 
 target_include_directories(pyGinkgo PRIVATE ${Ginkgo_BINARY_DIR}/include)
 target_link_libraries(pyGinkgo PRIVATE Ginkgo::ginkgo)
@@ -60,3 +61,6 @@ set_property(TARGET pyGinkgo PROPERTY CXX_STANDARD 14)
 add_test(NAME pyginkgo_import_test
          COMMAND ${PYTHON_EXECUTABLE} -m pytest
                  ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_import.py)
+add_test(NAME pyginkgo_array_test
+         COMMAND ${PYTHON_EXECUTABLE} -m pytest
+                 ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_array.py)
