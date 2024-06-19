@@ -68,3 +68,10 @@ def test_can_construct_np_array_from_gko_array():
     assert np_arr[2] == 3.0
     assert np_arr[3] == 4.0
     assert np_arr[4] == 5.0
+
+
+def test_can_reduce_add_array():
+    executor = pyGinkgo.ReferenceExecutor()
+    np_array = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
+    arr = pyGinkgo.base.array(executor, np_array)
+    assert pyGinkgo.base.reduce_add(arr, 0.0) == 15.0
