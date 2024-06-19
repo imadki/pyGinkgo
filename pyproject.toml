@@ -1,0 +1,37 @@
+[project]
+name = "pyGinkgo"
+version = "0.0.0"
+description = "PyGinkgo is a Python binding for the Ginkgo framework, providing access to Ginkgo's powerful linear algebra capabilities from Python."
+authors = [
+    {name = "Keshvi Tuteja ", email = "keshvi.tuteja@kit.edu"},
+    {name = "Gregor Olenik", email = "gregor.olenik@kit.edu"},
+]
+license = {text = "MIT"}
+readme="Readme.md"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+requires-python = ">=3.6"
+dependencies = [
+    "numpy",
+    "pybind11",
+]
+
+[project_urls]
+Documentation= "https://obr.readthedocs.io/"
+Changelog= "https://github.com/Helmholtz-AI-Energy/pyGinkgo/blob/main/CHANGELOG.md"
+Issues= "https://github.com/Helmholtz-AI-Energy/pyGinkgo/issues"
+
+[project.optional-dependencies]
+doc = [
+    "sphinx==6.2.1",
+    "sphinx-autoapi==3.0.0",
+    "sphinxcontrib.applehelp==1.0.7",
+    "furo",
+    "myst_parser",
+]
+test = [
+    "pytest",
+]
