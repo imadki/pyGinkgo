@@ -55,3 +55,16 @@ def test_can_copy_construct_array():
     arr = pyGinkgo.base.array(executor, np_array)
     arr_copy = pyGinkgo.base.array(executor, arr)
     assert arr.get_size() == arr_copy.get_size()
+
+
+def test_can_construct_np_array_from_gko_array():
+    executor = pyGinkgo.ReferenceExecutor()
+    lst = [1.0, 2.0, 3.0, 4.0, 5.0]
+    arr = pyGinkgo.base.array(executor, lst)
+    np_arr = np.array(arr)
+    assert arr.get_size() == len(np_arr)
+    assert np_arr[0] == 1.0
+    assert np_arr[1] == 2.0
+    assert np_arr[2] == 3.0
+    assert np_arr[3] == 4.0
+    assert np_arr[4] == 5.0
