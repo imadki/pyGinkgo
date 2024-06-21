@@ -7,8 +7,8 @@
 
 namespace py = pybind11;
 
-void init_array(py::module_ &module_base) {
-  py::class_<gko::array<ValueType>>(module_base, "array", py::buffer_protocol())
+void init_array(py::module_ &module) {
+  py::class_<gko::array<ValueType>>(module, "array", py::buffer_protocol())
       .def(py::init<std::shared_ptr<const gko::Executor>, int>())
       .def(py::init<std::shared_ptr<const gko::Executor>,
                     gko::array<ValueType> &>())
