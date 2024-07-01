@@ -39,6 +39,7 @@ jobs:
       run: ctest -R pyginkgo --test-dir build/Develop
 
     - name: Display test output
+      if: ${{ always() }}
       run: cat build/Develop/Testing/Temporary/LastTest.log
 
     - name: Upload build artifacts
