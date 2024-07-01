@@ -38,6 +38,9 @@ jobs:
     - name: Run specific test
       run: ctest -R pyginkgo --test-dir build/Develop
 
+    - name: Display test output
+      run: cat build/Develop/Testing/Temporary/LastTest.log
+
     - name: Upload build artifacts
       uses: actions/upload-artifact@v2
       if: ${{ always() }}
