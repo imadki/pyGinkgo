@@ -47,6 +47,7 @@ class TestDense:
         assert dense.get_num_stored_elements() == len(self.values)
         assert dense.at(2) == -1.0
         assert dense.at(0, 2) == dense.at(2)
+        assert dense.at(2, 1) == 6
 
     def test_dense_support_basic_functionality(self):
         dense = pyGinkgo.matrix.dense(self.ref, (3, 3), np.array([self.values]), 3)
@@ -58,9 +59,3 @@ class TestDense:
         dense.inv_scale(5)
         assert dense.at(2) == -1.0
         assert dense.at(1, 2) == dense.at(5)
-
-    def test_can_create_dense_from_nparray(self):
-        ref = pyGinkgo.ReferenceExecutor()
-        dense = pyGinkgo.matrix.dense(ref, (3, 2), np.array(self.values), 3)
-
-        assert dense.at(2, 1) == 6
