@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ main ]
 
+env:
+  CTEST_OUTPUT_ON_FAILURE: 1
+
 jobs:
   build:
 
@@ -37,10 +40,6 @@ jobs:
 
     - name: Run specific test
       run: ctest -R pyginkgo --test-dir build/Develop
-
-    - name: Display test output
-      if: ${{ always() }}
-      run: cat build/Develop/Testing/Temporary/LastTest.log
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v2
