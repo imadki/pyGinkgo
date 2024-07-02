@@ -3,6 +3,7 @@
 # SPDX-FileCopyrightText: 2024 pyGinkgo authors
 
 import sys
+import os
 import pyGinkgo
 import numpy as np
 
@@ -32,9 +33,8 @@ class TestDense:
 
     def test_can_read_mtx_file(self):
         # Matrix market format stores column major order
-        dense = pyGinkgo.matrix.read_dense(
-            "/Users/go/Code/pyGinkgo/tests/dense_example.mtx", self.ref
-        )
+        fn = os.path.dirname(os.path.realpath(__file__)) + "/dense_example.mtx"
+        dense = pyGinkgo.matrix.read_dense(fn, self.ref)
 
         assert dense.get_num_stored_elements() == 12
         assert dense.at(0, 2) == 0.2785
