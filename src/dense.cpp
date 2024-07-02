@@ -27,7 +27,7 @@ void init_dense(py::module_ &module_matrix) {
         auto elems =
             (info.ndim == 1) ? info.shape[0] : info.shape[0] * info.shape[1];
 
-        auto view = gko::array<ValueType>(ref, elems, (ValueType *)info.ptr);
+        auto view = gko::array<ValueType>::view(ref, elems, (ValueType *)info.ptr);
 
         auto rows = info.shape[0];
         auto cols = (info.ndim == 1) ? 1 : info.shape[1];
@@ -62,7 +62,7 @@ void init_dense(py::module_ &module_matrix) {
         auto elems =
             (info.ndim == 1) ? info.shape[0] : info.shape[0] * info.shape[1];
 
-        auto view = gko::array<ValueType>(ref, elems, (ValueType *)info.ptr);
+        auto view = gko::array<ValueType>::view(ref, elems, (ValueType *)info.ptr);
 
         auto rows = info.shape[0];
         auto cols = (info.ndim == 1) ? 1 : info.shape[1];
