@@ -7,11 +7,16 @@
 namespace py = pybind11;
 
 void init_array(py::module_ &);
+void init_dense(py::module_ &);
 
 PYBIND11_MODULE(pyGinkgo, m) {
   m.doc() = "Python bindings for the Ginkgo framework";
 
+  py::class_<gko::LinOp, std::shared_ptr<gko::LinOp>>(m, "LinOp");
+
   py::class_<gko::ptr_param<gko::LinOp>>(m, "ptr_param");
+
+  py::class_<gko::dim<2>>(m, "dim2").def(py::init<unsigned long, unsigned long>());
 
   py::class_<gko::Executor, std::shared_ptr<gko::Executor>>(m, "Executor");
 
@@ -30,4 +35,9 @@ PYBIND11_MODULE(pyGinkgo, m) {
   py::module_ module_base =
       m.def_submodule("base", "Submodule for Ginkgos low level type bindings");
   init_array(module_base);
+
+  py::module_ module_matrix =
+      m.def_submodule("matrix", "Submodule for Ginkgos matrix type bindings");
+
+  init_dense(module_matrix);
 }

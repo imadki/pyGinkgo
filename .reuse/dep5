@@ -31,6 +31,10 @@ Files: *.json
 Copyright: 2024 pyGinkgo authors
 License: MIT
 
+Files: tests/*.mtx
+Copyright: 2024 pyGinkgo authors
+License: MIT
+
 Files: *.toml
 Copyright: 2024 pyGinkgo authors
 License: MIT
