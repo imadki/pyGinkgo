@@ -38,3 +38,8 @@ repos:
     hooks:
       - id: cmake-format
       - id: cmake-lint
+  - repo: https://github.com/pre-commit/mirrors-clang-format
+    rev: v14.0.0  # Use the appropriate version
+    hooks:
+      - id: clang-format
+        files: ^src/.*\.(cpp|hpp)$
