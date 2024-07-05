@@ -41,9 +41,4 @@ jobs:
     - name: Run specific test
       run: ctest -R pyginkgo --test-dir build/Develop
 
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v2
-      if: ${{ always() }}
-      with:
-        name: build
-        path: build/Develop/Testing
+

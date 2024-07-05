@@ -8,7 +8,8 @@ void init_dense(py::module_ &module_matrix) {
 
   module_matrix.def("read_dense", [](const std::string &fn,
                                      std::shared_ptr<gko::Executor> exec) {
-    return gko::share(gko::read<gko::matrix::Dense<ValueType>>(std::ifstream(fn), exec));
+    return gko::share(
+        gko::read<gko::matrix::Dense<ValueType>>(std::ifstream(fn), exec));
   });
 
   py::class_<gko::matrix::Dense<ValueType>,
@@ -27,7 +28,8 @@ void init_dense(py::module_ &module_matrix) {
         auto elems =
             (info.ndim == 1) ? info.shape[0] : info.shape[0] * info.shape[1];
 
-        auto view = gko::array<ValueType>::view(ref, elems, (ValueType *)info.ptr);
+        auto view =
+            gko::array<ValueType>::view(ref, elems, (ValueType *)info.ptr);
 
         auto rows = info.shape[0];
         auto cols = (info.ndim == 1) ? 1 : info.shape[1];
@@ -62,7 +64,8 @@ void init_dense(py::module_ &module_matrix) {
         auto elems =
             (info.ndim == 1) ? info.shape[0] : info.shape[0] * info.shape[1];
 
-        auto view = gko::array<ValueType>::view(ref, elems, (ValueType *)info.ptr);
+        auto view =
+            gko::array<ValueType>::view(ref, elems, (ValueType *)info.ptr);
 
         auto rows = info.shape[0];
         auto cols = (info.ndim == 1) ? 1 : info.shape[1];
@@ -167,12 +170,12 @@ void init_dense(py::module_ &module_matrix) {
       .def("sub_scaled", &gko::matrix::Dense<ValueType>::sub_scaled,
            "Subtracts `b` scaled by `alpha` from the matrix (aka: BLAS axpy).")
       .def("at",
-           py::overload_cast<size_t>(
-               &gko::matrix::Dense<ValueType>::at, py::const_),
+           py::overload_cast<size_t>(&gko::matrix::Dense<ValueType>::at,
+                                     py::const_),
            "Returns an element using linearized index.")
       .def("at",
-           py::overload_cast<size_t, size_t>(
-               &gko::matrix::Dense<ValueType>::at, py::const_),
+           py::overload_cast<size_t, size_t>(&gko::matrix::Dense<ValueType>::at,
+                                             py::const_),
            "Returns an element at row, column index.")
       .def("get_num_stored_elements",
            &gko::matrix::Dense<ValueType>::get_num_stored_elements,

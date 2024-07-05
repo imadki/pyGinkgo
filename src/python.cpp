@@ -16,7 +16,8 @@ PYBIND11_MODULE(pyGinkgo, m) {
 
   py::class_<gko::ptr_param<gko::LinOp>>(m, "ptr_param");
 
-  py::class_<gko::dim<2>>(m, "dim2").def(py::init<unsigned long, unsigned long>());
+  py::class_<gko::dim<2>>(m, "dim2").def(
+      py::init<unsigned long, unsigned long>());
 
   py::class_<gko::Executor, std::shared_ptr<gko::Executor>>(m, "Executor");
 
