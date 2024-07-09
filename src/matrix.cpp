@@ -29,13 +29,16 @@ namespace py = pybind11;
         py::buffer_info cols_info = cols.request();                            \
                                                                                \
         if (data_info.format != py::format_descriptor<ValueType>::format())    \
-          throw std::runtime_error("Incompatible dtype");                      \
+          throw std::runtime_error(                                            \
+              "Provided values have an incompatible dtype");                   \
                                                                                \
         if (rows_info.format != py::format_descriptor<IndexType>::format())    \
-          throw std::runtime_error("Incompatible dtype");                      \
+          throw std::runtime_error(                                            \
+              "Provided rows have an incompatible dtype");                     \
                                                                                \
         if (cols_info.format != py::format_descriptor<IndexType>::format())    \
-          throw std::runtime_error("Incompatible dtype");                      \
+          throw std::runtime_error(                                            \
+              "Provided cols have an incompatible dtype");                     \
                                                                                \
         auto ref = gko::ReferenceExecutor::create();                           \
                                                                                \
@@ -53,11 +56,12 @@ namespace py = pybind11;
             exec, gko::dim<2>{dim[0].cast<size_t>(), dim[1].cast<size_t>()},   \
             data_view, cols_view, rows_view));                                 \
       }))                                                                      \
-      .def("apply",                                                            \
-           py::overload_cast<gko::ptr_param<const gko::LinOp>,                 \
-                             gko::ptr_param<gko::LinOp>>(                      \
-               &gko::matrix::Name<ValueType, IndexType>::apply),               \
-           "")                                                                 \
+      .def(                                                                    \
+          "apply",                                                             \
+          [](const gko::matrix::Name<ValueType, IndexType> &m,                 \
+             std::shared_ptr<const gko::LinOp> b,                              \
+             std::shared_ptr<gko::LinOp> x) { m.apply(b, x); },                \
+          "")                                                                  \
       .def("__repr__",                                                         \
            [](const gko::matrix::Name<ValueType> &o) {                         \
              auto str = std::string("pygko.matrix.Name object");               \
