@@ -158,7 +158,7 @@ void init_dense(py::module_ &module_matrix) {
       })
       .def(
           "apply",
-          [](gko::matrix::Dense<ValueType> d,
+          [](const gko::matrix::Dense<ValueType> &d,
              std::shared_ptr<const gko::LinOp> b,
              std::shared_ptr<gko::LinOp> x) { d.apply(b, x); },
           "")
