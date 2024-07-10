@@ -23,6 +23,7 @@ def verify_dense_vec(mtx, values):
 
 class TestDense:
     values = [1.0, 2.0, -1.0, 3.0, 4.0, -1.0, 5.0, 6.0, -1.0]
+    values2d = [[1.0, 2.0, -1.0], [3.0, 4.0, -1.0], [5.0, 6.0, -1.0]]
     ref = pyGinkgo.ReferenceExecutor()
 
     def test_can_create_dense_linop(self):
@@ -55,6 +56,12 @@ class TestDense:
         assert dense.at(0, 2) == 0.2785
         assert dense.at(2) == 0.2785
         assert dense.at(2, 2) == 0.9575
+
+    def test_can_create_dense_from_2D_np_array_with_default_exec(self):
+        dense = pyGinkgo.matrix.dense(np.array(self.values2d))
+        assert dense.at(0, 1) == 2.0
+        assert dense.at(0, 2) == -1.0
+        assert dense.at(1, 1) == 4.0
 
     def test_can_create_dense_from_1D_np_array_with_stride(self):
         dense = pyGinkgo.matrix.dense(self.ref, (3, 3), np.array([self.values]), 3)
