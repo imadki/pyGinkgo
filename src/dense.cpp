@@ -32,9 +32,6 @@ void init_dense(py::module_ &module_matrix) {
     auto rows = info.shape[0];
     auto cols = (info.ndim == 1) ? 1 : info.shape[1];
 
-    // TODO fix dim<2>
-    // TODO fix stride since the stride is given in bytes on the numpy
-    // side
     return gko::matrix::Dense<ValueType>::create(exec, gko::dim<2>{rows, cols},
                                                  view, cols);
   };
@@ -159,6 +156,12 @@ void init_dense(py::module_ &module_matrix) {
           );
         }
       })
+      .def(
+          "apply",
+          [](gko::matrix::Dense<ValueType> d,
+             std::shared_ptr<const gko::LinOp> b,
+             std::shared_ptr<gko::LinOp> x) { d.apply(b, x); },
+          "")
       .def("scale",
            [](gko::matrix::Dense<ValueType> &m, ValueType s) {
              auto o = gko::matrix::Dense<ValueType>::create(m.get_executor(),
