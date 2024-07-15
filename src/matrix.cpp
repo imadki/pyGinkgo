@@ -72,5 +72,22 @@ namespace py = pybind11;
            "Applies Name matrix axpy to a vector (or a sequence of vectors)."  \
            "Performs the operation x = Name * b + x")
 
-void init_coo(py::module_ &module_matrix) { GKO_MATRIX_BINDING(Coo); }
-void init_csr(py::module_ &module_matrix) { GKO_MATRIX_BINDING(Csr); }
+void init_coo(py::module_ &module_matrix) {
+  module_matrix.def("read_Coo", [](const std::string &fn,
+                                   std::shared_ptr<gko::Executor> exec) {
+    return gko::share(
+        gko::read<gko::matrix::Coo<ValueType>>(std::ifstream(fn), exec));
+  });
+
+  GKO_MATRIX_BINDING(Coo);
+}
+
+void init_csr(py::module_ &module_matrix) {
+  module_matrix.def("read_Csr", [](const std::string &fn,
+                                   std::shared_ptr<gko::Executor> exec) {
+    return gko::share(
+        gko::read<gko::matrix::Csr<ValueType>>(std::ifstream(fn), exec));
+  });
+
+  GKO_MATRIX_BINDING(Csr);
+}

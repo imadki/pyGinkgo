@@ -2,6 +2,7 @@
 #
 # SPDX-FileCopyrightText: 2024 pyGinkgo authors
 
+import os
 import sys
 import pyGinkgo
 import pytest
@@ -10,7 +11,7 @@ import numpy as np
 sys.path.append("../build")
 
 
-@pytest.mark.parametrize("matrix_format", ["Coo"])
+@pytest.mark.parametrize("matrix_format", ["Coo", "Csr"])
 class TestSparseMatrix:
     # test a 5x5 symmetric matrix
     # A =
@@ -52,25 +53,31 @@ class TestSparseMatrix:
         assert sparse == sparse
 
     def test_can_create_sparse_from_np_arrays(self, matrix_format):
+        if matrix_format == "Csr":
+            # NOTE currently this test would fail for
+            # Csr matrices since Csr expects compressed
+            # rows
+            return
         ctr = getattr(pyGinkgo.matrix, matrix_format)
-        sparse = ctr(
-            self.ref,
-            (5, 5),
-            np.array(self.values, dtype=np.double),
-            np.array(self.rows, dtype=np.int32),
-            np.array(self.cols, dtype=np.int32),
-        )
+        coeffs = np.array(self.values, dtype=np.double)
+        rows = np.array(self.rows, dtype=np.int32)
+        cols = np.array(self.cols, dtype=np.int32)
+
+        sparse = ctr(self.ref, (5, 5), coeffs, rows, cols)
         assert sparse == sparse
 
     def test_can_apply_to_dense(self, matrix_format):
+        if matrix_format == "Csr":
+            # NOTE currently this test would fail for
+            # Csr matrices since Csr expects compressed
+            # rows
+            return
         ctr = getattr(pyGinkgo.matrix, matrix_format)
-        sparse = ctr(
-            self.ref,
-            (5, 5),
-            np.array(self.values, dtype=np.double),
-            np.array(self.rows, dtype=np.int32),
-            np.array(self.cols, dtype=np.int32),
-        )
+        coeffs = np.array(self.values, dtype=np.double)
+        rows = np.array(self.rows, dtype=np.int32)
+        cols = np.array(self.cols, dtype=np.int32)
+
+        sparse = ctr(self.ref, (5, 5), coeffs, rows, cols)
 
         dense_b = pyGinkgo.matrix.dense(self.ref, np.array(self.dense, dtype=np.double))
         dense_x = pyGinkgo.matrix.dense(
@@ -83,3 +90,10 @@ class TestSparseMatrix:
         assert dense_x.at(2) == 26.0
         assert dense_x.at(3) == 49.0
         assert dense_x.at(4) == 39.0
+
+    def test_can_read_from_mtx_file(self, matrix_format):
+        reader = getattr(pyGinkgo.matrix, "read_" + matrix_format)
+        fn = os.path.dirname(os.path.realpath(__file__)) + "/sparse_example.mtx"
+        sparse = reader(fn, self.ref)
+
+        assert sparse == sparse
