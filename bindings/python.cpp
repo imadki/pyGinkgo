@@ -6,7 +6,7 @@
 
 namespace py = pybind11;
 
-void init_array(py::module_ &);
+void init_array_all_types(py::module_ &);
 void init_dense(py::module_ &);
 void init_coo(py::module_ &);
 void init_csr(py::module_ &);
@@ -29,9 +29,9 @@ PYBIND11_MODULE(pyGinkgo, m)
     add_stream_classes(m);
     add_executor_classes(m);
 
-    py::module_ module_base = m.def_submodule(
-        "base", "Submodule for Ginkgos low level type bindings");
-    init_array(module_base);
+    py::module_ module_base =
+        m.def_submodule("base", "Submodule for Ginkgos low level type bindings");
+    init_array_all_types(module_base);
 
     py::module_ module_matrix =
         m.def_submodule("matrix", "Submodule for Ginkgos matrix type bindings");

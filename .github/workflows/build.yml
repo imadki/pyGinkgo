@@ -11,7 +11,6 @@ env:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -31,9 +30,16 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y libopenmpi-dev
         pip install pytest numpy torch
+        mkdir -p $HOME/FETCHCONTENT
+
+    - name: Set up cache
+        uses: actions/cache@v4
+        with:
+          path: $HOME/FETCHCONTENT
+          key: GinkgoCache
 
     - name: Configure CMake
-      run: cmake --preset develop -DGINKGO_BUILD_OMP=OFF
+      run: cmake --preset develop -DGINKGO_BUILD_OMP=OFF -DFETCHCONTENT_BASE_DIR=$HOME/FETCHCONTENT
 
     - name: Build with CMake
       run: cmake --build --preset develop

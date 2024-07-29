@@ -3,25 +3,30 @@
 // SPDX-FileCopyrightText: 2024 pyGinkgo authors
 
 #include "pybind11/numpy.h"
-#include "python.hpp"
+#include <pybind11/pybind11.h>
+
+#include "ginkgo/ginkgo.hpp"
 
 namespace py = pybind11;
 
-void init_array(py::module_ &module)
-{
-    py::class_<gko::array<ValueType>>(module, "array", py::buffer_protocol())
-        .def(py::init<std::shared_ptr<const gko::Executor>, int>())
-        .def(py::init<std::shared_ptr<const gko::Executor>,
-                      gko::array<ValueType> &>())
-        .def(py::init(
-            [](std::shared_ptr<gko::Executor> exec,
-               py::array_t<double, py::array::c_style | py::array::forcecast>
-                   b) {
-                // for documentation of the second argument see
-                // see
-                // https://pybind11.readthedocs.io/en/stable/advanced/pycpp/numpy.html#arrays
-                /* Request a buffer descriptor from Python */
-                py::buffer_info info = b.request();
+template <typename ValueType>
+void init_array(py::module_ &module, const std::string &typestr) {
+  std::string pyclass_name = std::string("array_") + typestr;
+
+  py::class_<gko::array<ValueType>>(module, pyclass_name.c_str(),
+                                    py::buffer_protocol())
+      .def(py::init<std::shared_ptr<const gko::Executor>, int>())
+      .def(py::init<std::shared_ptr<const gko::Executor>,
+                    gko::array<ValueType> &>())
+      .def(py::init(
+          [](std::shared_ptr<gko::Executor> exec,
+             py::array_t<ValueType, py::array::c_style | py::array::forcecast>
+                 b) {
+            // for documentation of the second argument see
+            // see
+            // https://pybind11.readthedocs.io/en/stable/advanced/pycpp/numpy.html#arrays
+            /* Request a buffer descriptor from Python */
+            py::buffer_info info = b.request();
 
                 if (info.format != py::format_descriptor<ValueType>::format()) {
                     throw std::runtime_error("Incompatible dtype");
@@ -58,8 +63,15 @@ void init_array(py::module_ &module)
             return arr.get_const_data()[idx];
         });
 
-    module.def(
-        "reduce_add",
-        pybind11::overload_cast<const gko::array<ValueType> &, const ValueType>(
-            &gko::reduce_add<ValueType>));
+  // std::string reduce_add_name = std::string("reduce_add_") + typestr;
+  module.def(
+      "reduce_add", // reduce_add_name.c_str(),
+      pybind11::overload_cast<const gko::array<ValueType> &, const ValueType>(
+          &gko::reduce_add<ValueType>));
+}
+
+void init_array_all_types(py::module_ &module) {
+  init_array<double>(module, "double");
+  init_array<float>(module, "float");
+  init_array<int>(module, "int");
 }

@@ -46,7 +46,8 @@ if(NOT ginkgo_FOUND)
   FetchContent_Declare(
     ginkgo
     GIT_REPOSITORY https://github.com/ginkgo-project/ginkgo.git
-    GIT_TAG v1.8.0)
+    GIT_TAG v1.8.0
+    EXCLUDE_FROM_ALL)
   FetchContent_MakeAvailable(ginkgo)
 endif()
 
@@ -57,13 +58,13 @@ endif()
 
 pybind11_add_module(
   pyGinkgo
-  ${PROJECT_SOURCE_DIR}/src/python.cpp
-  ${PROJECT_SOURCE_DIR}/src/array.cpp
-  ${PROJECT_SOURCE_DIR}/src/dense.cpp
-  ${PROJECT_SOURCE_DIR}/src/matrix.cpp
-  ${PROJECT_SOURCE_DIR}/src/memory.cpp
-  ${PROJECT_SOURCE_DIR}/src/stream.cpp
-  ${PROJECT_SOURCE_DIR}/src/executor.cpp)
+  ${PROJECT_SOURCE_DIR}/bindings/python.cpp
+  ${PROJECT_SOURCE_DIR}/bindings/array.cpp
+  ${PROJECT_SOURCE_DIR}/bindings/dense.cpp
+  ${PROJECT_SOURCE_DIR}/bindings/matrix.cpp
+  ${PROJECT_SOURCE_DIR}/bindings/memory.cpp
+  ${PROJECT_SOURCE_DIR}/bindings/stream.cpp
+  ${PROJECT_SOURCE_DIR}/bindings/executor.cpp)
 
 target_include_directories(pyGinkgo PRIVATE ${Ginkgo_BINARY_DIR}/include)
 target_link_libraries(pyGinkgo PRIVATE Ginkgo::ginkgo)
@@ -89,3 +90,17 @@ if(GINKGO_BUILD_CUDA)
            COMMAND ${PYTHON_EXECUTABLE} -m pytest
                    ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_cuda_executor.py)
 endif()
+
+message("Install path: ${Python_SITELIB}")
+install(TARGETS pyGinkgo DESTINATION ${Python_SITELIB}/${PROJECT_NAME})
+install(
+  IMPORTED_RUNTIME_ARTIFACTS
+  ginkgo
+  ginkgo_device
+  ginkgo_hip
+  ginkgo_cuda
+  ginkgo_omp
+  ginkgo_dpcpp
+  ginkgo_reference
+  DESTINATION
+  ${Python_SITELIB}/${PROJECT_NAME})
