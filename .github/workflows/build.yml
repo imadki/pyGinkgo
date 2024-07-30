@@ -36,7 +36,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: $HOME/FETCHCONTENT
-          key: GinkgoCache
+          key: ${{ github.event.pull_request.number }}
 
     - name: Configure CMake
       run: cmake --preset develop -DGINKGO_BUILD_OMP=OFF -DFETCHCONTENT_BASE_DIR=$HOME/FETCHCONTENT
