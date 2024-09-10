@@ -24,8 +24,25 @@
       "displayName": "Build pyGinkgo bindings",
       "description": "Build pyGinkgo bindings",
       "binaryDir": "${sourceDir}/build/Develop"
-    }
+    },
 
+    {
+      "name": "ninja-develop-cuda",
+      "inherits": [
+        "develop",
+        "ninja"
+      ],
+      "displayName": "Build pyGinkgo bindings for CUDA executor",
+      "description": "Build pyGinkgo bindings for CUDA executor",
+      "binaryDir": "${sourceDir}/build/DevelopNinjaCUDA",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "GINKGO_BUILD_CUDA": "ON",
+        "GINKGO_BUILD_HIP": "OFF",
+        "GINKGO_BUILD_MPI": "OFF",
+        "GINKGO_DPCPP_SINGLE_MODE": "OFF"
+      }
+    }
   ],
   "buildPresets": [
     {
@@ -33,6 +50,16 @@
       "displayName": "Build for CPUs only with unit tests enabled",
       "configurePreset": "ninja-develop",
       "configuration": "ninja-develop"
+    },
+
+    {
+      "name": "ninja-develop-cuda",
+      "displayName": "Build for CUDA with unit tests enabled",
+      "configurePreset": "ninja-develop-cuda",
+      "targets": [
+        "all", "pyGinkgo"
+      ],
+      "jobs": 10
     }
    ]
 }
