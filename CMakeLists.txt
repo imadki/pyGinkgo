@@ -50,6 +50,11 @@ if(NOT ginkgo_FOUND)
 
 endif()
 
+# Pass build type down to c++ macro: https://stackoverflow.com/a/9017635/8302811
+if(GINKGO_BUILD_CUDA)
+  add_compile_definitions(GINKGO_BUILD_CUDA)
+endif()
+
 pybind11_add_module(
   pyGinkgo
   ${PROJECT_SOURCE_DIR}/src/python.cpp
