@@ -33,10 +33,10 @@ jobs:
         pip install pytest numpy torch
 
     - name: Configure CMake
-      run: cmake --preset ninja-develop -DGINKGO_BUILD_OMP=OFF
+      run: cmake --preset develop -DGINKGO_BUILD_OMP=OFF
 
     - name: Build with CMake
-      run: cmake --build --preset ninja-develop
+      run: cmake --build --preset develop
 
     - name: Run specific test
       run: ctest -R pyginkgo --test-dir build/Develop
