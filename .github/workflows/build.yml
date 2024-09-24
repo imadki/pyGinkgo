@@ -39,6 +39,4 @@ jobs:
       run: cmake --build --preset develop
 
     - name: Run specific test
-      run: ctest -R pyginkgo --test-dir build/Develop
-
-
+      run: ctest --preset -R pyginkgo

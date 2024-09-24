@@ -51,6 +51,12 @@
   ],
   "buildPresets": [
     {
+      "name": "debug",
+      "displayName": "Build for CPUs only with unit tests enabled",
+      "configurePreset": "debug",
+      "configuration": "debug"
+    },
+    {
       "name": "develop",
       "displayName": "Build for CPUs only with unit tests enabled",
       "configurePreset": "develop",
@@ -62,5 +68,19 @@
       "configurePreset": "release",
       "configuration": "release"
     }
-   ]
+   ],
+  "testPresets": [
+    {
+      "name": "debug",
+      "displayName": "Build for CPUs only with unit tests enabled",
+      "configurePreset": "debug",
+      "configuration": "debug"
+    },
+    {
+      "name": "develop",
+      "displayName": "Build for CPUs only with unit tests enabled",
+      "configurePreset": "develop",
+      "configuration": "develop"
+    }
+  ]
 }
