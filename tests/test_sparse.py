@@ -4,11 +4,11 @@
 
 import os
 import sys
-import pyGinkgo
 import pytest
 import numpy as np
 
 sys.path.append("../build")
+import pyGinkgoBindings as pGB
 
 
 @pytest.mark.parametrize("matrix_format", ["Coo", "Csr"])
@@ -45,10 +45,10 @@ class TestSparseMatrix:
     ]
     dense = [1, 1, 1, 1, 1]
 
-    ref = pyGinkgo.ReferenceExecutor()
+    ref = pGB.ReferenceExecutor()
 
     def test_can_create_sparse_matrix(self, matrix_format):
-        ctr = getattr(pyGinkgo.matrix, matrix_format)
+        ctr = getattr(pGB.matrix, matrix_format)
         sparse = ctr(self.ref)
         assert sparse == sparse
 
@@ -58,7 +58,7 @@ class TestSparseMatrix:
             # Csr matrices since Csr expects compressed
             # rows
             return
-        ctr = getattr(pyGinkgo.matrix, matrix_format)
+        ctr = getattr(pGB.matrix, matrix_format)
         coeffs = np.array(self.values, dtype=np.double)
         rows = np.array(self.rows, dtype=np.int32)
         cols = np.array(self.cols, dtype=np.int32)
@@ -72,17 +72,15 @@ class TestSparseMatrix:
             # Csr matrices since Csr expects compressed
             # rows
             return
-        ctr = getattr(pyGinkgo.matrix, matrix_format)
+        ctr = getattr(pGB.matrix, matrix_format)
         coeffs = np.array(self.values, dtype=np.double)
         rows = np.array(self.rows, dtype=np.int32)
         cols = np.array(self.cols, dtype=np.int32)
 
         sparse = ctr(self.ref, (5, 5), coeffs, rows, cols)
 
-        dense_b = pyGinkgo.matrix.dense(self.ref, np.array(self.dense, dtype=np.double))
-        dense_x = pyGinkgo.matrix.dense(
-            self.ref, np.array([0, 0, 0, 0, 0], dtype=np.double)
-        )
+        dense_b = pGB.matrix.dense(self.ref, np.array(self.dense, dtype=np.double))
+        dense_x = pGB.matrix.dense(self.ref, np.array([0, 0, 0, 0, 0], dtype=np.double))
 
         sparse.apply(dense_b, dense_x)
         assert dense_x.at(0) == 31.0
@@ -92,7 +90,7 @@ class TestSparseMatrix:
         assert dense_x.at(4) == 39.0
 
     def test_can_read_from_mtx_file(self, matrix_format):
-        reader = getattr(pyGinkgo.matrix, "read_" + matrix_format)
+        reader = getattr(pGB.matrix, "read_" + matrix_format)
         fn = os.path.dirname(os.path.realpath(__file__)) + "/sparse_example.mtx"
         sparse = reader(fn, self.ref)
 

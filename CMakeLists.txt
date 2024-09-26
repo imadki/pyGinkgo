@@ -57,7 +57,7 @@ if(GINKGO_BUILD_CUDA)
 endif()
 
 pybind11_add_module(
-  pyGinkgo
+  pyGinkgoBindings
   ${PROJECT_SOURCE_DIR}/bindings/python.cpp
   ${PROJECT_SOURCE_DIR}/bindings/array.cpp
   ${PROJECT_SOURCE_DIR}/bindings/dense.cpp
@@ -66,9 +66,10 @@ pybind11_add_module(
   ${PROJECT_SOURCE_DIR}/bindings/stream.cpp
   ${PROJECT_SOURCE_DIR}/bindings/executor.cpp)
 
-target_include_directories(pyGinkgo PRIVATE ${Ginkgo_BINARY_DIR}/include)
-target_link_libraries(pyGinkgo PRIVATE Ginkgo::ginkgo)
-set_property(TARGET pyGinkgo PROPERTY CXX_STANDARD 14)
+target_include_directories(pyGinkgoBindings
+                           PRIVATE ${Ginkgo_BINARY_DIR}/include)
+target_link_libraries(pyGinkgoBindings PRIVATE Ginkgo::ginkgo)
+set_property(TARGET pyGinkgoBindings PROPERTY CXX_STANDARD 14)
 
 # adding tests
 add_test(NAME pyginkgo_import_test
