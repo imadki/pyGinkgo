@@ -58,13 +58,13 @@ endif()
 
 pybind11_add_module(
   pyGinkgoBindings
-  ${PROJECT_SOURCE_DIR}/bindings/python.cpp
-  ${PROJECT_SOURCE_DIR}/bindings/array.cpp
-  ${PROJECT_SOURCE_DIR}/bindings/dense.cpp
-  ${PROJECT_SOURCE_DIR}/bindings/matrix.cpp
-  ${PROJECT_SOURCE_DIR}/bindings/memory.cpp
-  ${PROJECT_SOURCE_DIR}/bindings/stream.cpp
-  ${PROJECT_SOURCE_DIR}/bindings/executor.cpp)
+  ${PROJECT_SOURCE_DIR}/src/cpp_bindings/python.cpp
+  ${PROJECT_SOURCE_DIR}/src/cpp_bindings/array.cpp
+  ${PROJECT_SOURCE_DIR}/src/cpp_bindings/dense.cpp
+  ${PROJECT_SOURCE_DIR}/src/cpp_bindings/matrix.cpp
+  ${PROJECT_SOURCE_DIR}/src/cpp_bindings/memory.cpp
+  ${PROJECT_SOURCE_DIR}/src/cpp_bindings/stream.cpp
+  ${PROJECT_SOURCE_DIR}/src/cpp_bindings/executor.cpp)
 
 target_include_directories(pyGinkgoBindings
                            PRIVATE ${Ginkgo_BINARY_DIR}/include)
@@ -92,8 +92,15 @@ if(GINKGO_BUILD_CUDA)
                    ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_cuda_executor.py)
 endif()
 
+if(APPLE)
+  set(CMAKE_MACOSX_RPATH 1)
+endif()
+set(CMAKE_INSTALL_RPATH ${Python_SITELIB}/${PROJECT_NAME})
+
 message("Install path: ${Python_SITELIB}")
-install(TARGETS pyGinkgo DESTINATION ${Python_SITELIB}/${PROJECT_NAME})
+set_target_properties(
+  pyGinkgoBindings PROPERTIES INSTALL_RPATH ${Python_SITELIB}/${PROJECT_NAME})
+install(TARGETS pyGinkgoBindings DESTINATION ${Python_SITELIB}/${PROJECT_NAME})
 install(
   IMPORTED_RUNTIME_ARTIFACTS
   ginkgo
@@ -105,3 +112,5 @@ install(
   ginkgo_reference
   DESTINATION
   ${Python_SITELIB}/${PROJECT_NAME})
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/pyGinkgo/
+        DESTINATION ${Python_SITELIB}/${PROJECT_NAME})

@@ -1,5 +1,7 @@
 # Version 0.1.0 (unreleased)
 - Add simplified CMakePresets [#49](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/49)
+- Split library into pure bindings and user facing python part [#37](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/37)
+- Add arrays for ints and floats [#37](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/37)
 - Add CUDA Exector bindings [#48](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/48)
 - Add basic bindings for sparse matrices [#33](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/33)
 - Add bindings for dense matrices [#21](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/21), [#32](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/34) 

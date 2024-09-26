@@ -15,7 +15,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Set up Python
       uses: actions/setup-python@v2
@@ -38,7 +38,7 @@ jobs:
         key: ${{ github.event.pull_request.number }}
 
     - name: Configure CMake
-      run: cmake --preset develop -DGINKGO_BUILD_OMP=OFF -DFETCHCONTENT_BASE_DIR=$HOME/FETCHCONTENT
+      run: cmake --preset develop -DGINKGO_BUILD_OMP=OFF
 
     - name: Build with CMake
       run: cmake --build --preset develop
