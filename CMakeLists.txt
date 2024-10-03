@@ -5,6 +5,7 @@
 cmake_minimum_required(VERSION 3.20)
 project(pyGinkgo)
 
+include(cmake/AutoEnableDevice.cmake)
 enable_testing()
 
 # Find Python interpreter and library
@@ -47,7 +48,6 @@ if(NOT ginkgo_FOUND)
     GIT_REPOSITORY https://github.com/ginkgo-project/ginkgo.git
     GIT_TAG v1.8.0)
   FetchContent_MakeAvailable(ginkgo)
-
 endif()
 
 # Pass build type down to c++ macro: https://stackoverflow.com/a/9017635/8302811

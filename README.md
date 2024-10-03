@@ -15,6 +15,7 @@ PyGinkgo is a Python binding for the Ginkgo framework, providing access to Ginkg
 - Python 3.x
 - Ginkgo
 - Pybind11
+- Ninja # if you want to use cmake presets
 
 ### Building the module
 
