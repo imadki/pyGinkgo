@@ -11,6 +11,10 @@ Files: .gitignore
 Copyright: 2024 pyGinkgo authors
 License: Unlicense
 
+Files: .clang-format
+Copyright: 2024 pyGinkgo authors
+License: Unlicense
+
 Files: *.yaml
 Copyright: 2024 pyGinkgo authors
 License: Unlicense
