@@ -29,8 +29,8 @@ PYBIND11_MODULE(pyGinkgo, m)
     add_stream_classes(m);
     add_executor_classes(m);
 
-    py::module_ module_base =
-        m.def_submodule("base", "Submodule for Ginkgos low level type bindings");
+    py::module_ module_base = m.def_submodule(
+        "base", "Submodule for Ginkgos low level type bindings");
     init_array_all_types(module_base);
 
     py::module_ module_matrix =
