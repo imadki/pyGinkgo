@@ -14,7 +14,7 @@ void add_allocator_classes(py::module_ &);
 void add_stream_classes(py::module_ &);
 void add_executor_classes(py::module_ &);
 
-PYBIND11_MODULE(pyGinkgo, m)
+PYBIND11_MODULE(pyGinkgoBindings, m)
 {
     m.doc() = "Python bindings for the Ginkgo framework";
 
