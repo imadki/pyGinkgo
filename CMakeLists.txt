@@ -98,8 +98,6 @@ endif()
 set(CMAKE_INSTALL_RPATH ${Python_SITELIB}/${PROJECT_NAME})
 
 message("Install path: ${Python_SITELIB}")
-set_target_properties(
-  pyGinkgoBindings PROPERTIES INSTALL_RPATH ${Python_SITELIB}/${PROJECT_NAME})
 install(TARGETS pyGinkgoBindings DESTINATION ${Python_SITELIB}/${PROJECT_NAME})
 install(
   IMPORTED_RUNTIME_ARTIFACTS
@@ -112,5 +110,6 @@ install(
   ginkgo_reference
   DESTINATION
   ${Python_SITELIB}/${PROJECT_NAME})
+
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/pyGinkgo/
         DESTINATION ${Python_SITELIB}/${PROJECT_NAME})
