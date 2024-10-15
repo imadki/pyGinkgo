@@ -24,7 +24,6 @@ void init_array(py::module_ &module, const std::string &typestr)
                py::array_t<ValueType, py::array::c_style | py::array::forcecast>
                    b) {
                 // for documentation of the second argument see
-                // see
                 // https://pybind11.readthedocs.io/en/stable/advanced/pycpp/numpy.html#arrays
                 /* Request a buffer descriptor from Python */
                 py::buffer_info info = b.request();
@@ -59,7 +58,7 @@ void init_array(py::module_ &module, const std::string &typestr)
         })
         .def("fill", &gko::array<ValueType>::fill,
              "Fill the array with the given value.")
-        .def("get_size", &gko::array<ValueType>::get_num_elems)
+        .def("get_size", &gko::array<ValueType>::get_size)
         .def("at", [](const gko::array<ValueType> &arr, int idx) {
             return arr.get_const_data()[idx];
         });
