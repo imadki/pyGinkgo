@@ -46,7 +46,8 @@ if(NOT ginkgo_FOUND)
   FetchContent_Declare(
     ginkgo
     GIT_REPOSITORY https://github.com/ginkgo-project/ginkgo.git
-    GIT_TAG v1.8.0)
+    GIT_TAG v1.8.0
+    EXCLUDE_FROM_ALL)
   FetchContent_MakeAvailable(ginkgo)
 endif()
 
@@ -56,18 +57,19 @@ if(GINKGO_BUILD_CUDA)
 endif()
 
 pybind11_add_module(
-  pyGinkgo
-  ${PROJECT_SOURCE_DIR}/src/python.cpp
-  ${PROJECT_SOURCE_DIR}/src/array.cpp
-  ${PROJECT_SOURCE_DIR}/src/dense.cpp
-  ${PROJECT_SOURCE_DIR}/src/matrix.cpp
-  ${PROJECT_SOURCE_DIR}/src/memory.cpp
-  ${PROJECT_SOURCE_DIR}/src/stream.cpp
-  ${PROJECT_SOURCE_DIR}/src/executor.cpp)
+  pyGinkgoBindings
+  ${PROJECT_SOURCE_DIR}/src/cpp_bindings/python.cpp
+  ${PROJECT_SOURCE_DIR}/src/cpp_bindings/array.cpp
+  ${PROJECT_SOURCE_DIR}/src/cpp_bindings/dense.cpp
+  ${PROJECT_SOURCE_DIR}/src/cpp_bindings/matrix.cpp
+  ${PROJECT_SOURCE_DIR}/src/cpp_bindings/memory.cpp
+  ${PROJECT_SOURCE_DIR}/src/cpp_bindings/stream.cpp
+  ${PROJECT_SOURCE_DIR}/src/cpp_bindings/executor.cpp)
 
-target_include_directories(pyGinkgo PRIVATE ${Ginkgo_BINARY_DIR}/include)
-target_link_libraries(pyGinkgo PRIVATE Ginkgo::ginkgo)
-set_property(TARGET pyGinkgo PROPERTY CXX_STANDARD 14)
+target_include_directories(pyGinkgoBindings
+                           PRIVATE ${Ginkgo_BINARY_DIR}/include)
+target_link_libraries(pyGinkgoBindings PRIVATE Ginkgo::ginkgo)
+set_property(TARGET pyGinkgoBindings PROPERTY CXX_STANDARD 14)
 
 # adding tests
 add_test(NAME pyginkgo_import_test
@@ -89,3 +91,25 @@ if(GINKGO_BUILD_CUDA)
            COMMAND ${PYTHON_EXECUTABLE} -m pytest
                    ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_cuda_executor.py)
 endif()
+
+if(APPLE)
+  set(CMAKE_MACOSX_RPATH 1)
+endif()
+set(CMAKE_INSTALL_RPATH ${Python_SITELIB}/${PROJECT_NAME})
+
+message("Install path: ${Python_SITELIB}")
+install(TARGETS pyGinkgoBindings DESTINATION ${Python_SITELIB}/${PROJECT_NAME})
+install(
+  IMPORTED_RUNTIME_ARTIFACTS
+  ginkgo
+  ginkgo_device
+  ginkgo_hip
+  ginkgo_cuda
+  ginkgo_omp
+  ginkgo_dpcpp
+  ginkgo_reference
+  DESTINATION
+  ${Python_SITELIB}/${PROJECT_NAME})
+
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/pyGinkgo/
+        DESTINATION ${Python_SITELIB}/${PROJECT_NAME})

@@ -4,74 +4,62 @@
 
 
 import sys
-import pyGinkgo
+import pytest
 import numpy as np
 
 sys.path.append("../build")
+import pyGinkgoBindings as pGB
 
 
-def test_init_empty_array():
-    executor = pyGinkgo.ReferenceExecutor()
+@pytest.mark.parametrize("data_type", ["float", "double", "int"])
+class TestArray:
+    ref = pGB.ReferenceExecutor()
     size = 5
-    arr = pyGinkgo.base.array(executor, size)
-    assert arr.get_size() == size
-
-
-def test_can_fill_array():
-    executor = pyGinkgo.ReferenceExecutor()
-    size = 5
-    arr = pyGinkgo.base.array(executor, size)
-    arr.fill(10.0)
-    assert arr.at(0) == 10.0
-
-
-def test_can_instantiate_array_from_python_list():
-    executor = pyGinkgo.ReferenceExecutor()
     lst = [1.0, 2.0, 3.0, 4.0, 5.0]
-    arr = pyGinkgo.base.array(executor, lst)
-    assert arr.get_size() == len(lst)
-    assert arr.at(0) == 1.0
-    assert arr.at(1) == 2.0
-    assert arr.at(2) == 3.0
-    assert arr.at(3) == 4.0
-    assert arr.at(4) == 5.0
 
+    d_type_map = {"int": int, "float": float, "double": np.double}
 
-def test_can_instantiate_array_from_numpy_array():
-    executor = pyGinkgo.ReferenceExecutor()
-    np_array = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
-    arr = pyGinkgo.base.array(executor, np_array)
-    assert arr.get_size() == len(np_array)
-    assert arr.at(0) == 1.0
-    assert arr.at(1) == 2.0
-    assert arr.at(2) == 3.0
-    assert arr.at(3) == 4.0
-    assert arr.at(4) == 5.0
+    def test_init_empty_array(self, data_type):
+        ctr = getattr(pGB.base, "array_" + data_type)
+        arr = ctr(self.ref, self.size)
+        assert arr.get_size() == self.size
 
+    def test_can_fill_array(self, data_type):
+        ctr = getattr(pGB.base, "array_" + data_type)
+        arr = ctr(self.ref, self.size)
+        fill_value = self.d_type_map[data_type](10)
+        arr.fill(fill_value)
+        assert arr.at(0) == fill_value
 
-def test_can_copy_construct_array():
-    executor = pyGinkgo.ReferenceExecutor()
-    np_array = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
-    arr = pyGinkgo.base.array(executor, np_array)
-    arr_copy = pyGinkgo.base.array(executor, arr)
-    assert arr.get_size() == arr_copy.get_size()
+    def test_can_instantiate_array_from_numpy_array(self, data_type):
+        np_array = np.array(self.lst, dtype=self.d_type_map[data_type])
+        ctr = getattr(pGB.base, "array_" + data_type)
+        arr = ctr(self.ref, np_array)
+        assert arr.get_size() == len(np_array)
+        for i in range(self.size):
+            expect = self.d_type_map[data_type](self.lst[i])
+            assert arr.at(i) == expect
 
+    def test_can_copy_construct_array(self, data_type):
+        ctr = getattr(pGB.base, "array_" + data_type)
+        np_array = np.array(self.lst)
+        arr = ctr(self.ref, np_array)
+        arr_copy = ctr(self.ref, arr)
 
-def test_can_construct_np_array_from_gko_array():
-    executor = pyGinkgo.ReferenceExecutor()
-    lst = [1.0, 2.0, 3.0, 4.0, 5.0]
-    arr = pyGinkgo.base.array(executor, lst)
-    np_arr = np.array(arr)
-    assert arr.get_size() == len(np_arr)
-    assert np_arr[0] == 1.0
-    assert np_arr[1] == 2.0
-    assert np_arr[2] == 3.0
-    assert np_arr[3] == 4.0
-    assert np_arr[4] == 5.0
+        assert arr.get_size() == arr_copy.get_size()
 
+    def test_can_construct_np_array_from_gko_array(self, data_type):
+        ctr = getattr(pGB.base, "array_" + data_type)
+        np_array = np.array(self.lst)
+        arr = ctr(self.ref, np_array)
+        np_array_copy = np.array(arr)
 
-def test_can_reduce_add_array():
-    executor = pyGinkgo.ReferenceExecutor()
-    np_array = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
-    arr = pyGinkgo.base.array(executor, np_array)
-    assert pyGinkgo.base.reduce_add(arr, 0.0) == 15.0
+        assert np.array_equal(np_array, np_array_copy)
+
+    def test_can_reduce_add_array(self, data_type):
+        ctr = getattr(pGB.base, "array_" + data_type)
+        np_array = np.array(self.lst, dtype=self.d_type_map[data_type])
+        arr = ctr(self.ref, np_array)
+        init_value = self.d_type_map[data_type](0.0)
+        expected_value = self.d_type_map[data_type](15.0)
+        assert pGB.base.reduce_add(arr, init_value) == expected_value

@@ -11,7 +11,7 @@ sys.path.append("../build")
 
 def test_import():
     try:
-        import pyGinkgo  # noqa: F401
+        import pyGinkgoBindings  # noqa: F401
 
         assert True  # If import succeeds, the test passes
 

@@ -11,12 +11,11 @@ env:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Set up Python
       uses: actions/setup-python@v2
@@ -31,6 +30,12 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y libopenmpi-dev
         pip install pytest numpy torch
+
+    - name: Set up cache
+      uses: actions/cache@v4
+      with:
+        path: build
+        key: ${{ github.event.pull_request.number }}
 
     - name: Configure CMake
       run: cmake --preset develop -DGINKGO_BUILD_OMP=OFF

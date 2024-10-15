@@ -2,23 +2,28 @@
 //
 // SPDX-FileCopyrightText: 2024 pyGinkgo authors
 
+#include <pybind11/pybind11.h>
 #include "pybind11/numpy.h"
-#include "python.hpp"
+
+#include "ginkgo/ginkgo.hpp"
 
 namespace py = pybind11;
 
-void init_array(py::module_ &module)
+template <typename ValueType>
+void init_array(py::module_ &module, const std::string &typestr)
 {
-    py::class_<gko::array<ValueType>>(module, "array", py::buffer_protocol())
+    std::string pyclass_name = std::string("array_") + typestr;
+
+    py::class_<gko::array<ValueType>>(module, pyclass_name.c_str(),
+                                      py::buffer_protocol())
         .def(py::init<std::shared_ptr<const gko::Executor>, int>())
         .def(py::init<std::shared_ptr<const gko::Executor>,
                       gko::array<ValueType> &>())
         .def(py::init(
             [](std::shared_ptr<gko::Executor> exec,
-               py::array_t<double, py::array::c_style | py::array::forcecast>
+               py::array_t<ValueType, py::array::c_style | py::array::forcecast>
                    b) {
                 // for documentation of the second argument see
-                // see
                 // https://pybind11.readthedocs.io/en/stable/advanced/pycpp/numpy.html#arrays
                 /* Request a buffer descriptor from Python */
                 py::buffer_info info = b.request();
@@ -53,7 +58,7 @@ void init_array(py::module_ &module)
         })
         .def("fill", &gko::array<ValueType>::fill,
              "Fill the array with the given value.")
-        .def("get_size", &gko::array<ValueType>::get_num_elems)
+        .def("get_size", &gko::array<ValueType>::get_size)
         .def("at", [](const gko::array<ValueType> &arr, int idx) {
             return arr.get_const_data()[idx];
         });
@@ -62,4 +67,11 @@ void init_array(py::module_ &module)
         "reduce_add",
         pybind11::overload_cast<const gko::array<ValueType> &, const ValueType>(
             &gko::reduce_add<ValueType>));
+}
+
+void init_array_all_types(py::module_ &module)
+{
+    init_array<double>(module, "double");
+    init_array<float>(module, "float");
+    init_array<int>(module, "int");
 }
