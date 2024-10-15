@@ -13,6 +13,7 @@ void init_csr(py::module_ &);
 void init_logger(py::module_ &);
 void init_gmres(py::module_ &);
 void init_config_solver(py::module_ &);
+void init_ilu(py::module_ &);
 void add_allocator_classes(py::module_ &);
 void add_stream_classes(py::module_ &);
 void add_executor_classes(py::module_ &);
@@ -53,6 +54,10 @@ PYBIND11_MODULE(pyGinkgoBindings, m)
     py::module_ module_logger =
         m.def_submodule("logger", "Submodule for Ginkgos logger type bindings");
     init_logger(module_logger);
+
+    py::module_ module_preconditioner = m.def_submodule(
+        "preconditioner", "Submodule for Ginkgos preconditioner type bindings");
+    init_ilu(module_preconditioner);
 
     py::module_ module_solver =
         m.def_submodule("solver", "Submodule for Ginkgos solver type bindings");
