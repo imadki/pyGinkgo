@@ -68,23 +68,9 @@ if(GINKGO_BUILD_CUDA)
   add_compile_definitions(GINKGO_BUILD_CUDA)
 endif()
 
-<<<<<<< HEAD
 add_subdirectory(src/cpp_bindings)
 
 pybind11_add_module(pyGinkgoBindings ${PYGINKGO_CPP_SOURCES})
-=======
-pybind11_add_module(
-  pyGinkgoBindings
-  ${PROJECT_SOURCE_DIR}/src/cpp_bindings/python.cpp
-  ${PROJECT_SOURCE_DIR}/src/cpp_bindings/array.cpp
-  ${PROJECT_SOURCE_DIR}/src/cpp_bindings/dense.cpp
-  ${PROJECT_SOURCE_DIR}/src/cpp_bindings/matrix.cpp
-  ${PROJECT_SOURCE_DIR}/src/cpp_bindings/memory.cpp
-  ${PROJECT_SOURCE_DIR}/src/cpp_bindings/stream.cpp
-  ${PROJECT_SOURCE_DIR}/src/cpp_bindings/executor.cpp
-  ${PROJECT_SOURCE_DIR}/src/cpp_bindings/solver/gmres.cpp
-  ${PROJECT_SOURCE_DIR}/src/cpp_bindings/preconditioner/ilu.cpp)
->>>>>>> e25585d (add test, fix template arguments)
 
 target_include_directories(pyGinkgoBindings
                            PRIVATE ${Ginkgo_BINARY_DIR}/include)

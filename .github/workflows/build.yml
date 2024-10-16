@@ -29,7 +29,7 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y libopenmpi-dev
-        pip install pytest numpy torch cupy
+        pip install pytest numpy torch
 
     - name: Set up cache
       uses: actions/cache@v4
