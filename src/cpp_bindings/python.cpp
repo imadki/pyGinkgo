@@ -20,8 +20,6 @@ PYBIND11_MODULE(pyGinkgoBindings, m)
 
     py::class_<gko::LinOp, std::shared_ptr<gko::LinOp>>(m, "LinOp");
 
-    py::class_<gko::ptr_param<gko::LinOp>>(m, "ptr_param");
-
     py::class_<gko::dim<2>>(m, "dim2").def(
         py::init<unsigned long, unsigned long>());
 

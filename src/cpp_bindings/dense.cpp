@@ -6,12 +6,6 @@
 
 void init_dense(py::module_ &module_matrix)
 {
-    module_matrix.def("read_dense", [](const std::string &fn,
-                                       std::shared_ptr<gko::Executor> exec) {
-        return gko::share(
-            gko::read<gko::matrix::Dense<ValueType>>(std::ifstream(fn), exec));
-    });
-
     /* function to create a dense matrix from py::buffer object
      *
      */
@@ -178,10 +172,23 @@ void init_dense(py::module_ &module_matrix)
                  o->fill(s);
                  m.inv_scale(o);
              })
-        .def("add_scaled", &gko::matrix::Dense<ValueType>::add_scaled,
-             "Adds `b` scaled by `alpha` to the matrix (aka: BLAS axpy).")
+        // TODO: those functions were actually newer tested.
+        // With the following changes they should be working now,
+        // yet the tests for them should be definatelly added in
+        // the following PR
         .def(
-            "sub_scaled", &gko::matrix::Dense<ValueType>::sub_scaled,
+            "add_scaled",
+            [](gko::matrix::Dense<ValueType> &self,
+               std::shared_ptr<gko::LinOp> alpha,
+               std::shared_ptr<gko::LinOp> b) { self.add_scaled(alpha, b); },
+            py::arg("alpha"), py::arg("b"),
+            "Adds `b` scaled by `alpha` to the matrix (aka: BLAS axpy).")
+        .def(
+            "sub_scaled",
+            [](gko::matrix::Dense<ValueType> &self,
+               std::shared_ptr<gko::LinOp> alpha,
+               std::shared_ptr<gko::LinOp> b) { self.sub_scaled(alpha, b); },
+            py::arg("alpha"), py::arg("b"),
             "Subtracts `b` scaled by `alpha` from the matrix (aka: BLAS axpy).")
         .def("at",
              py::overload_cast<size_t>(&gko::matrix::Dense<ValueType>::at,
@@ -195,4 +202,10 @@ void init_dense(py::module_ &module_matrix)
              &gko::matrix::Dense<ValueType>::get_num_stored_elements,
              "Returns the number of elements explicitly stored in the "
              "matrix.");
+
+    module_matrix.def("read_dense", [](const std::string &fn,
+                                       std::shared_ptr<gko::Executor> exec) {
+        return gko::share(
+            gko::read<gko::matrix::Dense<ValueType>>(std::ifstream(fn), exec));
+    });
 }
