@@ -72,16 +72,25 @@ target_link_libraries(pyGinkgoBindings PRIVATE Ginkgo::ginkgo)
 set_property(TARGET pyGinkgoBindings PROPERTY CXX_STANDARD 14)
 
 # Generating stubs for the library (interface annotation) using
-# https://github.com/sizmailov/pybind11-stubgen
-add_custom_command(
-  TARGET pyGinkgoBindings
-  POST_BUILD
-  WORKING_DIRECTORY $<TARGET_FILE_DIR:pyGinkgoBindings>
-  VERBATIM
-  COMMAND ${PYTHON_EXECUTABLE} -c
-          "import pybind11_stubgen; pybind11_stubgen.main();" pyGinkgoBindings
-  COMMENT "Generating stub files at: \
-$<TARGET_FILE_DIR:pyGinkgoBindings>/pyGinkgoBindings")
+# https://github.com/sizmailov/pybind11-stubgen Thus this library should be
+# first installed before enabling the generation
+option(
+  ENABLE_PYGINKGOBINDINGS_STUBS
+  "Whether the stub (interface) files are to be generated for pyGinkgoBindings"
+  OFF)
+message(
+  "Stubs generation for pyGinkgoBindings is: ${ENABLE_PYGINKGOBINDINGS_STUBS}")
+if(${ENABLE_PYGINKGOBINDINGS_STUBS})
+  add_custom_command(
+    TARGET pyGinkgoBindings
+    POST_BUILD
+    WORKING_DIRECTORY $<TARGET_FILE_DIR:pyGinkgoBindings>
+    VERBATIM
+    COMMAND ${PYTHON_EXECUTABLE} -c
+            "import pybind11_stubgen; pybind11_stubgen.main();" pyGinkgoBindings
+    COMMENT "Generating stub files at: \
+  $<TARGET_FILE_DIR:pyGinkgoBindings>/pyGinkgoBindings")
+endif()
 
 # adding tests
 add_test(NAME pyginkgo_import_test
@@ -127,5 +136,7 @@ install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/pyGinkgo/
         DESTINATION ${Python_SITELIB}/${PROJECT_NAME})
 
 # Installing stub files
-install(DIRECTORY $<TARGET_FILE_DIR:pyGinkgoBindings>/stubs/pyGinkgoBindings
-        DESTINATION ${Python_SITELIB}/${PROJECT_NAME})
+if(${ENABLE_PYGINKGOBINDINGS_STUBS})
+  install(DIRECTORY $<TARGET_FILE_DIR:pyGinkgoBindings>/stubs/pyGinkgoBindings
+          DESTINATION ${Python_SITELIB}/${PROJECT_NAME})
+endif()
