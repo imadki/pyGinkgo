@@ -16,26 +16,25 @@ PyGinkgo is a Python binding for the Ginkgo framework, providing access to Ginkg
 - Ginkgo
 - Pybind11
 - Ninja # if you want to use cmake presets
+- [pybind11-stubgen](https://pypi.org/project/pybind11-stubgen/) # if you want to use [stubs generation](#stubs-generation)
 
 ### Building the module
 
 1. **Clone the repository**:
-2. ```bash
+   ```bash
    git clone https://github.com/Helmholtz-AI-Energy/pyGinkgo.git
    ```
+2. **Build using CMake**:
+   ```bash
+   # Make a build directory in the project directory
+   mkdir build && cd build
 
-3. **Build using CMake**:
+   # Run CMake configuration
+   cmake ..
 
-```bash
-# Make a build directory in the project directory
-mkdir build && cd build
-
-# Run CMake configuration
-cmake ..
-
-# Build the project using the specified number of cores (replace "number of cores" with the desired value)
-cmake --build . -j=number_of_cores
-```
+   # Build the project using the specified number of cores (replace "number of cores" with the desired value)
+   cmake --build . -j=number_of_cores
+   ```
 
 ### Running the tests
 You would need to install pytest to be able to run the tests. To run all tests:
@@ -46,6 +45,37 @@ To run a particular test, say 'pyginkgo_import_test':
 ```bash
 ctest -R pyginkgo_import_test
 ```
+
+### Stubs generation
+From [Python mypy documentation](https://mypy.readthedocs.io/en/stable/stubgen.html):
+> A stub file (see [PEP 484](https://peps.python.org/pep-0484/)) contains only type hints for the public interface of a module, with empty function bodies. Mypy can use a stub file instead of the real implementation to provide type information for the module. They are useful for third-party modules whose authors have not yet added type hints (and when no stubs are available in typeshed) and C extension modules (which mypy can’t directly process).
+
+For this project the [pybind11-stubgen](https://github.com/sizmailov/pybind11-stubgen) module was used, [being specifically tailored](https://github.com/sizmailov/pybind11-stubgen/issues/31#issuecomment-1751932149) to work with pybind11.
+
+In order to enable the stubs generation:
+1. **Install [pybind11-stubgen](https://pypi.org/project/pybind11-stubgen/) on your local Python installation**:
+   ```bash
+   pip install pybind11-stubgen
+   ```
+
+2. **Set `ENABLE_PYGINKGOBINDINGS_STUBS=ON` when doing CMake configuration**:
+   ```bash
+   cmake .. -DENABLE_PYGINKGOBINDINGS_STUBS=ON
+   ```
+
+3. Now stubs are generated in the build folder and during the library installation. They would allow to see what's inside of the `pyGinkgo.pyGinkgoBindings` module and use autocomplete:
+   ```python
+   class dense(pyGinkgoBindings.LinOp):
+      @typing.overload
+      def __init__(self, arg0: typing_extensions.Buffer) -> None:
+         ...
+      @typing.overload
+      def __init__(self, arg0: pyGinkgoBindings.Executor, arg1: typing_extensions.Buffer) -> None:
+         ...
+      @typing.overload
+      def __init__(self, arg0: pyGinkgoBindings.Executor) -> None:
+         ...
+   ```
 
 ## Usage
 
