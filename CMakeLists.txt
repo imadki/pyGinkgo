@@ -71,18 +71,15 @@ target_include_directories(pyGinkgoBindings
 target_link_libraries(pyGinkgoBindings PRIVATE Ginkgo::ginkgo)
 set_property(TARGET pyGinkgoBindings PROPERTY CXX_STANDARD 14)
 
-# Generating stubs for the library (interface annotation) as per
-# https://mypy.readthedocs.io/en/stable/stubgen.html#specifying-what-to-stub
-# Requires mypy to be installed Executes `python -m mypy.stubgen -p
-# pyGinkgoBindings -o . --include-private` inside the pyGinkgoBindings build
-# folder
+# Generating stubs for the library (interface annotation) using
+# https://github.com/sizmailov/pybind11-stubgen
 add_custom_command(
   TARGET pyGinkgoBindings
   POST_BUILD
   WORKING_DIRECTORY $<TARGET_FILE_DIR:pyGinkgoBindings>
   VERBATIM
-  COMMAND ${PYTHON_EXECUTABLE} -c "import mypy.stubgen;mypy.stubgen.main(\
-[\'-p\',\'pyGinkgoBindings\',\'-o\',\'.\',\'--include-private\'])"
+  COMMAND ${PYTHON_EXECUTABLE} -c
+          "import pybind11_stubgen; pybind11_stubgen.main();" pyGinkgoBindings
   COMMENT "Generating stub files at: \
 $<TARGET_FILE_DIR:pyGinkgoBindings>/pyGinkgoBindings")
 
@@ -130,5 +127,5 @@ install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/pyGinkgo/
         DESTINATION ${Python_SITELIB}/${PROJECT_NAME})
 
 # Installing stub files
-install(DIRECTORY $<TARGET_FILE_DIR:pyGinkgoBindings>/pyGinkgoBindings
+install(DIRECTORY $<TARGET_FILE_DIR:pyGinkgoBindings>/stubs/pyGinkgoBindings
         DESTINATION ${Python_SITELIB}/${PROJECT_NAME})
