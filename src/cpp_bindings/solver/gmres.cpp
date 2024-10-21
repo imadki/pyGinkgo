@@ -13,17 +13,20 @@ void init_gmres(py::module_ &module_solver)
                          std::shared_ptr<const gko::LinOp> system_matrix,
                          size_t max_iters, size_t krylov_dim,
                          ValueType reduction_factor) {
-            auto fact = gko::share(
-                gko::solver::Gmres<ValueType>::build()
-                    .with_criteria(
-                        gko::stop::Iteration::build().with_max_iters(max_iters),
-                        gko::stop::ResidualNorm<ValueType>::build()
-                            .with_baseline(gko::stop::mode::absolute)
-                            .with_reduction_factor(reduction_factor))
-                    .with_krylov_dim(krylov_dim)
-                    .on(exec));
-            return gko::share(fact->generate(system_matrix));
-        }))
+                 auto fact = gko::share(
+                     gko::solver::Gmres<ValueType>::build()
+                         .with_criteria(
+                             gko::stop::Iteration::build().with_max_iters(
+                                 max_iters),
+                             gko::stop::ResidualNorm<ValueType>::build()
+                                 .with_baseline(gko::stop::mode::absolute)
+                                 .with_reduction_factor(reduction_factor))
+                         .with_krylov_dim(krylov_dim)
+                         .on(exec));
+                 return gko::share(fact->generate(system_matrix));
+             }),
+             py::arg("exec"), py::arg("system_matrix"), py::arg("max_iters"),
+             py::arg("krylov_dim"), py::arg("reduction_factor"))
         .def("initialize_logger",
              [](gko::solver::Gmres<ValueType> &o) {
                  std::shared_ptr<gko::log::Convergence<ValueType>>
