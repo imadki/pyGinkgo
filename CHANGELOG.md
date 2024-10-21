@@ -1,4 +1,5 @@
 # Version 0.1.0 (unreleased)
+- Add stubs generation [#58](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/58)
 - Add simplified CMakePresets [#49](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/49)
 - Split library into pure bindings and user facing python part [#37](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/37)
 - Add arrays for ints and floats [#37](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/37)

@@ -42,10 +42,18 @@ void add_executor_classes(py::module_ &root_module)
                                                   stream->get());
              }),
              // The first two are the deviation from the original library
-             py::arg("device_id") = 0,
-             py::arg("master") = gko::ReferenceExecutor::create(),
-             py::arg("allocator") = std::make_shared<gko::CudaAllocator>(),
-             py::arg("stream") = std::make_shared<gko::cuda_stream>())
+             py::arg_v("device_id", 0),
+             py::arg_v("master", gko::ReferenceExecutor::create(),
+                       "ReferenceExecutor()"),
+             py::arg_v("allocator", std::make_shared<gko::CudaAllocator>(),
+                       "CudaAllocator()"),
+             py::arg_v("stream", std::make_shared<gko::cuda_stream>(),
+                       "cuda_stream()"),
+             "The default arguments are:\n"
+             "    device_id: 0\n"
+             "    master: ReferenceExecutor()\n"
+             "    allocator: CudaAllocator()\n"
+             "    stream: cuda_stream()")
 
         .def_property_readonly(
             "master",
