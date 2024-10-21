@@ -19,7 +19,9 @@ class TestSparseMatrix:
         fn = os.path.dirname(os.path.realpath(__file__)) + "/fv1.mtx"
         mtx = reader(fn, self.ref)
         solver_ctr = getattr(pgb.solver, solver_name)
-        solver = solver_ctr(self.ref, mtx, 1000, 10, 1e-06)
+        max_iter = 1000
+        tol = 1e-06
+        solver = solver_ctr(self.ref, mtx, max_iter, 10, tol)
         logger = solver.initialize_logger()
         assert logger.has_converged() == False
 
@@ -32,3 +34,6 @@ class TestSparseMatrix:
         solver = solver.apply(rhs, initial_guess)
 
         assert logger.has_converged() == True
+        assert logger.get_num_iterations() < max_iter
+        assert logger.get_residual_norm() < tol
+        assert logger.get_residual_norm() > 0.0

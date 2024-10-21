@@ -18,7 +18,7 @@ void init_gmres(py::module_ &module_solver)
                     .with_criteria(
                         gko::stop::Iteration::build().with_max_iters(max_iters),
                         gko::stop::ResidualNorm<ValueType>::build()
-                            .with_baseline(gko::stop::mode::rhs_norm)
+                            .with_baseline(gko::stop::mode::absolute)
                             .with_reduction_factor(reduction_factor))
                     .with_krylov_dim(krylov_dim)
                     .on(exec));
@@ -26,10 +26,6 @@ void init_gmres(py::module_ &module_solver)
         }))
         .def("initialize_logger",
              [](gko::solver::Gmres<ValueType> &o) {
-                 // This adds a simple logger that only reports convergence
-                 // state at the end of the solver. Specifically it captures the
-                 // last residual norm, the final number of iterations, and the
-                 // converged or not converged status.
                  std::shared_ptr<gko::log::Convergence<ValueType>>
                      convergence_logger =
                          gko::log::Convergence<ValueType>::create();
