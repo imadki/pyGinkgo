@@ -10,6 +10,7 @@ void init_array_all_types(py::module_ &);
 void init_dense(py::module_ &);
 void init_coo(py::module_ &);
 void init_csr(py::module_ &);
+void init_logger(py::module_ &);
 void init_gmres(py::module_ &);
 void add_allocator_classes(py::module_ &);
 void add_stream_classes(py::module_ &);
@@ -21,8 +22,10 @@ PYBIND11_MODULE(pyGinkgoBindings, m)
 
     py::class_<gko::LinOp, std::shared_ptr<gko::LinOp>>(m, "LinOp");
 
-    py::class_<gko::dim<2>>(m, "dim2").def(
-        py::init<unsigned long, unsigned long>());
+    py::class_<gko::dim<2>>(m, "dim2")
+        .def(py::init<unsigned long, unsigned long>())
+        .def("__getitem__",
+             [](const gko::dim<2> &o, size_t i) { return o[i]; });
 
     add_allocator_classes(m);
     add_stream_classes(m);
@@ -38,6 +41,10 @@ PYBIND11_MODULE(pyGinkgoBindings, m)
     init_dense(module_matrix);
     init_coo(module_matrix);
     init_csr(module_matrix);
+
+    py::module_ module_logger =
+        m.def_submodule("solver", "Submodule for Ginkgos logger type bindings");
+    init_logger(module_logger);
 
     py::module_ module_solver =
         m.def_submodule("solver", "Submodule for Ginkgos solver type bindings");

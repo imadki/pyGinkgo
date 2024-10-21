@@ -10,24 +10,25 @@ import pytest
 sys.path.append("../build")
 
 
-@pytest.mark.parametrize("solver", ["gmres"])
+@pytest.mark.parametrize("solver_name", ["gmres"])
 class TestSparseMatrix:
     ref = pgb.ReferenceExecutor()
 
-    def test_can_create_solver(self, solver_name):
-        reader = getattr(pgb.matrix, "read_coo")
-        fn = os.path.dirname(os.path.realpath(__file__)) + "/sparse_example.mtx"
-        # sparse = pgb.matrix.read_coo(fn, executor)
-        sparse = reader(fn, self.ref)
+    def test_unpreconditioned_solver(self, solver_name):
+        reader = getattr(pgb.matrix, "read_Coo")
+        fn = os.path.dirname(os.path.realpath(__file__)) + "/fv1.mtx"
+        mtx = reader(fn, self.ref)
         solver_ctr = getattr(pgb.solver, solver_name)
-        # sparse = pgb.solver.gmres(executor, sparse_matrix, iter, reset, stop)
-        solver = solver_ctr(self.ref, sparse, 100, 10, 1e-06)
+        solver = solver_ctr(self.ref, mtx, 1000, 10, 1e-06)
+        logger = solver.initialize_logger()
+        assert logger.has_converged() == False
 
-        # to use the solver
-        # rhs and sol ginkgo.dense
-        # read rhs from disk
-        # rhs = pyGinkgo.matrix.read_dense(fn, executor)
-        # create x by copy construct and fill with zeros
-        # solver.apply(rhs, sol)
+        dim = mtx.get_size()
+        assert dim[0] == dim[1]
+        rhs = pgb.matrix.dense(mtx.get_executor(), (dim[0], 1))
+        rhs.fill(1.0)
+        initial_guess = pgb.matrix.dense(mtx.get_executor(), (dim[0], 1))
+        initial_guess.fill(0.0)
+        solver = solver.apply(rhs, initial_guess)
 
-        assert solver == solver
+        assert logger.has_converged() == True
