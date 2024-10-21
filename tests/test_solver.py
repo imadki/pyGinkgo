@@ -14,16 +14,24 @@ sys.path.append("../build")
 class TestSparseMatrix:
     ref = pgb.ReferenceExecutor()
 
+    solver_args = {
+        "gmres": {
+            "krylov_dim": 10,
+            "max_iters": 1000,
+            "reduction_factor": 1e-06,
+            "relative_stop_mode": False,
+        }
+    }
+
     def test_unpreconditioned_solver(self, solver_name):
         reader = getattr(pgb.matrix, "read_Coo")
         fn = os.path.dirname(os.path.realpath(__file__)) + "/fv1.mtx"
         mtx = reader(fn, self.ref)
         solver_ctr = getattr(pgb.solver, solver_name)
-        max_iter = 1000
-        tol = 1e-06
-        solver = solver_ctr(self.ref, mtx, max_iter, 10, tol)
+        args = self.solver_args[solver_name]
+        solver = solver_ctr(exec=self.ref, system_matrix=mtx, **args)
         logger = solver.initialize_logger()
-        assert logger.has_converged() == False
+        assert not logger.has_converged()
 
         dim = mtx.get_size()
         assert dim[0] == dim[1]
@@ -33,7 +41,7 @@ class TestSparseMatrix:
         initial_guess.fill(0.0)
         solver = solver.apply(rhs, initial_guess)
 
-        assert logger.has_converged() == True
-        assert logger.get_num_iterations() < max_iter
-        assert logger.get_residual_norm() < tol
+        assert logger.has_converged()
+        assert logger.get_num_iterations() < args["max_iters"]
+        assert logger.get_residual_norm() < args["reduction_factor"]
         assert logger.get_residual_norm() > 0.0
