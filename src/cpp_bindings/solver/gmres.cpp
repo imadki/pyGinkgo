@@ -29,7 +29,7 @@ void init_gmres(py::module_ &module_solver)
                  return gko::share(fact->generate(system_matrix));
              }),
              py::arg("exec"), py::arg("system_matrix"), py::arg("max_iters"),
-             py::arg("krylov_dim"), py::arg("reduction_factor"),
+             py::arg("krylov_dim"), py::arg("tolerance"),
              py::arg("relative_stop_mode"))
         .def("initialize_logger",
              [](gko::solver::Gmres<ValueType> &o) {
