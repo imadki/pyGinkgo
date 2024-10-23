@@ -39,7 +39,7 @@ class TestSparseMatrix:
         rhs.fill(1.0)
         initial_guess = pgb.matrix.dense(mtx.get_executor(), (dim[0], 1))
         initial_guess.fill(0.0)
-        solver = solver.apply(rhs, initial_guess)
+        solver.apply(rhs, initial_guess)
 
         assert logger.has_converged()
         assert logger.get_num_iterations() < args["max_iters"]
