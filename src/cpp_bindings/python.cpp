@@ -43,7 +43,7 @@ PYBIND11_MODULE(pyGinkgoBindings, m)
     init_csr(module_matrix);
 
     py::module_ module_logger =
-        m.def_submodule("solver", "Submodule for Ginkgos logger type bindings");
+        m.def_submodule("logger", "Submodule for Ginkgos logger type bindings");
     init_logger(module_logger);
 
     py::module_ module_solver =
