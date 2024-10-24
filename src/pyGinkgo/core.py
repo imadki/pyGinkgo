@@ -27,7 +27,7 @@ def asarray(obj, executor: str = "Reference", dtype="float"):
     return ctr(executor, obj)
 
 
-def solve(A, b, initial_guess=None, solver="GMRES", solver_args: dict):
+def solve(A, b, initial_guess=None, solver="GMRES", solver_args=dict(): dict):
     """Solve a given linear system, where A is the system matrix and b the RHS
 
     Parameters: A - The system matrix
@@ -38,10 +38,17 @@ def solve(A, b, initial_guess=None, solver="GMRES", solver_args: dict):
                     arguments, eg {'max_iters': 100, 'tolerance': 1e-6}  
     """
 
+    if not solver_args:
+        solver_args = {'max_iters': 100, 'tolerance': 1e-6}
+
     solver_ctr = getattr(pgb.solver, solver)
     # sparse = pgb.solver.gmres(executor, sparse_matrix, iter, reset, stop)
     solver_executor = A.get_executor()
     solver_inst = solver_ctr(solver_executor, A, **solver_args)
+
+    if not initial_guess:
+        initial_guess = pgb.matrix.dense(b.get_executor(), (b.dim[0], 1))
+        initial_guess.fill(0.0)
 
     solver_inst.apply(b, initial_guess)
     return initial_guess
