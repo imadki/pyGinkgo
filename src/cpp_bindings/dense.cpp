@@ -194,6 +194,8 @@ void init_dense(py::module_ &module_matrix)
              py::overload_cast<size_t>(&gko::matrix::Dense<ValueType>::at,
                                        py::const_),
              "Returns an element using linearized index.")
+        .def("fill", &gko::matrix::Dense<ValueType>::fill,
+             "Fills the matrix with a given value")
         .def("at",
              py::overload_cast<size_t, size_t>(
                  &gko::matrix::Dense<ValueType>::at, py::const_),

@@ -64,7 +64,9 @@ pybind11_add_module(
   ${PROJECT_SOURCE_DIR}/src/cpp_bindings/matrix.cpp
   ${PROJECT_SOURCE_DIR}/src/cpp_bindings/memory.cpp
   ${PROJECT_SOURCE_DIR}/src/cpp_bindings/stream.cpp
-  ${PROJECT_SOURCE_DIR}/src/cpp_bindings/executor.cpp)
+  ${PROJECT_SOURCE_DIR}/src/cpp_bindings/logger.cpp
+  ${PROJECT_SOURCE_DIR}/src/cpp_bindings/executor.cpp
+  ${PROJECT_SOURCE_DIR}/src/cpp_bindings/solver/gmres.cpp)
 
 target_include_directories(pyGinkgoBindings
                            PRIVATE ${Ginkgo_BINARY_DIR}/include)
@@ -105,6 +107,9 @@ add_test(NAME pyginkgo_dense_matrix_test
 add_test(NAME pyginkgo_sparse_matrix_test
          COMMAND ${PYTHON_EXECUTABLE} -m pytest
                  ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_sparse.py)
+add_test(NAME pyginkgo_solver_test
+         COMMAND ${PYTHON_EXECUTABLE} -m pytest
+                 ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_solver.py)
 
 # add CUDA specific tests, if building with CUDA enabled
 if(GINKGO_BUILD_CUDA)
