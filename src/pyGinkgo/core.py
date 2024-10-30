@@ -4,6 +4,7 @@
 
 from pyGinkgo import pyGinkgoBindings as pGB
 import numpy as np
+import json
 
 
 def asarray(obj, executor: str = "Reference", dtype="float"):
