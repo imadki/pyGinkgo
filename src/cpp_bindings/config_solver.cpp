@@ -43,5 +43,5 @@ gko::log::Convergence<ValueType> config_solve(
 template <typename ValueType>
 void init_file_config(py::module_ &m)
 {
-        m.def("add", &config_solve, "wrapper for config solve");
+        m.def("config_solve", &config_solve, "wrapper for config solve");
 }
