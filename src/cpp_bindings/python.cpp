@@ -50,4 +50,5 @@ PYBIND11_MODULE(pyGinkgoBindings, m)
     py::module_ module_solver =
         m.def_submodule("solver", "Submodule for Ginkgos solver type bindings");
     init_gmres(module_solver);
+    init_file_config(module_solver);
 }

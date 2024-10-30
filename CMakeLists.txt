@@ -27,7 +27,7 @@ if(NOT pybind11_FOUND)
   FetchContent_MakeAvailable(pybind11)
 endif()
 
-find_package(nlohmann_json REQUIRED)
+find_package(nlohmann_json QUIET)
 if(NOT nlohmann_json_FOUND)
   FetchContent_Declare(
     nlohmann_json
