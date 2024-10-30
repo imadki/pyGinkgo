@@ -12,7 +12,7 @@
 
 namespace py = pybind11;
 
-gko::log::Convergence<ValueType> config_solve(
+std::shared_ptr<const gko::log::Convergence<ValueType>> config_solve(
     std::shared_ptr<gko::Executor> exec,
     std::shared_ptr<gko::LinOp> A,
     std::shared_ptr<gko::LinOp> b,
@@ -40,8 +40,7 @@ gko::log::Convergence<ValueType> config_solve(
     return logger;
 }
 
-template <typename ValueType>
-void init_file_config(py::module_ &m)
+void init_config_solver(py::module_ &m)
 {
         m.def("config_solve", &config_solve, "wrapper for config solve");
 }

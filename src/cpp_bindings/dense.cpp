@@ -51,14 +51,13 @@ void init_dense(py::module_ &module_matrix)
                 exec,
                 gko::dim<2>{dim[0].cast<size_t>(), dim[1].cast<size_t>()}));
         }))
-        .def(py::init(
-            [](std::shared_ptr<gko::Executor> exec, py::tuple dim, int stride) {
-                return gko::share(gko::matrix::Dense<ValueType>::create(
-                    exec,
-                    gko::dim<2>{dim[0].cast<dim_type>(),
-                                dim[1].cast < dim_type >> ()},
-                    stride));
-            }))
+        .def(py::init([](std::shared_ptr<gko::Executor> exec, py::tuple dim,
+                         int stride) {
+            return gko::share(gko::matrix::Dense<ValueType>::create(
+                exec,
+                gko::dim<2>{dim[0].cast<dim_type>(), dim[1].cast<dim_type>()},
+                stride));
+        }))
         .def(py::init([](std::shared_ptr<gko::Executor> exec, py::tuple dim,
                          py::buffer b, size_t stride) {
             py::buffer_info info = b.request();
