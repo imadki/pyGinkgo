@@ -27,7 +27,7 @@ void init_dense(py::module_ &module_matrix)
         auto cols = (info.ndim == 1) ? 1 : info.shape[1];
 
         return gko::matrix::Dense<ValueType>::create(
-            exec, gko::dim<2>{rows, cols}, view, cols);
+            exec, gko::dim<2>{static_cast<gko::dimension_type>(rows), static_cast<gko::dimension_type>(cols)}, view, cols);
     };
 
     py::class_<gko::matrix::Dense<ValueType>,
@@ -50,7 +50,7 @@ void init_dense(py::module_ &module_matrix)
         .def(py::init(
             [](std::shared_ptr<gko::Executor> exec, py::tuple dim, int stride) {
                 return gko::share(gko::matrix::Dense<ValueType>::create(
-                    exec, gko::dim<2>{dim[0].cast<int>(), dim[1].cast<int>()},
+                    exec, gko::dim<2>{dim[0].cast<gko::dimension_type>(), dim[1].cast<gko::dimension_type>>()},
                     stride));
             }))
         .def(py::init([](std::shared_ptr<gko::Executor> exec, py::tuple dim,
