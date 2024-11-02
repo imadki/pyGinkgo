@@ -106,21 +106,7 @@ if(${ENABLE_PYGINKGOBINDINGS_STUBS})
 endif()
 
 # adding tests
-add_test(NAME pyginkgo_import_test
-         COMMAND ${PYTHON_EXECUTABLE} -m pytest
-                 ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_import.py)
-add_test(NAME pyginkgo_array_test
-         COMMAND ${PYTHON_EXECUTABLE} -m pytest
-                 ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_array.py)
-add_test(NAME pyginkgo_dense_matrix_test
-         COMMAND ${PYTHON_EXECUTABLE} -m pytest
-                 ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_dense.py)
-add_test(NAME pyginkgo_sparse_matrix_test
-         COMMAND ${PYTHON_EXECUTABLE} -m pytest
-                 ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_sparse.py)
-add_test(NAME pyginkgo_solver_test
-         COMMAND ${PYTHON_EXECUTABLE} -m pytest
-                 ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_solver.py)
+add_subdirectory(tests/cpp_bindings)
 
 # add CUDA specific tests, if building with CUDA enabled
 if(GINKGO_BUILD_CUDA)

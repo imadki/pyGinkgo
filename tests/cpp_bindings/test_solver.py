@@ -4,10 +4,10 @@
 
 import os
 import sys
-import pyGinkgoBindings as pgb
 import pytest
 
-sys.path.append("../build")
+sys.path.append("../../")
+import pyGinkgoBindings as pgb
 
 
 @pytest.mark.parametrize("solver_name", ["gmres"])

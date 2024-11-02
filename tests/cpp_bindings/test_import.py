@@ -5,9 +5,9 @@
 # tests/test_import.py
 
 import sys
+import os
 
-sys.path.append("../build")
-
+sys.path.append("../..")
 
 def test_import():
     try:
