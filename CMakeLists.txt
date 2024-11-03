@@ -11,6 +11,10 @@ enable_testing()
 # Find Python interpreter and library
 find_package(Python COMPONENTS Interpreter Development)
 
+# copy all generated files to pyGinkgo 
+# that makes testing and installing easier
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/pyGinkgo)
+
 # Find OpenMPI find_package(MPI REQUIRED)
 
 # Find pybind11
@@ -105,8 +109,11 @@ if(${ENABLE_PYGINKGOBINDINGS_STUBS})
   $<TARGET_FILE_DIR:pyGinkgoBindings>/pyGinkgoBindings")
 endif()
 
+file(COPY ${CMAKE_SOURCE_DIR}/src/pyGinkgo DESTINATION ${CMAKE_BINARY_DIR}) 
+
 # adding tests
 add_subdirectory(tests/cpp_bindings)
+add_subdirectory(tests/pyGinkgo)
 
 # add CUDA specific tests, if building with CUDA enabled
 if(GINKGO_BUILD_CUDA)

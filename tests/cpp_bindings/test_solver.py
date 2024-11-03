@@ -11,7 +11,7 @@ import pyGinkgoBindings as pgb
 
 
 @pytest.mark.parametrize("solver_name", ["gmres"])
-class TestSparseMatrix:
+class TestSolverBinding:
     ref = pgb.ReferenceExecutor()
 
     solver_args = {

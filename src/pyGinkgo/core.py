@@ -46,7 +46,7 @@ def solve(A, b, initial_guess=None, solver_args: dict = dict()):
             "preconditioner": {
                 "type": "preconditioner::Ilu",
                 "l_solver_type": "solver::LowerTrs",
-                "reverse_apply": false,
+                "reverse_apply": False,
                 "factorization": {"type": "factorization::ParIlu"},
             },
             "criteria": [
@@ -61,11 +61,10 @@ def solve(A, b, initial_guess=None, solver_args: dict = dict()):
 
     # sparse = pgb.solver.gmres(executor, sparse_matrix, iter, reset, stop)
     solver_executor = A.get_executor()
-    solver_inst = solver_ctr(solver_executor, A, **solver_args)
 
     if not initial_guess:
         initial_guess = pgb.matrix.dense(b.get_executor(), (b.dim[0], 1))
         initial_guess.fill(0.0)
 
-    logger = pgb.solver.config_solve(A, b, initial_guess, json_file)
+    logger = pGB.solver.config_solve(solver_executor, A, b, initial_guess, json_file)
     return logger, initial_guess
