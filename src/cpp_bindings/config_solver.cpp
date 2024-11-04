@@ -31,12 +31,14 @@ std::shared_ptr<const gko::log::Convergence<ValueType>> config_solve(
 
     // Create solver
     auto solver = solver_gen->generate(A);
-    solver->apply(b, x);
 
     // Add logger
     std::shared_ptr<const gko::log::Convergence<ValueType>> logger =
         gko::log::Convergence<ValueType>::create();
     solver->add_logger(logger);
+
+    solver->apply(b, x);
+
     return logger;
 }
 
