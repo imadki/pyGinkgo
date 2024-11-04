@@ -3,20 +3,20 @@
 # SPDX-FileCopyrightText: 2024 pyGinkgo authors
 
 import sys
+
 sys.path.append("../../")
 import pyGinkgo as pg
 
 import os
-import pytest
-import numpy as np
+
 
 class TestSolve:
     executor = pg.ReferenceExecutor()
     fn = os.path.dirname(os.path.realpath(__file__)) + "/fv1.mtx"
     mtx = pg.matrix.read_Coo(fn, executor)
     dim = mtx.get_size()
-    rows =  dim[0]
-    cols =  dim[1]
+    rows = dim[0]
+    cols = dim[1]
     rhs = pg.matrix.dense(executor, (rows, 1))
     rhs.fill(1.0)
     initial_guess = pg.matrix.dense(executor, (rows, 1))
@@ -42,7 +42,9 @@ class TestSolve:
                 {"type": "ResidualNorm", "reduction_factor": 1e-7},
             ],
         }
-        logger, result = pg.solve(self.mtx, self.rhs, self.initial_guess, solver_args=solver_args)
+        logger, result = pg.solve(
+            self.mtx, self.rhs, self.initial_guess, solver_args=solver_args
+        )
 
         assert logger.has_converged()
         assert logger.get_num_iterations() < 1000
@@ -61,7 +63,9 @@ class TestSolve:
                 {"type": "ResidualNorm", "reduction_factor": 1e-7},
             ],
         }
-        logger, result = pg.solve(self.mtx, self.rhs, self.initial_guess, solver_args=solver_args)
+        logger, result = pg.solve(
+            self.mtx, self.rhs, self.initial_guess, solver_args=solver_args
+        )
 
         assert logger.has_converged()
         assert logger.get_num_iterations() < 1000

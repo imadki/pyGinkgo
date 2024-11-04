@@ -7,17 +7,16 @@
 
 #include "python.hpp"
 
-#include "ginkgo/ginkgo.hpp"
 #include <ginkgo/extensions/config/json_config.hpp>
+#include "ginkgo/ginkgo.hpp"
 
 namespace py = pybind11;
 
 std::shared_ptr<const gko::log::Convergence<ValueType>> config_solve(
-    std::shared_ptr<gko::Executor> exec,
-    std::shared_ptr<gko::LinOp> A,
-    std::shared_ptr<gko::LinOp> b,
-    std::shared_ptr<gko::LinOp> x,
-    std::string configfile){
+    std::shared_ptr<gko::Executor> exec, std::shared_ptr<gko::LinOp> A,
+    std::shared_ptr<gko::LinOp> b, std::shared_ptr<gko::LinOp> x,
+    std::string configfile)
+{
     auto config = gko::ext::config::parse_json_file(configfile);
     // Create the registry, which allows passing the existing data into config
     // This example does not use existing data.
@@ -44,5 +43,5 @@ std::shared_ptr<const gko::log::Convergence<ValueType>> config_solve(
 
 void init_config_solver(py::module_ &m)
 {
-        m.def("config_solve", &config_solve, "wrapper for config solve");
+    m.def("config_solve", &config_solve, "wrapper for config solve");
 }
