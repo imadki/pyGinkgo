@@ -7,6 +7,7 @@ import sys
 sys.path.append("../../")
 import pyGinkgo as pg
 
+import numpy as np
 import os
 
 
@@ -49,6 +50,11 @@ class TestSolve:
         assert logger.has_converged()
         assert logger.get_num_iterations() < 1000
 
+        # Check if result entries are non zero
+        npresult = np.array(result)
+        assert len(npresult) > 0 
+        assert len(np.nonzero(npresult)[0]) == len(npresult)
+
     def test_can_solve_with_solver_args_gmres(self):
         solver_args = {
             "type": "solver::Gmres",
@@ -69,3 +75,9 @@ class TestSolve:
 
         assert logger.has_converged()
         assert logger.get_num_iterations() < 1000
+
+        # Check if result entries are non zero
+        npresult = np.array(result)
+        assert len(npresult) > 0 
+        assert len(np.nonzero(npresult)[0]) == len(npresult)
+
