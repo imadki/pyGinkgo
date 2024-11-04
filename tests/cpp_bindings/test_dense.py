@@ -2,12 +2,10 @@
 #
 # SPDX-FileCopyrightText: 2024 pyGinkgo authors
 
-import sys
 import os
 import numpy as np
 
-sys.path.append("../../")
-import pyGinkgoBindings as pGB
+import pyGinkgo.pyGinkgoBindings as pGB
 
 
 def verify_dense_vec(mtx, values):

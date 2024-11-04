@@ -87,6 +87,21 @@ target_link_libraries(pyGinkgoBindings PRIVATE Ginkgo::ginkgo)
 target_link_libraries(pyGinkgoBindings PUBLIC nlohmann_json::nlohmann_json)
 set_property(TARGET pyGinkgoBindings PROPERTY CXX_STANDARD 14)
 
+set(PYGINKGO_PYTHON_FILES ${PROJECT_SOURCE_DIR}/src/pyGinkgo/__init__.py
+                          ${PROJECT_SOURCE_DIR}/src/pyGinkgo/core.py)
+add_custom_target(
+  pyGinkgo_copy_python_files ALL
+  DEPENDS pyGinkgoBindings
+  COMMAND ${CMAKE_COMMAND} -E make_directory
+          $<TARGET_FILE_DIR:pyGinkgoBindings>/pyGinkgo/
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${PYGINKGO_PYTHON_FILES}
+          $<TARGET_FILE_DIR:pyGinkgoBindings>/pyGinkgo/
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:pyGinkgoBindings>
+          $<TARGET_FILE_DIR:pyGinkgoBindings>/pyGinkgo/
+  VERBATIM
+  COMMENT "Moving Python sources into \
+  $<TARGET_FILE_DIR:pyGinkgoBindings> folder")
+
 # Generating stubs for the library (interface annotation) using
 # https://github.com/sizmailov/pybind11-stubgen Thus this library should be
 # first installed before enabling the generation
@@ -99,13 +114,17 @@ message(
 if(${ENABLE_PYGINKGOBINDINGS_STUBS})
   add_custom_command(
     TARGET pyGinkgoBindings
-    POST_BUILD
+    DEPENDS copy_python_files POST_BUILD
     WORKING_DIRECTORY $<TARGET_FILE_DIR:pyGinkgoBindings>
     VERBATIM
     COMMAND ${PYTHON_EXECUTABLE} -c
             "import pybind11_stubgen; pybind11_stubgen.main();" pyGinkgoBindings
+    COMMAND
+      ${CMAKE_COMMAND} -E copy_directory
+      $<TARGET_FILE_DIR:pyGinkgoBindings>/stubs/pyGinkgoBindings/
+      $<TARGET_FILE_DIR:pyGinkgoBindings>/pyGinkgo/pyGinkgoBindings/
     COMMENT "Generating stub files at: \
-  $<TARGET_FILE_DIR:pyGinkgoBindings>/pyGinkgoBindings")
+  $<TARGET_FILE_DIR:pyGinkgoBindings>/pyGinkgo")
 endif()
 
 file(COPY ${CMAKE_SOURCE_DIR}/src/pyGinkgo DESTINATION ${CMAKE_BINARY_DIR})
@@ -113,13 +132,6 @@ file(COPY ${CMAKE_SOURCE_DIR}/src/pyGinkgo DESTINATION ${CMAKE_BINARY_DIR})
 # adding tests
 add_subdirectory(tests/cpp_bindings)
 add_subdirectory(tests/pyGinkgo)
-
-# add CUDA specific tests, if building with CUDA enabled
-if(GINKGO_BUILD_CUDA)
-  add_test(NAME pyginkgo_cuda_executor_test
-           COMMAND ${PYTHON_EXECUTABLE} -m pytest
-                   ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_cuda_executor.py)
-endif()
 
 if(APPLE)
   set(CMAKE_MACOSX_RPATH 1)

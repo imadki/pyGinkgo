@@ -4,14 +4,11 @@
 
 # tests/test_import.py
 
-import sys
-
-sys.path.append("../..")
-
 
 def test_import():
     try:
-        import pyGinkgoBindings  # noqa: F401
+        import pyGinkgo  # noqa: F401
+        import pyGinkgo.pyGinkgoBindings  # noqa: F401
 
         assert True  # If import succeeds, the test passes
 
