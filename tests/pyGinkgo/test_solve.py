@@ -52,7 +52,7 @@ class TestSolve:
 
         # Check if result entries are non zero
         npresult = np.array(result)
-        assert len(npresult) > 0 
+        assert len(npresult) > 0
         assert len(np.nonzero(npresult)[0]) == len(npresult)
 
     def test_can_solve_with_solver_args_gmres(self):
@@ -78,6 +78,5 @@ class TestSolve:
 
         # Check if result entries are non zero
         npresult = np.array(result)
-        assert len(npresult) > 0 
+        assert len(npresult) > 0
         assert len(np.nonzero(npresult)[0]) == len(npresult)
-
