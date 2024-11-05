@@ -6,7 +6,7 @@
 
 import sys
 
-sys.path.append("../build")
+sys.path.append("../..")
 
 
 def test_import():

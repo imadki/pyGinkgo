@@ -1,4 +1,5 @@
 # Version 0.1.0 (unreleased)
+- Add file config solver bindings [#64](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/64)
 - Add GMRES solver bindings [#51](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/51)
 - Add stubs generation [#58](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/58)
 - Add simplified CMakePresets [#49](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/49)

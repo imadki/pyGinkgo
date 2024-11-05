@@ -11,20 +11,32 @@ enable_testing()
 # Find Python interpreter and library
 find_package(Python COMPONENTS Interpreter Development)
 
+# copy all generated files to pyGinkgo that makes testing and installing easier
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/pyGinkgo)
+
 # Find OpenMPI find_package(MPI REQUIRED)
 
 # Find pybind11
 find_package(pybind11 QUIET)
 
 # Fetch pybind11 if not found
+include(FetchContent)
 if(NOT pybind11_FOUND)
   # If not found, fetch Pybind11
-  include(FetchContent)
   FetchContent_Declare(
     pybind11
     GIT_REPOSITORY https://github.com/pybind/pybind11.git
     GIT_TAG v2.12.0)
   FetchContent_MakeAvailable(pybind11)
+endif()
+
+find_package(nlohmann_json QUIET)
+if(NOT nlohmann_json_FOUND)
+  FetchContent_Declare(
+    nlohmann_json
+    GIT_REPOSITORY https://github.com/nlohmann/json
+    GIT_TAG v3.11.3)
+  FetchContent_MakeAvailable(nlohmann_json)
 endif()
 
 # Find  Ginkgo find_package(Ginkgo 1.7.0 QUIET)
@@ -66,11 +78,13 @@ pybind11_add_module(
   ${PROJECT_SOURCE_DIR}/src/cpp_bindings/stream.cpp
   ${PROJECT_SOURCE_DIR}/src/cpp_bindings/logger.cpp
   ${PROJECT_SOURCE_DIR}/src/cpp_bindings/executor.cpp
-  ${PROJECT_SOURCE_DIR}/src/cpp_bindings/solver/gmres.cpp)
+  ${PROJECT_SOURCE_DIR}/src/cpp_bindings/solver/gmres.cpp
+  ${PROJECT_SOURCE_DIR}/src/cpp_bindings/solver/config_solver.cpp)
 
 target_include_directories(pyGinkgoBindings
                            PRIVATE ${Ginkgo_BINARY_DIR}/include)
 target_link_libraries(pyGinkgoBindings PRIVATE Ginkgo::ginkgo)
+target_link_libraries(pyGinkgoBindings PUBLIC nlohmann_json::nlohmann_json)
 set_property(TARGET pyGinkgoBindings PROPERTY CXX_STANDARD 14)
 
 # Generating stubs for the library (interface annotation) using
@@ -94,22 +108,11 @@ if(${ENABLE_PYGINKGOBINDINGS_STUBS})
   $<TARGET_FILE_DIR:pyGinkgoBindings>/pyGinkgoBindings")
 endif()
 
+file(COPY ${CMAKE_SOURCE_DIR}/src/pyGinkgo DESTINATION ${CMAKE_BINARY_DIR})
+
 # adding tests
-add_test(NAME pyginkgo_import_test
-         COMMAND ${PYTHON_EXECUTABLE} -m pytest
-                 ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_import.py)
-add_test(NAME pyginkgo_array_test
-         COMMAND ${PYTHON_EXECUTABLE} -m pytest
-                 ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_array.py)
-add_test(NAME pyginkgo_dense_matrix_test
-         COMMAND ${PYTHON_EXECUTABLE} -m pytest
-                 ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_dense.py)
-add_test(NAME pyginkgo_sparse_matrix_test
-         COMMAND ${PYTHON_EXECUTABLE} -m pytest
-                 ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_sparse.py)
-add_test(NAME pyginkgo_solver_test
-         COMMAND ${PYTHON_EXECUTABLE} -m pytest
-                 ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_solver.py)
+add_subdirectory(tests/cpp_bindings)
+add_subdirectory(tests/pyGinkgo)
 
 # add CUDA specific tests, if building with CUDA enabled
 if(GINKGO_BUILD_CUDA)

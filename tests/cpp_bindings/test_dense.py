@@ -6,7 +6,7 @@ import sys
 import os
 import numpy as np
 
-sys.path.append("../build")
+sys.path.append("../../")
 import pyGinkgoBindings as pGB
 
 

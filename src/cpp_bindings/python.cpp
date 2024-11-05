@@ -12,6 +12,7 @@ void init_coo(py::module_ &);
 void init_csr(py::module_ &);
 void init_logger(py::module_ &);
 void init_gmres(py::module_ &);
+void init_config_solver(py::module_ &);
 void add_allocator_classes(py::module_ &);
 void add_stream_classes(py::module_ &);
 void add_executor_classes(py::module_ &);
@@ -49,4 +50,5 @@ PYBIND11_MODULE(pyGinkgoBindings, m)
     py::module_ module_solver =
         m.def_submodule("solver", "Submodule for Ginkgos solver type bindings");
     init_gmres(module_solver);
+    init_config_solver(module_solver);
 }
