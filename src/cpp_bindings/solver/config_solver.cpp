@@ -5,7 +5,7 @@
 #include <pybind11/pybind11.h>
 #include "pybind11/numpy.h"
 
-#include "python.hpp"
+#include "../python.hpp"
 
 #include <ginkgo/extensions/config/json_config.hpp>
 #include "ginkgo/ginkgo.hpp"
