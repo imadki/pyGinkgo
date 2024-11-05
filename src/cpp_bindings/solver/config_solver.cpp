@@ -15,9 +15,9 @@ namespace py = pybind11;
 std::shared_ptr<const gko::log::Convergence<ValueType>> config_solve(
     std::shared_ptr<gko::Executor> exec, std::shared_ptr<gko::LinOp> A,
     std::shared_ptr<gko::LinOp> b, std::shared_ptr<gko::LinOp> x,
-    std::string configfile)
+    std::string json)
 {
-    auto config = gko::ext::config::parse_json_file(configfile);
+    auto config = gko::ext::config::parse_json(nlohmann::json::parse(json));
     // Create the registry, which allows passing the existing data into config
     // This example does not use existing data.
     auto reg = gko::config::registry();

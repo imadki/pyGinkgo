@@ -79,7 +79,7 @@ pybind11_add_module(
   ${PROJECT_SOURCE_DIR}/src/cpp_bindings/logger.cpp
   ${PROJECT_SOURCE_DIR}/src/cpp_bindings/executor.cpp
   ${PROJECT_SOURCE_DIR}/src/cpp_bindings/solver/gmres.cpp
-  ${PROJECT_SOURCE_DIR}/src/cpp_bindings/config_solver.cpp)
+  ${PROJECT_SOURCE_DIR}/src/cpp_bindings/solver/config_solver.cpp)
 
 target_include_directories(pyGinkgoBindings
                            PRIVATE ${Ginkgo_BINARY_DIR}/include)

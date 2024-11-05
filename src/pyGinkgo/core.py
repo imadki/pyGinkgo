@@ -54,17 +54,13 @@ def solve(A, b, initial_guess=None, solver_args: dict = dict()):
                 {"type": "ResidualNorm", "reduction_factor": 1e-7},
             ],
         }
-
-    json_file = "/tmp/gko_config.json"
-    with open(json_file, "w") as fh:
-        json.dump(solver_args, fh)
-
-    # sparse = pgb.solver.gmres(executor, sparse_matrix, iter, reset, stop)
     solver_executor = A.get_executor()
 
     if not initial_guess:
         initial_guess = pgb.matrix.dense(b.get_executor(), (b.dim[0], 1))
         initial_guess.fill(0.0)
 
-    logger = pGB.solver.config_solve(solver_executor, A, b, initial_guess, json_file)
+    logger = pGB.solver.config_solve(
+        solver_executor, A, b, initial_guess, json.dumps(solver_args)
+    )
     return logger, initial_guess
