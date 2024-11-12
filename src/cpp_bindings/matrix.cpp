@@ -61,12 +61,6 @@ namespace py = pybind11;
                 gko::dim<2>{dim[0].cast<size_t>(), dim[1].cast<size_t>()},    \
                 data_view, cols_view, rows_view));                            \
         }))                                                                   \
-        .def(                                                                 \
-            "apply",                                                          \
-            [](const gko::matrix::Name<ValueType, IndexType> &m,              \
-               std::shared_ptr<const gko::LinOp> b,                           \
-               std::shared_ptr<gko::LinOp> x) { m.apply(b, x); },             \
-            "")                                                               \
         .def("__repr__",                                                      \
              [](const gko::matrix::Name<ValueType> &o) {                      \
                  auto str = std::string("pygko.matrix.Name object");          \
@@ -75,8 +69,6 @@ namespace py = pybind11;
         .def("get_num_stored_elements",                                       \
              &gko::matrix::Name<ValueType>::get_num_stored_elements,          \
              "Get the number of non zero elements")                           \
-        .def("get_executor", &gko::matrix::Name<ValueType>::get_executor,     \
-             "Get the executor")                                              \
         .def("get_size", &gko::matrix::Name<ValueType>::get_size,             \
              "Get the size of the matrix")
 

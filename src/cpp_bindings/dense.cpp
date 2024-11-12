@@ -179,10 +179,6 @@ void init_dense(py::module_ &module_matrix)
                  o->fill(s);
                  m.inv_scale(o);
              })
-        // TODO: those functions were actually newer tested.
-        // With the following changes they should be working now,
-        // yet the tests for them should be definitely added in
-        // the following PR
         .def(
             "add_scaled",
             [](gko::matrix::Dense<ValueType> &self,
