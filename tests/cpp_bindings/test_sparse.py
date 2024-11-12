@@ -9,6 +9,17 @@ import numpy as np
 import pyGinkgo.pyGinkgoBindings as pGB
 
 
+def coo_rows_to_csr_rows(coo_rows: list) -> list:
+    # https://stackoverflow.com/a/71339835/8302811
+    n_rows = max(coo_rows) + 1
+    ret = [0] * n_rows
+    for i in coo_rows:
+        ret[i] += 1
+    for i in range(n_rows - 1):
+        ret[i + 1] += ret[i]
+    return [0] + ret
+
+
 @pytest.mark.parametrize("matrix_format", ["Coo", "Csr"])
 class TestSparseMatrix:
     # test a 5x5 symmetric matrix
@@ -20,7 +31,9 @@ class TestSparseMatrix:
     # | .  21  .  13   5 |
     #
 
-    rows = [0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4]
+    coo_rows = [0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4]
+    csr_rows = coo_rows_to_csr_rows(coo_rows)
+
     cols = [0, 1, 3, 0, 1, 2, 4, 1, 2, 3, 0, 2, 3, 4, 1, 3, 4]
     values = [
         1.0,
@@ -45,37 +58,46 @@ class TestSparseMatrix:
 
     ref = pGB.ReferenceExecutor()
 
+    def get_rows(self, matrix_format) -> list:
+        if matrix_format == "Csr":
+            return self.csr_rows
+        else:
+            return self.coo_rows
+
     def test_can_create_sparse_matrix(self, matrix_format):
         ctr = getattr(pGB.matrix, matrix_format)
         sparse = ctr(self.ref)
         assert sparse == sparse
 
     def test_can_create_sparse_from_np_arrays(self, matrix_format):
-        if matrix_format == "Csr":
-            # NOTE currently this test would fail for
-            # Csr matrices since Csr expects compressed
-            # rows
-            return
         ctr = getattr(pGB.matrix, matrix_format)
         coeffs = np.array(self.values, dtype=np.double)
-        rows = np.array(self.rows, dtype=np.int32)
+        rows = np.array(self.get_rows(matrix_format), dtype=np.int32)
         cols = np.array(self.cols, dtype=np.int32)
 
-        sparse = ctr(self.ref, (5, 5), coeffs, rows, cols)
+        print(rows)
+        sparse = ctr(self.ref, (5, 5), coeffs, cols, rows)
         assert sparse == sparse
 
+    def test_can_create_sparse_from_gko_arrays(self, matrix_format):
+        ctr = getattr(pGB.matrix, matrix_format)
+        coeffs = pGB.base.array_double(self.ref, np.array(self.values, dtype=np.double))
+        rows = pGB.base.array_int(
+            self.ref, np.array(self.get_rows(matrix_format), dtype=np.int32)
+        )
+        cols = pGB.base.array_int(self.ref, np.array(self.cols, dtype=np.int32))
+
+        sparse = ctr(self.ref, (5, 5), coeffs, cols, rows)
+        assert sparse == sparse
+        assert sparse.get_num_stored_elements() == coeffs.get_size()
+
     def test_can_apply_to_dense(self, matrix_format):
-        if matrix_format == "Csr":
-            # NOTE currently this test would fail for
-            # Csr matrices since Csr expects compressed
-            # rows
-            return
         ctr = getattr(pGB.matrix, matrix_format)
         coeffs = np.array(self.values, dtype=np.double)
-        rows = np.array(self.rows, dtype=np.int32)
+        rows = np.array(self.get_rows(matrix_format), dtype=np.int32)
         cols = np.array(self.cols, dtype=np.int32)
 
-        sparse = ctr(self.ref, (5, 5), coeffs, rows, cols)
+        sparse = ctr(self.ref, (5, 5), coeffs, cols, rows)
 
         dense_b = pGB.matrix.dense(self.ref, np.array(self.dense, dtype=np.double))
         dense_x = pGB.matrix.dense(self.ref, np.array([0, 0, 0, 0, 0], dtype=np.double))

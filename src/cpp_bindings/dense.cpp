@@ -152,7 +152,8 @@ void init_dense(py::module_ &module_matrix)
                                                                 struct-style
                                                                 format
                                                                 descriptor */
-                    dim,          /* Number of dimensions */
+                    dim, /* Number of dimensions */
+                    // TODO: potential mistake:
                     {rows, cols}, /* Buffer dimensions */
                     {sizeof(ValueType), sizeof(ValueType) * rows}
                     /* Strides (in bytes) for each index */
