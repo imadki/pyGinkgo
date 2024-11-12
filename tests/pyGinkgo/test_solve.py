@@ -6,21 +6,22 @@ import sys
 
 sys.path.append("../../")
 import pyGinkgo as pg
+import pyGinkgo.pyGinkgoBindings as pGB
 
 import numpy as np
 import os
 
 
 class TestSolve:
-    executor = pg.ReferenceExecutor()
+    executor = pGB.ReferenceExecutor()
     fn = os.path.dirname(os.path.realpath(__file__)) + "/fv1.mtx"
-    mtx = pg.matrix.read_Coo(fn, executor)
+    mtx = pGB.matrix.read_Coo(fn, executor)
     dim = mtx.get_size()
     rows = dim[0]
     cols = dim[1]
-    rhs = pg.matrix.dense(executor, (rows, 1))
+    rhs = pGB.matrix.dense(executor, (rows, 1))
     rhs.fill(1.0)
-    initial_guess = pg.matrix.dense(executor, (rows, 1))
+    initial_guess = pGB.matrix.dense(executor, (rows, 1))
     initial_guess.fill(0.0)
 
     def test_can_default_solve(self):
