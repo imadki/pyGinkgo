@@ -70,6 +70,8 @@ endif()
 
 add_subdirectory(src/cpp_bindings)
 
+pybind11_add_module(pyGinkgoBindings ${PYGINKGO_CPP_SOURCES})
+
 target_include_directories(pyGinkgoBindings
                            PRIVATE ${Ginkgo_BINARY_DIR}/include)
 target_link_libraries(pyGinkgoBindings PRIVATE Ginkgo::ginkgo)
