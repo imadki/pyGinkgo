@@ -2,23 +2,12 @@
 #
 # SPDX-FileCopyrightText: 2024 pyGinkgo authors
 
-import sys
 import os
 import numpy as np
 
-sys.path.append("../../")
-import pyGinkgoBindings as pGB
+import pyGinkgo.pyGinkgoBindings as pGB
 
-
-def verify_dense_vec(mtx, values):
-    """ """
-    assert mtx.get_num_stored_elements() == len(values)
-    for i in range(len(values)):
-        assert mtx.at(i) == values[i]
-
-    assert mtx.at(2, 0) == mtx.at(2)
-    # test if it can be called several times
-    assert mtx.at(2, 0) == mtx.at(2)
+from test_utils import verify_dense_vec
 
 
 class TestDense:
@@ -34,6 +23,10 @@ class TestDense:
         dense = pGB.matrix.dense(self.ref, (len(self.values), 1))
         assert dense == dense
 
+    def test_can_create_dense_linop_with_dim_stride(self):
+        dense = pGB.matrix.dense(self.ref, (len(self.values), 1), 1)
+        assert dense == dense
+
     def test_can_create_dense_from_1D_np_array_with_default_exec(self):
         dense = pGB.matrix.dense(np.array(self.values))
         verify_dense_vec(dense, self.values)
@@ -45,6 +38,12 @@ class TestDense:
 
     def test_can_create_dense_from_1D_np_array(self):
         dense = pGB.matrix.dense(self.ref, np.array(self.values))
+        verify_dense_vec(dense, self.values)
+
+    def test_can_create_dense_from_1D_np_array_with_dim_stride(self):
+        dense = pGB.matrix.dense(
+            self.ref, (len(self.values), 1), np.array(self.values), 1
+        )
         verify_dense_vec(dense, self.values)
 
     def test_can_read_mtx_file(self):
@@ -90,3 +89,19 @@ class TestDense:
         result = pGB.matrix.dense(self.ref, (1, 1))
         dense_a.apply(dense_b, result)
         result.at(0) == aT.dot(a)[0, 0]
+
+    def test_add_scaled(self):
+        a = np.array(self.values)
+        dense_a = pGB.matrix.dense(a)
+        alpha = 2.0
+        dense_alpha = pGB.matrix.dense(np.array([alpha]))
+        dense_a.add_scaled(dense_alpha, dense_a)
+        verify_dense_vec(dense_a, (1 + alpha) * a)
+
+    def test_sub_scaled(self):
+        a = np.array(self.values)
+        dense_a = pGB.matrix.dense(a)
+        alpha = 0.5
+        dense_alpha = pGB.matrix.dense(np.array([alpha]))
+        dense_a.sub_scaled(dense_alpha, dense_a)
+        verify_dense_vec(dense_a, (1 - alpha) * a)

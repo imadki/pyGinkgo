@@ -21,16 +21,23 @@ PYBIND11_MODULE(pyGinkgoBindings, m)
 {
     m.doc() = "Python bindings for the Ginkgo framework";
 
-    py::class_<gko::LinOp, std::shared_ptr<gko::LinOp>>(m, "LinOp");
+    add_allocator_classes(m);
+    add_stream_classes(m);
+    add_executor_classes(m);
+
+    py::class_<gko::LinOp, std::shared_ptr<gko::LinOp>>(m, "LinOp")
+        .def("get_executor", &gko::PolymorphicObject::get_executor,
+             "Get the executor")
+        .def(
+            "apply",
+            [](const gko::LinOp &m, std::shared_ptr<const gko::LinOp> b,
+               std::shared_ptr<gko::LinOp> x) { m.apply(b, x); },
+            "");
 
     py::class_<gko::dim<2>>(m, "dim2")
         .def(py::init<unsigned long, unsigned long>())
         .def("__getitem__",
              [](const gko::dim<2> &o, size_t i) { return o[i]; });
-
-    add_allocator_classes(m);
-    add_stream_classes(m);
-    add_executor_classes(m);
 
     py::module_ module_base = m.def_submodule(
         "base", "Submodule for Ginkgos low level type bindings");

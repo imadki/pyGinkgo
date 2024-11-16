@@ -3,12 +3,10 @@
 # SPDX-FileCopyrightText: 2024 pyGinkgo authors
 
 
-import sys
 import pytest
 import numpy as np
 
-sys.path.append("../../")
-import pyGinkgoBindings as pGB
+import pyGinkgo.pyGinkgoBindings as pGB
 
 
 @pytest.mark.parametrize("data_type", ["float", "double", "int"])

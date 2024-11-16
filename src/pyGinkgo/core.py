@@ -12,7 +12,7 @@ def asarray(obj, executor: str = "Reference", dtype="float"):
     valid_dtypes = ["int", "float", "double"]
     if not dtype in valid_dtypes:
         raise ValueError(
-            "Not a valid dtype: " + dtype + " possible choices are: " + valid_dtypes
+            "Not a valid dtype: " + dtype + " possible choices are: " + str(valid_dtypes)
         )
     valid_executor = ["Reference", "Cuda"]
     if not executor in valid_executor:
@@ -20,7 +20,7 @@ def asarray(obj, executor: str = "Reference", dtype="float"):
             "Not a valid executor: "
             + dtype
             + " possible choices are: "
-            + valid_executor
+            + str(valid_executor)
         )
 
     ctr = getattr(pGB.base, "array_" + dtype)
@@ -57,7 +57,7 @@ def solve(A, b, initial_guess=None, solver_args: dict = dict()):
     solver_executor = A.get_executor()
 
     if not initial_guess:
-        initial_guess = pgb.matrix.dense(b.get_executor(), (b.dim[0], 1))
+        initial_guess = pGB.matrix.dense(b.get_executor(), (b.dim[0], 1))
         initial_guess.fill(0.0)
 
     logger = pGB.solver.config_solve(

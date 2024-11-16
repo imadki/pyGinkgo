@@ -3,11 +3,9 @@
 # SPDX-FileCopyrightText: 2024 pyGinkgo authors
 
 import os
-import sys
 import pytest
 
-sys.path.append("../../")
-import pyGinkgoBindings as pgb
+import pyGinkgo.pyGinkgoBindings as pgb
 
 
 @pytest.mark.parametrize("solver_name", ["gmres"])

@@ -12,7 +12,7 @@ enable_testing()
 find_package(Python COMPONENTS Interpreter Development)
 
 # copy all generated files to pyGinkgo that makes testing and installing easier
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/pyGinkgo)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${PROJECT_NAME})
 
 # Find OpenMPI find_package(MPI REQUIRED)
 
@@ -100,26 +100,30 @@ if(${ENABLE_PYGINKGOBINDINGS_STUBS})
   add_custom_command(
     TARGET pyGinkgoBindings
     POST_BUILD
-    WORKING_DIRECTORY $<TARGET_FILE_DIR:pyGinkgoBindings>
+    WORKING_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
     VERBATIM
-    COMMAND ${PYTHON_EXECUTABLE} -c
-            "import pybind11_stubgen; pybind11_stubgen.main();" pyGinkgoBindings
-    COMMENT "Generating stub files at: \
-  $<TARGET_FILE_DIR:pyGinkgoBindings>/pyGinkgoBindings")
+    COMMAND
+      ${PYTHON_EXECUTABLE} -c
+      "import pybind11_stubgen; pybind11_stubgen.main();" pyGinkgoBindings
+      "-o./"
+    COMMENT "Generating stub files at ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 endif()
 
-file(COPY ${CMAKE_SOURCE_DIR}/src/pyGinkgo DESTINATION ${CMAKE_BINARY_DIR})
+# Generating the virtual installation within the build folder
+set(PYGINKGO_PYTHON_FILES ${PROJECT_SOURCE_DIR}/src/pyGinkgo/__init__.py
+                          ${PROJECT_SOURCE_DIR}/src/pyGinkgo/core.py)
+add_custom_target(
+  pyGinkgo_virtual_installation ALL
+  DEPENDS pyGinkgoBindings
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${PYGINKGO_PYTHON_FILES}
+          ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+  VERBATIM
+  COMMENT "Creating self-contained library folder at: \
+${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 
 # adding tests
 add_subdirectory(tests/cpp_bindings)
 add_subdirectory(tests/pyGinkgo)
-
-# add CUDA specific tests, if building with CUDA enabled
-if(GINKGO_BUILD_CUDA)
-  add_test(NAME pyginkgo_cuda_executor_test
-           COMMAND ${PYTHON_EXECUTABLE} -m pytest
-                   ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_cuda_executor.py)
-endif()
 
 if(APPLE)
   set(CMAKE_MACOSX_RPATH 1)
@@ -127,7 +131,8 @@ endif()
 set(CMAKE_INSTALL_RPATH ${Python_SITELIB}/${PROJECT_NAME})
 
 message("Install path: ${Python_SITELIB}")
-install(TARGETS pyGinkgoBindings DESTINATION ${Python_SITELIB}/${PROJECT_NAME})
+install(DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+        DESTINATION ${Python_SITELIB})
 install(
   IMPORTED_RUNTIME_ARTIFACTS
   ginkgo
@@ -139,12 +144,3 @@ install(
   ginkgo_reference
   DESTINATION
   ${Python_SITELIB}/${PROJECT_NAME})
-
-install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/pyGinkgo/
-        DESTINATION ${Python_SITELIB}/${PROJECT_NAME})
-
-# Installing stub files
-if(${ENABLE_PYGINKGOBINDINGS_STUBS})
-  install(DIRECTORY $<TARGET_FILE_DIR:pyGinkgoBindings>/stubs/pyGinkgoBindings
-          DESTINATION ${Python_SITELIB}/${PROJECT_NAME})
-endif()
