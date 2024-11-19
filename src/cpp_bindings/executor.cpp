@@ -68,4 +68,42 @@ void add_executor_classes(py::module_ &root_module)
 
         .def_static("get_num_devices", &gko::CudaExecutor::get_num_devices);
 #endif
+#ifdef GINKGO_BUILD_HIP
+    py::class_<gko::detail::ExecutorBase<gko::HipExecutor>, gko::Executor,
+               std::shared_ptr<gko::detail::ExecutorBase<gko::HipExecutor>>>(
+        root_module, "HipExecutorBase");
+
+    py::class_<gko::HipExecutor, gko::detail::ExecutorBase<gko::HipExecutor>,
+               std::shared_ptr<gko::HipExecutor>>(root_module, "HipExecutor")
+        .def(py::init([](int dev_id, std::shared_ptr<gko::Executor> master,
+                         std::shared_ptr<gko::HipAllocatorBase> alloc,
+                         std::shared_ptr<gko::hip_stream> stream) {
+                 return gko::HipExecutor::create(dev_id, master, alloc,
+                                                 stream->get());
+             }),
+             // The first two are the deviation from the original library
+             py::arg_v("device_id", 0),
+             py::arg_v("master", gko::ReferenceExecutor::create(),
+                       "ReferenceExecutor()"),
+             py::arg_v("allocator", std::make_shared<gko::HipAllocator>(),
+                       "HipAllocator()"),
+             py::arg_v("stream", std::make_shared<gko::hip_stream>(),
+                       "hip_stream()"),
+             "The default arguments are:\n"
+             "    device_id: 0\n"
+             "    master: ReferenceExecutor()\n"
+             "    allocator: HipAllocator()\n"
+             "    stream: hip_stream()")
+
+        .def_property_readonly(
+            "master",
+            [](std::shared_ptr<gko::HipExecutor> self)
+                -> std::shared_ptr<gko::Executor>
+            // Hopefully there would be no problems with converting val to lval
+            { return self->get_master(); })
+
+        .def_property_readonly("device_id", &gko::HipExecutor::get_device_id)
+
+        .def_static("get_num_devices", &gko::HipExecutor::get_num_devices);
+#endif
 }
