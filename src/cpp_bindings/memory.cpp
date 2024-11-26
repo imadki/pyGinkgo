@@ -26,4 +26,16 @@ void add_allocator_classes(py::module_ &root_module)
                                                     "CudaAllocator")
         .def(py::init());
 #endif
+#ifdef GINKGO_BUILD_HIP
+    // TODO: implement CudaAllocatorBase binding,
+    //    to be able to define custom allocator
+    py::class_<gko::HipAllocatorBase, gko::Allocator,
+               std::shared_ptr<gko::HipAllocatorBase>>(root_module,
+                                                        "HipAllocatorBase");
+
+    py::class_<gko::HipAllocator, gko::HipAllocatorBase,
+               std::shared_ptr<gko::HipAllocator>>(root_module,
+                                                    "HipAllocator")
+        .def(py::init());
+#endif
 }
