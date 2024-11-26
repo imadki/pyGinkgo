@@ -68,7 +68,7 @@ if(GINKGO_BUILD_CUDA)
   add_compile_definitions(GINKGO_BUILD_CUDA)
 endif()
 if(GINKGO_BUILD_HIP)
-    add_compile_definitions(GINKGO_BUILD_HIP)
+  add_compile_definitions(GINKGO_BUILD_HIP)
 endif()
 
 add_subdirectory(src/cpp_bindings)
