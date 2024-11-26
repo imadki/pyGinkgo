@@ -2,6 +2,7 @@
 - Added parametrization to templated classes [#75](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/75)
 - Add pyTorch interoperability [#56](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/56)
 - Add direct solver bindings [#72](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/72)
+- Add HIP Executor bindings [#68](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/68)
 - Add ILU preconditioner bindings [#55](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/55)
 - Aligning tests with code [#65](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/65)
 - Add file config solver bindings [#64](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/64)
