@@ -22,8 +22,8 @@ void add_stream_classes(py::module_ &root_module)
              "Creates a new custom CUDA stream on the given CUDA device ID");
 #endif
 #ifdef GINKGO_BUILD_HIP
-    py::class_<gko::hip_stream, std::shared_ptr<gko::hip_stream>>(
-        root_module, "hip_stream")
+    py::class_<gko::hip_stream, std::shared_ptr<gko::hip_stream>>(root_module,
+                                                                  "hip_stream")
         // The comments are copied from the source of the class at
         // ginkgo-src/include/ginkgo/core/base/stream.hpp
         .def(

@@ -31,11 +31,10 @@ void add_allocator_classes(py::module_ &root_module)
     //    to be able to define custom allocator
     py::class_<gko::HipAllocatorBase, gko::Allocator,
                std::shared_ptr<gko::HipAllocatorBase>>(root_module,
-                                                        "HipAllocatorBase");
+                                                       "HipAllocatorBase");
 
     py::class_<gko::HipAllocator, gko::HipAllocatorBase,
-               std::shared_ptr<gko::HipAllocator>>(root_module,
-                                                    "HipAllocator")
+               std::shared_ptr<gko::HipAllocator>>(root_module, "HipAllocator")
         .def(py::init());
 #endif
 }
