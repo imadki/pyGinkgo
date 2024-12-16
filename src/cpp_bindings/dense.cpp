@@ -209,7 +209,7 @@ void init_dense(py::module_ &module_matrix)
              "Returns the number of elements explicitly stored in the "
              "matrix.")
 	.def("get_size", 
-            &gko::matrix::Dense<ValueType>::get_num_stored_elements, 
+            &gko::matrix::Dense<ValueType>::get_size, 
             "Returns the number of elements explicitly stored in the matrix."); 
 
     module_matrix.def("read_dense", [](const std::string &fn,
