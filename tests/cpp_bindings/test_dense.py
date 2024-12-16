@@ -107,10 +107,6 @@ class TestDense:
         verify_dense_vec(dense_a, (1 - alpha) * a)
 
     def test_dense_can_return_size(self):
-        dense = pGB.matrix.dense(
-            self.ref, (3, 3), np.array(self.values), 3)
+        dense = pGB.matrix.dense(self.ref, (3, 3), np.array(self.values), 3)
         assert dense.get_size()[0] == 3
         assert dense.get_size()[1] == 3
-
-
-
