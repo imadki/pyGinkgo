@@ -42,7 +42,7 @@ void init_direct(py::module_ &module_solver)
         .def("__repr__",
              [](const gko::experimental::solver::Direct<ValueType, IndexType>
                     &o) {
-                 auto str = std::string("pygko.solver.Direct object");
+                 auto str = std::string("pygko.solver.direct object");
                  return str;
              })
         .def(
