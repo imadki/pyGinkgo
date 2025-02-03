@@ -10,18 +10,19 @@ using Ilu =
                              false>;
 
 void init_ilu(py::module_ &module_preconditioner)
-void init_ilu(py::module_ &module_solver)
-{
-    py::class_<gko::solver::Ilu, std::shared_ptr<gko::preconditioner::Ilu>,
-               gko::LinOp>(module_solver, "Ilu")
 {
     py::class_<Ilu, std::shared_ptr<Ilu>, gko::LinOp>(module_preconditioner,
                                                       "Ilu")
-            auto ilu_pre_factory =
-                gko::preconditioner::Ilu<
-                    gko::solver::LowerTrs<ValueType, IndexType>,
-                    gko::solver::UpperTrs<ValueType, IndexType>, false>::build()
-                    .on(exec);
+        .def(py::init([](std::shared_ptr<gko::Executor> exec,
+                         std::shared_ptr<const gko::LinOp> system_matrix) {
+            auto par_ilu_fact =
+                gko::factorization::ParIlu<ValueType, IndexType>::build().on(
+                    exec);
+            // Generate concrete factorization for input matrix
+            auto par_ilu = gko::share(par_ilu_fact->generate(system_matrix));
+
+            // Generate an ILU preconditioner factory by setting lower and upper
+            // triangular solver - in this case the exact triangular solves
             auto ilu_pre_factory = Ilu::build().on(exec);
 
             // Use incomplete factors to generate ILU preconditioner
