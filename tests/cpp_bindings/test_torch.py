@@ -44,3 +44,5 @@ def test_can_create_dense_from_torch_tensor():
     assert dense.get_num_stored_elements() == 4
     assert dense.at(0, 1) == 2.0
     assert dense.at(1, 1) == 4.0
+    assert dense.get_size()[0] == 2
+    assert dense.get_size()[1] == 2
