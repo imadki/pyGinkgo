@@ -4,6 +4,8 @@
 
 from pyGinkgo import pyGinkgoBindings as pGB
 
+import torch
+
 
 def RR1(X, AX, BX):
     """
@@ -18,6 +20,7 @@ def RR1(X, AX, BX):
     - hX     : Eigenvectors
     - Lambda : Eigenvalues
     """
+    executor = pgb.ReferenceExecutor()
     XT = X.T
 
     G1 = pGB.matrix.dense(X)
@@ -27,20 +30,15 @@ def RR1(X, AX, BX):
     XT.apply(BX, G2)
 
     # Find L s.t. L @ L.T = G2
-    # TODO check on Ginkgo how cholesky works
-    # TODO needs cholesky bindings
-    L = cholesky(G2, lower=True)
+    direct1 = pgb.direct(G1)
+    direct1.apply(L, G2)
 
-    # TODO use view from Ginkgo here
-    # G2[:] = L^(-1) @ G1 @ L^(-T)
-    # TODO needs triangular bindings
-    # G2[:] = solve_triangular(L, G1, lower=True, overwrite_b=True)
-    # G2[:] = solve_triangular(L, G2.T, lower=True)
+    torchG2 = torch.astensor(G2)
+    L, Q = eigh(torchG2)
+    Lambda = pGB.matrix.dense(executor, L.__array__())
+    hY = pGB.matrix.dense(executor, Q.__array__())
 
-    # # TODO eigh -> use pytorch
-    # Lambda, hY = eigh(G2)
-
-    # # hX = L^(-T) @ hY
-    # hX = solve_triangular(L, hY, trans="T", lower=True)
+    direct2 = pgb.direct(Lambda)
+    direct2.apply(hY, hX)
 
     return hX, Lambda
