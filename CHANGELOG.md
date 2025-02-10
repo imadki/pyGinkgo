@@ -1,4 +1,5 @@
 # Version 0.1.0 (unreleased)
+- Add pyTorch interoperability [#56](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/56)
 - Add direct solver bindings [#72](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/72)
 - Add ILU preconditioner bindings [#55](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/55)
 - Aligning tests with code [#65](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/65)

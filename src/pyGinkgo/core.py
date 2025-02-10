@@ -6,13 +6,23 @@ from pyGinkgo import pyGinkgoBindings as pGB
 import numpy as np
 import json
 
+try:
+    import torch
 
-def asarray(obj, executor: str = "Reference", dtype="float"):
+    torch_avail = True
+except ImportError:
+    torch_avail = False
+
+
+def as_array(obj, executor: str = "Reference", dtype="float"):
     """create a ginkgo array from a given object"""
     valid_dtypes = ["int", "float", "double"]
     if not dtype in valid_dtypes:
         raise ValueError(
-            "Not a valid dtype: " + dtype + " possible choices are: " + str(valid_dtypes)
+            "Not a valid dtype: "
+            + dtype
+            + " possible choices are: "
+            + str(valid_dtypes)
         )
     valid_executor = ["Reference", "Cuda"]
     if not executor in valid_executor:
@@ -24,6 +34,34 @@ def asarray(obj, executor: str = "Reference", dtype="float"):
         )
 
     ctr = getattr(pGB.base, "array_" + dtype)
+    executor = getattr(pGB, executor + "Executor")()
+    return ctr(executor, obj)
+
+
+def as_tensor(obj, executor: str = "Reference", dtype="float"):
+    """create a ginkgo array from a given object"""
+    valid_dtypes = ["int", "float", "double"]
+    if not dtype in valid_dtypes:
+        raise ValueError(
+            "Not a valid dtype: "
+            + dtype
+            + " possible choices are: "
+            + str(valid_dtypes)
+        )
+    valid_executor = ["Reference", "Cuda"]
+    if not executor in valid_executor:
+        raise ValueError(
+            "Not a valid executor: "
+            + dtype
+            + " possible choices are: "
+            + str(valid_executor)
+        )
+
+    if torch_avail:
+        if isinstance(obj, torch.Tensor):
+            obj = obj.__array__()
+
+    ctr = getattr(pGB.base, "dense")
     executor = getattr(pGB, executor + "Executor")()
     return ctr(executor, obj)
 
