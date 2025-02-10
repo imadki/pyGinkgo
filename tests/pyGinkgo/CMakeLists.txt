@@ -15,3 +15,4 @@ function(pyginkgo_python_test TEST)
 endfunction()
 
 pyginkgo_python_test(solve)
+pyginkgo_python_test(RR)
