@@ -121,7 +121,8 @@ void init_dense(py::module_ &module_matrix, const std::string typestr)
                  }
              })
         .def("T",
-             py::overload_cast<>(&gko::matrix::Dense<ValueType>::transpose),
+             py::overload_cast<>(&gko::matrix::Dense<ValueType>::transpose,
+                                 py::const_),
              "Computes and returns transpose of the matrix")
         .def_buffer([](gko::matrix::Dense<ValueType> &m) -> py::buffer_info {
             // buffer info needs data on host, thus if data is on device it
