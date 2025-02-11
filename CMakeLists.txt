@@ -104,8 +104,10 @@ if(${ENABLE_PYGINKGOBINDINGS_STUBS})
 endif()
 
 # Generating the virtual installation within the build folder
-set(PYGINKGO_PYTHON_FILES ${PROJECT_SOURCE_DIR}/src/pyGinkgo/__init__.py
-                          ${PROJECT_SOURCE_DIR}/src/pyGinkgo/core.py)
+set(PYGINKGO_PYTHON_FILES
+    ${PROJECT_SOURCE_DIR}/src/pyGinkgo/__init__.py
+    ${PROJECT_SOURCE_DIR}/src/pyGinkgo/core.py
+    ${PROJECT_SOURCE_DIR}/src/pyGinkgo/rayleigh_ritz.py)
 add_custom_target(
   pyGinkgo_virtual_installation ALL
   DEPENDS pyGinkgoBindings
