@@ -30,7 +30,7 @@ def RR1(X, AX, BX):
     XT.apply(BX, G2)
 
     # Find L s.t. L @ L.T = G2
-    direct1 = pgb.direct(G1)
+    direct1 = pGB.direct(G1)
     direct1.apply(L, G2)
 
     torchG2 = torch.astensor(G2)
@@ -38,7 +38,7 @@ def RR1(X, AX, BX):
     Lambda = pGB.matrix.dense(executor, L.__array__())
     hY = pGB.matrix.dense(executor, Q.__array__())
 
-    direct2 = pgb.direct(Lambda)
+    direct2 = pGB.direct(Lambda)
     direct2.apply(hY, hX)
 
     return hX, Lambda
