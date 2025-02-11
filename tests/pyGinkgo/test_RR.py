@@ -31,4 +31,4 @@ class TestSolve:
         dense1 = pGB.matrix.dense(np.array(self.values1))
         dense2 = pGB.matrix.dense(np.array(self.values2))
         dense3 = pGB.matrix.dense(np.array(self.values3))
-        pg.RR(dense1, dense2, dense3)
+        pg.RR1(dense1, dense2, dense3)
