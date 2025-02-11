@@ -123,7 +123,7 @@ void init_dense(py::module_ &module_matrix, const std::string typestr)
         .def(
             "T",
             [](gko::matrix::Dense<ValueType> &m) {
-                return gko::share(m.transpose())
+                return gko::share(m.transpose());
             },
             "Computes and returns transpose of the matrix")
         .def_buffer([](gko::matrix::Dense<ValueType> &m) -> py::buffer_info {
