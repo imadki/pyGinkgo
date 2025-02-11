@@ -56,13 +56,13 @@ PYBIND11_MODULE(pyGinkgoBindings, m)
         m.def_submodule("logger", "Submodule for Ginkgos logger type bindings");
     init_logger(module_logger);
 
-    py::module_ module_preconditioner = m.def_submodule(
-        "preconditioner", "Submodule for Ginkgos preconditioner type bindings");
-    init_ilu(module_preconditioner);
-
     py::module_ module_solver =
         m.def_submodule("solver", "Submodule for Ginkgos solver type bindings");
     init_gmres(module_solver);
     init_direct(module_solver);
     init_config_solver(module_solver);
+
+    py::module_ module_preconditioner = m.def_submodule(
+        "preconditioner", "Submodule for Ginkgos preconditioner type bindings");
+    init_ilu(module_preconditioner);
 }
