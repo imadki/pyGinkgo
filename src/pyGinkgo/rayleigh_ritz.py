@@ -20,7 +20,7 @@ def RR1(X, AX, BX):
     - hX     : Eigenvectors
     - Lambda : Eigenvalues
     """
-    executor = pgb.ReferenceExecutor()
+    executor = pGB.ReferenceExecutor()
     XT = X.T
 
     G1 = pGB.matrix.dense(X)
