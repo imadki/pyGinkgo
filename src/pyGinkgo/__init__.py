@@ -5,5 +5,5 @@
 from .pyGinkgoBindings import *
 
 from .core import *
-from .solver import *
+#from .solver import *
 from .rayleigh_ritz import *

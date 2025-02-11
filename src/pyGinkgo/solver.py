@@ -189,44 +189,46 @@ def lobpcg(A, X0, nev,
   X      : last iterates of least dominant eigenvectors, n-by-m
   res    : normalized norms of eigenresiduals, m-by-it
   """
-    
-  if B is not None:
-    # if method == 'Basic':
-    #   Lambda, X, res = Basic_LOBPCG_gen(A, B, X0, nev,
-    #                                     T=T, itmax=itmax, tol=tol,
-    #                                     A_products=A_products,
-    #                                     B_products=B_products)
-    # elif method == 'BLOPEX':
-    #   Lambda, X, res = BLOPEX_LOBPCG_gen(A, B, X0, nev,
-    #                                      T=T, itmax=itmax, tol=tol,
-    #                                      A_products=A_products,
-    #                                      B_products=B_products)
-    # elif method == 'Ortho':
-    #   Lambda, X, res = Ortho_LOBPCG_gen(A, B, X0, nev,
-    #                                     T=T, itmax=itmax, tol=tol,
-    #                                     A_products=A_products,
-    #                                     B_products=B_products)
-    # elif method == 'Skip_ortho':
-    #   Lambda, X, res = Skip_ortho_LOBPCG_gen(A, B, X0, nev,
-    #                                          T=T, itmax=itmax, tol=tol,
-    #                                          A_products=A_products,
-    #                                          B_products=B_products)
-  else:
-    if method == 'Basic':
-      return lobpcg_basic_standard_impl_(A, X0, nev,
-                                             T=T, itmax=itmax, tol=tol,
-                                             A_products=A_products)
-  #   elif method == 'BLOPEX':
-  #     Lambda, X, res = BLOPEX_LOBPCG_standard(A, X0, nev,
-  #                                             T=T, itmax=itmax, tol=tol,
-  #                                             A_products=A_products)
-  #   elif method == 'Ortho':
-  #     Lambda, X, res = Ortho_LOBPCG_standard(A, X0, nev,
-  #                                            T=T, itmax=itmax, tol=tol,
-  #                                            A_products=A_products)
-  #   elif method == 'Skip_ortho':
-  #     Lambda, X, res = Skip_ortho_LOBPCG_standard(A, X0, nev,
-  #                                                 T=T, itmax=itmax, tol=tol,
-  #                                                 A_products=A_products)
+  pass
+ #  
+ #if B is not None:
+ #    pass
+ #  # if method == 'Basic':
+ #  #   Lambda, X, res = Basic_LOBPCG_gen(A, B, X0, nev,
+ #  #                                     T=T, itmax=itmax, tol=tol,
+ #  #                                     A_products=A_products,
+ #  #                                     B_products=B_products)
+ #  # elif method == 'BLOPEX':
+ #  #   Lambda, X, res = BLOPEX_LOBPCG_gen(A, B, X0, nev,
+ #  #                                      T=T, itmax=itmax, tol=tol,
+ #  #                                      A_products=A_products,
+ #  #                                      B_products=B_products)
+ #  # elif method == 'Ortho':
+ #  #   Lambda, X, res = Ortho_LOBPCG_gen(A, B, X0, nev,
+ #  #                                     T=T, itmax=itmax, tol=tol,
+ #  #                                     A_products=A_products,
+ #  #                                     B_products=B_products)
+ #  # elif method == 'Skip_ortho':
+ #  #   Lambda, X, res = Skip_ortho_LOBPCG_gen(A, B, X0, nev,
+ #  #                                          T=T, itmax=itmax, tol=tol,
+ #  #                                          A_products=A_products,
+ #  #                                          B_products=B_products)
+ #else:
+ #  if method == 'Basic':
+ #    return lobpcg_basic_standard_impl_(A, X0, nev,
+ #                                           T=T, itmax=itmax, tol=tol,
+ #                                           A_products=A_products)
+ ##   elif method == 'BLOPEX':
+ ##     Lambda, X, res = BLOPEX_LOBPCG_standard(A, X0, nev,
+ ##                                             T=T, itmax=itmax, tol=tol,
+ ##                                             A_products=A_products)
+ ##   elif method == 'Ortho':
+ ##     Lambda, X, res = Ortho_LOBPCG_standard(A, X0, nev,
+ ##                                            T=T, itmax=itmax, tol=tol,
+ ##                                            A_products=A_products)
+ ##   elif method == 'Skip_ortho':
+ ##     Lambda, X, res = Skip_ortho_LOBPCG_standard(A, X0, nev,
+ ##                                                 T=T, itmax=itmax, tol=tol,
+ ##                                                 A_products=A_products)
 
-  # return Lambda, X, res
+ ## return Lambda, X, res
