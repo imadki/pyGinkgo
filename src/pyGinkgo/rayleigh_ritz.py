@@ -21,7 +21,7 @@ def RR1(X, AX, BX):
     - Lambda : Eigenvalues
     """
     executor = pGB.ReferenceExecutor()
-    XT = X.T
+    XT = X.T()
 
     G1 = pGB.matrix.dense(X)
     XT.apply(AX, G1)
