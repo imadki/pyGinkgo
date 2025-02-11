@@ -117,6 +117,16 @@ class TestDense:
         dense_a.apply(dense_b, result)
         assert result.at(0) == aT.dot(a)[0, 0]
 
+    def test_can_transpose(self):
+        dense_a = pGB.matrix.dense(self.ref, (3, 3), np.array([self.values]), 3)
+        dense_aT = dense_a.T
+        dense_a(0, 1) == dense_aT(1, 0)
+        dense_a(0, 2) == dense_aT(2, 0)
+        dense_a(1, 2) == dense_aT(2, 1)
+        dense_a(0, 0) == dense_aT(0, 0)
+        dense_a(1, 1) == dense_aT(1, 1)
+        dense_a(2, 2) == dense_aT(2, 2)
+
     def test_add_scaled(self, data_type):
         dense_cls = getattr(pGB.matrix, "dense_" + data_type)
         a = np.array(self.values, dtype=d_type_map[data_type])
