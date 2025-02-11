@@ -119,7 +119,7 @@ class TestDense:
 
     def test_can_transpose(self):
         dense_a = pGB.matrix.dense(self.ref, (3, 3), np.array([self.values]), 3)
-        dense_aT = dense_a.T
+        dense_aT = dense_a.T()
         dense_a(0, 1) == dense_aT(1, 0)
         dense_a(0, 2) == dense_aT(2, 0)
         dense_a(1, 2) == dense_aT(2, 1)
