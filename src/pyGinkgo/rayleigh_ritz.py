@@ -46,6 +46,7 @@ def RR1(X, AX, BX):
 
     G2T = G2.T()
     direct3 = pGB.solver.direct(executor, G2T, factorization="Cholesky")
+    hX = pGB.matrix.dense(hY)
     direct3.apply(hY, hX)
 
     return hX, Lambda
