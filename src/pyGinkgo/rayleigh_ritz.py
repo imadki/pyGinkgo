@@ -38,7 +38,7 @@ def RR1(X, AX, BX):
     G2PP = pGB.matrix.dense(X)
     direct2.apply(G2PT, G2PP)
 
-    torchG2 = torch.as_tensor(G2PP)
+    torchG2 = torch.as_tensor(np.array(G2PP))
     L, Q = eigh(torchG2)
     Lambda = pGB.matrix.dense(executor, L.__array__())
     hY = pGB.matrix.dense(executor, Q.__array__())
