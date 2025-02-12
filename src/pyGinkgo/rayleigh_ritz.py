@@ -5,6 +5,7 @@
 from pyGinkgo import pyGinkgoBindings as pGB
 
 import torch
+import numpy as np
 
 
 def RR1(X, AX, BX):
