@@ -30,15 +30,21 @@ def RR1(X, AX, BX):
     XT.apply(BX, G2)
 
     # Find L s.t. L @ L.T = G2
-    direct1 = pGB.solver.direct(executor, G1, factorization="Cholesky")
-    direct1.apply(L, G2)
+    direct1 = pGB.solver.direct(executor, G2, factorization="Cholesky")
+    G2P = pGB.matrix.dense(X)
+    direct1.apply(G1, G2P)
+    G2PT = G2P.T()
+    direct2 = pGB.solver.direct(executor, G2, factorization="Cholesky")
+    G2PP = pGB.matrix.dense(X)
+    direct2.apply(G2PT, G2PP)
 
-    torchG2 = torch.astensor(G2)
+    torchG2 = torch.astensor(G2PP)
     L, Q = eigh(torchG2)
     Lambda = pGB.matrix.dense(executor, L.__array__())
     hY = pGB.matrix.dense(executor, Q.__array__())
 
-    direct2 = pGB.solver.direct(executor, Lambda, factorization="Cholesky")
-    direct2.apply(hY, hX)
+    G2T = G2.T()
+    direct3 = pGB.solver.direct(executor, G2T, factorization="Cholesky")
+    direct3.apply(hY, hX)
 
     return hX, Lambda
