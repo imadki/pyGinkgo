@@ -3,9 +3,13 @@
 // SPDX-FileCopyrightText: 2024 pyGinkgo authors
 
 #include "python.hpp"
+#include "utils.hpp"
 
-void init_dense(py::module_ &module_matrix)
+template <typename ValueType>
+void init_dense(py::module_ &module_matrix, const std::string typestr)
 {
+    std::string pyclass_name = std::string("dense_") + typestr;
+
     using dim_type = gko::dim<2>::dimension_type;
     /* function to create a dense matrix from py::buffer object
      *
@@ -13,9 +17,7 @@ void init_dense(py::module_ &module_matrix)
     auto init_func = [](std::shared_ptr<gko::Executor> exec, py::buffer b) {
         /* Request a buffer descriptor from Python */
         py::buffer_info info = b.request();
-
-        if (info.format != py::format_descriptor<ValueType>::format())
-            throw std::runtime_error("Incompatible dtype");
+        check_buffer_dtype<ValueType>(info);
 
         /* create a view into numpy data */
         auto elems =
@@ -36,7 +38,7 @@ void init_dense(py::module_ &module_matrix)
 
     py::class_<gko::matrix::Dense<ValueType>,
                std::shared_ptr<gko::matrix::Dense<ValueType>>, gko::LinOp>(
-        module_matrix, "dense", py::buffer_protocol())
+        module_matrix, pyclass_name.c_str(), py::buffer_protocol())
         .def(py::init([init_func](py::buffer b) {
             auto ref = gko::ReferenceExecutor::create();
             return init_func(ref, b);
@@ -61,8 +63,7 @@ void init_dense(py::module_ &module_matrix)
         .def(py::init([](std::shared_ptr<gko::Executor> exec, py::tuple dim,
                          py::buffer b, size_t stride) {
             py::buffer_info info = b.request();
-            if (info.format != py::format_descriptor<ValueType>::format())
-                throw std::runtime_error("Incompatible dtype");
+            check_buffer_dtype<ValueType>(info);
 
             auto ref = gko::ReferenceExecutor::create();
 
@@ -211,9 +212,17 @@ void init_dense(py::module_ &module_matrix)
              "Returns the number of elements explicitly stored in the "
              "matrix.");
 
-    module_matrix.def("read_dense", [](const std::string &fn,
-                                       std::shared_ptr<gko::Executor> exec) {
-        return gko::share(
-            gko::read<gko::matrix::Dense<ValueType>>(std::ifstream(fn), exec));
-    });
+    std::string read_dense_name = std::string("read_dense_") + typestr;
+    module_matrix.def(
+        read_dense_name.c_str(),
+        [](const std::string &fn, std::shared_ptr<gko::Executor> exec) {
+            return gko::share(gko::read<gko::matrix::Dense<ValueType>>(
+                std::ifstream(fn), exec));
+        });
+}
+
+void init_dense_all_types(py::module_ &module)
+{
+#define DECLARE_DENSE_VALUE(ValueType) init_dense<ValueType>(module, #ValueType)
+    PYGKO_INSTANTIATE_FOR_EACH_NON_COMPLEX_VALUE_TYPE(DECLARE_DENSE_VALUE);
 }
