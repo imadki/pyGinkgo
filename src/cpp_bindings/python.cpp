@@ -3,6 +3,7 @@
 // SPDX-FileCopyrightText: 2024 pyGinkgo authors
 
 #include "python.hpp"
+#include "half.hpp"
 
 namespace py = pybind11;
 
@@ -27,9 +28,16 @@ PYBIND11_MODULE(pyGinkgoBindings, m)
     add_stream_classes(m);
     add_executor_classes(m);
 
-    py::class_<gko::LinOp, std::shared_ptr<gko::LinOp>>(m, "LinOp")
+    // Declaring common types
+    py::class_<half>(m, "half");
+
+    py::class_<gko::PolymorphicObject, std::shared_ptr<gko::PolymorphicObject>>(
+        m, "PolymorphicObject")
         .def("get_executor", &gko::PolymorphicObject::get_executor,
-             "Get the executor")
+             "Get the executor");
+
+    py::class_<gko::LinOp, gko::PolymorphicObject, std::shared_ptr<gko::LinOp>>(
+        m, "LinOp")
         .def(
             "apply",
             [](const gko::LinOp &m, std::shared_ptr<const gko::LinOp> b,
@@ -41,6 +49,8 @@ PYBIND11_MODULE(pyGinkgoBindings, m)
         .def("__getitem__",
              [](const gko::dim<2> &o, size_t i) { return o[i]; });
 
+
+    // Declaring submodules
     py::module_ module_base = m.def_submodule(
         "base", "Submodule for Ginkgos low level type bindings");
     init_array_all_types(module_base);
