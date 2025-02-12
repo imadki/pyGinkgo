@@ -59,3 +59,33 @@ class TestTorchInteroperability:
         assert dense.at(1, 1) == 4.0
         assert dense.get_size()[0] == 2
         assert dense.get_size()[1] == 2
+
+    def test_can_create_torch_array_from_gko_array(self):
+        executor = pgb.ReferenceExecutor()
+        np_array = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
+        arr = pgb.base.array_float(executor, np_array)
+        torch_array = torch.asarray(arr)
+        assert torch_array.size(dim=0) == np_array.size
+
+
+    def test_can_create_dense_from_torch_tensor(self):
+        executor = pgb.ReferenceExecutor()
+        data = [[1.0, 2.0], [3.0, 4.0]]
+        torch_tensor = torch.tensor(data, dtype=float)
+        dense = pgb.matrix.dense(executor, torch_tensor.__array__())
+        assert dense.get_num_stored_elements() == 4
+        assert dense.at(0, 1) == 2.0
+        assert dense.at(1, 1) == 4.0
+        assert dense.get_size()[0] == 2
+        assert dense.get_size()[1] == 2
+
+
+    def test_can_create_torch_tensor_from_dense(self):
+        executor = pgb.ReferenceExecutor()
+        data = [[1.0, 2.0], [3.0, 4.0]]
+        dense = pgb.matrix.dense(executor, data)
+        torch_tensor = torch.as_tensor(dense)
+        assert torch_tensor[0][0] == 1.0
+        assert torch_tensor[0][1] == 2.0
+        assert torch_tensor[1][0] == 3.0
+        assert torch_tensor[1][1] == 4.0
