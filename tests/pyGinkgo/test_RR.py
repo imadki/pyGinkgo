@@ -23,9 +23,9 @@ class TestSolve:
     rhs.fill(1.0)
     initial_guess = pGB.matrix.dense(executor, (rows, 1))
     initial_guess.fill(0.0)
-    X = [[1, 4], [2, 5], [3, 6]]
-    AX = [[9, 27], [12, 30], [15, 33]]
-    BX = [[1, 4], [4, 10], [9, 18]]
+    X = [[1.0, 4.0], [2.0, 5.0], [3.0, 6.0]]
+    AX = [[9.0, 27.0], [12.0, 30.0], [15.0, 33.0]]
+    BX = [[1.0, 4.0], [4.0, 10.0], [9.0, 18.0]]
 
     def test_can_default_solve(self):
         denseX = pGB.matrix.dense(np.array(self.X))
