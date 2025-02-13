@@ -67,11 +67,11 @@ class TestTorchInteroperability:
         torch_array = torch.asarray(arr)
         assert torch_array.size(dim=0) == np_array.size
 
-    def test_can_create_torch_tensor_from_dense():
+    def test_can_create_torch_tensor_from_dense(self):
         executor = pgb.ReferenceExecutor()
         data = np.array([[1.0, 2.0], [3.0, 4.0]])
         dense = pgb.matrix.dense(executor, data)
-        torch_tensor = torch.as_tensor(dense)
+        torch_tensor = torch.as_tensor(np.array(dense))
         assert torch_tensor[0][0] == 1.0
         assert torch_tensor[0][1] == 2.0
         assert torch_tensor[1][0] == 3.0

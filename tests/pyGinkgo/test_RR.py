@@ -23,12 +23,14 @@ class TestSolve:
     rhs.fill(1.0)
     initial_guess = pGB.matrix.dense(executor, (rows, 1))
     initial_guess.fill(0.0)
-    values1 = [[1.0, 2.0, -1.0], [3.0, 4.0, -1.0], [5.0, 6.0, -1.0]]
-    values2 = [[1.0, 2.0, -1.0], [3.0, 4.0, -1.0], [5.0, 6.0, -1.0]]
-    values3 = [[1.0, 2.0, -1.0], [3.0, 4.0, -1.0], [5.0, 6.0, -1.0]]
+    X = [[1, 4], [2, 5], [3, 6]]
+    AX = [[9, 27], [12, 30], [15, 33]]
+    BX = [[1, 4], [4, 10], [9, 18]]
 
     def test_can_default_solve(self):
-        dense1 = pGB.matrix.dense(np.array(self.values1))
-        dense2 = pGB.matrix.dense(np.array(self.values2))
-        dense3 = pGB.matrix.dense(np.array(self.values3))
-        pg.RR1(dense1, dense2, dense3)
+        denseX = pGB.matrix.dense(np.array(self.X))
+        denseAX = pGB.matrix.dense(np.array(self.AX))
+        denseBX = pGB.matrix.dense(np.array(self.BX))
+        hX, Lambda = pg.RR1(denseX, denseAX, denseBX)
+        assert hX[0][0] == 0
+        assert Lambda[0][0] == 0
