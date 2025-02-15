@@ -3,7 +3,6 @@
 // SPDX-FileCopyrightText: 2024 pyGinkgo authors
 
 #include "python.hpp"
-#include "half.hpp"
 
 namespace py = pybind11;
 
@@ -29,7 +28,9 @@ PYBIND11_MODULE(pyGinkgoBindings, m)
     add_executor_classes(m);
 
     // Declaring common types
-    py::class_<half>(m, "half");
+    py::class_<half>(m, "half").def("__repr__", [](const half &h) {
+        return std::to_string(static_cast<float>(h));
+    });
 
     py::class_<gko::PolymorphicObject, std::shared_ptr<gko::PolymorphicObject>>(
         m, "PolymorphicObject")

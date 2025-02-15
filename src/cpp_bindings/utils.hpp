@@ -1,8 +1,6 @@
 #pragma once
 
-#include <pybind11/numpy.h>
 #include <ginkgo/core/base/types.hpp>
-#include "half.hpp"
 #include "python.hpp"
 
 template <typename ValueType>
