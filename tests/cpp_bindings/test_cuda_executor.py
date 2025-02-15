@@ -29,7 +29,7 @@ def test_dense_copy_to_host():
     master = pGB.ReferenceExecutor()
     executor = pGB.CudaExecutor(master=master)
     np_array = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
-    dense = pGB.matrix.dense(executor, np_array)
+    dense = pGB.matrix.dense_double(executor, np_array)
     dense_on_master = dense.copy_to_host()
     assert dense.get_executor() == executor
     assert dense_on_master.get_executor() == master
