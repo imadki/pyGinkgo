@@ -3,7 +3,6 @@
 # SPDX-FileCopyrightText: 2024 pyGinkgo authors
 
 from pyGinkgo import pyGinkgoBindings as pGB
-import numpy as np
 import json
 
 try:
@@ -13,10 +12,14 @@ try:
 except ImportError:
     torch_avail = False
 
+valid_value_types = ["half", "float", "double"]
+valid_index_types = ["int32", "int64"]
+valid_dtypes = valid_value_types + valid_index_types
+valid_executor = ["Reference", "Cuda"]
+
 
 def as_array(obj, executor: str = "Reference", dtype="float"):
     """create a ginkgo array from a given object"""
-    valid_dtypes = ["int", "float", "double"]
     if not dtype in valid_dtypes:
         raise ValueError(
             "Not a valid dtype: "
@@ -24,7 +27,6 @@ def as_array(obj, executor: str = "Reference", dtype="float"):
             + " possible choices are: "
             + str(valid_dtypes)
         )
-    valid_executor = ["Reference", "Cuda"]
     if not executor in valid_executor:
         raise ValueError(
             "Not a valid executor: "
@@ -40,15 +42,13 @@ def as_array(obj, executor: str = "Reference", dtype="float"):
 
 def as_tensor(obj, executor: str = "Reference", dtype="float"):
     """create a ginkgo array from a given object"""
-    valid_dtypes = ["int", "float", "double"]
-    if not dtype in valid_dtypes:
+    if not dtype in valid_value_types:
         raise ValueError(
             "Not a valid dtype: "
             + dtype
             + " possible choices are: "
-            + str(valid_dtypes)
+            + str(valid_value_types)
         )
-    valid_executor = ["Reference", "Cuda"]
     if not executor in valid_executor:
         raise ValueError(
             "Not a valid executor: "
@@ -61,7 +61,7 @@ def as_tensor(obj, executor: str = "Reference", dtype="float"):
         if isinstance(obj, torch.Tensor):
             obj = obj.__array__()
 
-    ctr = getattr(pGB.base, "dense")
+    ctr = getattr(pGB.base, "dense_" + dtype)
     executor = getattr(pGB, executor + "Executor")()
     return ctr(executor, obj)
 
@@ -94,8 +94,12 @@ def solve(A, b, initial_guess=None, solver_args: dict = dict()):
         }
     solver_executor = A.get_executor()
 
+    # TODO: Create a better way to check the dtype of the matrix
+    dtype = str(type(A)).split('_')[1]
+    dense_ctr = getattr(pGB.matrix, f"dense_{dtype}")
+
     if not initial_guess:
-        initial_guess = pGB.matrix.dense(b.get_executor(), (b.dim[0], 1))
+        initial_guess = dense_ctr(b.get_executor(), (b.dim[0], 1))
         initial_guess.fill(0.0)
 
     logger = pGB.solver.config_solve(

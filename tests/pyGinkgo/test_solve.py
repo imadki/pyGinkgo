@@ -2,9 +2,6 @@
 #
 # SPDX-FileCopyrightText: 2024 pyGinkgo authors
 
-import sys
-
-sys.path.append("../../")
 import pyGinkgo as pg
 import pyGinkgo.pyGinkgoBindings as pGB
 
@@ -15,13 +12,13 @@ import os
 class TestSolve:
     executor = pGB.ReferenceExecutor()
     fn = os.path.dirname(os.path.realpath(__file__)) + "/fv1.mtx"
-    mtx = pGB.matrix.read_Coo(fn, executor)
+    mtx = pGB.matrix.read_Coo_double_int32(fn, executor)
     dim = mtx.get_size()
     rows = dim[0]
     cols = dim[1]
-    rhs = pGB.matrix.dense(executor, (rows, 1))
+    rhs = pGB.matrix.dense_double(executor, (rows, 1))
     rhs.fill(1.0)
-    initial_guess = pGB.matrix.dense(executor, (rows, 1))
+    initial_guess = pGB.matrix.dense_double(executor, (rows, 1))
     initial_guess.fill(0.0)
 
     def test_can_default_solve(self):
