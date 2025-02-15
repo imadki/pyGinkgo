@@ -12,7 +12,7 @@ import pyGinkgo.pyGinkgoBindings as pgb
 class TestDirectSolverBinding:
     ref = pgb.ReferenceExecutor()
     values = [1.0, 0.0, 0.0, 0.0, 2.0, 0.0, 0.0, 0.0, 3.0]
-    mtx = pgb.matrix.dense(ref, (3, 3), np.array(values), 3)
+    mtx = pgb.matrix.dense_double(ref, (3, 3), np.array(values), 3)
     dim = (3, 3)
     exp = np.array([1, 1 / 2.0, 1 / 3.0])
 
@@ -23,9 +23,9 @@ class TestDirectSolverBinding:
         args = self.solver_args[solver_name]
         solver = solver_ctr(exec=self.ref, system_matrix=self.mtx, **args)
 
-        rhs = pgb.matrix.dense(self.mtx.get_executor(), (self.dim[0], 1))
+        rhs = pgb.matrix.dense_double(self.mtx.get_executor(), (self.dim[0], 1))
         rhs.fill(1.0)
-        x = pgb.matrix.dense(self.mtx.get_executor(), (self.dim[0], 1))
+        x = pgb.matrix.dense_double(self.mtx.get_executor(), (self.dim[0], 1))
         x.fill(0.0)
         solver.apply(rhs, x)
 
