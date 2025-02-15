@@ -3,94 +3,91 @@
 // SPDX-FileCopyrightText: 2024 pyGinkgo authors
 
 #include "python.hpp"
+#include "utils.hpp"
 
 namespace py = pybind11;
 
-#define GKO_MATRIX_BINDING(Name)                                              \
-    py::class_<gko::matrix::Name<ValueType>,                                  \
-               std::shared_ptr<gko::matrix::Name<ValueType>>, gko::LinOp>(    \
-        module_matrix, #Name, py::buffer_protocol())                          \
-        .def(py::init([](std::shared_ptr<gko::Executor> exec) {               \
-            return gko::matrix::Name<ValueType>::create(exec);                \
-        }))                                                                   \
-        .def(py::init([](std::shared_ptr<gko::Executor> exec, py::tuple dim,  \
-                         gko::array<ValueType> &vals,                         \
-                         gko::array<IndexType> &cols,                         \
-                         gko::array<IndexType> &rows) {                       \
-            return gko::share(gko::matrix::Name<ValueType>::create(           \
-                exec,                                                         \
-                gko::dim<2>{dim[0].cast<size_t>(), dim[1].cast<size_t>()},    \
-                vals, cols, rows));                                           \
-        }))                                                                   \
-        .def(py::init([](std::shared_ptr<gko::Executor> exec, py::tuple dim,  \
-                         py::buffer data, py::buffer cols, py::buffer rows) { \
-            /* Request a buffer descriptor from Python */                     \
-            py::buffer_info data_info = data.request();                       \
-            py::buffer_info cols_info = cols.request();                       \
-            py::buffer_info rows_info = rows.request();                       \
-                                                                              \
-            if (data_info.format !=                                           \
-                py::format_descriptor<ValueType>::format())                   \
-                throw std::runtime_error(                                     \
-                    "Provided values have an incompatible dtype");            \
-                                                                              \
-            if (cols_info.format !=                                           \
-                py::format_descriptor<IndexType>::format())                   \
-                throw std::runtime_error(                                     \
-                    "Provided cols have an incompatible dtype");              \
-                                                                              \
-            if (rows_info.format !=                                           \
-                py::format_descriptor<IndexType>::format())                   \
-                throw std::runtime_error(                                     \
-                    "Provided rows have an incompatible dtype");              \
-                                                                              \
-            auto ref = gko::ReferenceExecutor::create();                      \
-                                                                              \
-            /* create a view into numpy data */                               \
-            auto nnz = data_info.shape[0];                                    \
-                                                                              \
-            auto data_view = gko::array<ValueType>::view(                     \
-                ref, nnz, (ValueType *)data_info.ptr);                        \
-            auto cols_view = gko::array<IndexType>::view(                     \
-                ref, nnz, (IndexType *)cols_info.ptr);                        \
-                                                                              \
-            auto rows_view = gko::array<IndexType>::view(                     \
-                ref, rows_info.shape[0], (IndexType *)rows_info.ptr);         \
-                                                                              \
-            return gko::share(gko::matrix::Name<ValueType>::create(           \
-                exec,                                                         \
-                gko::dim<2>{dim[0].cast<size_t>(), dim[1].cast<size_t>()},    \
-                data_view, cols_view, rows_view));                            \
-        }))                                                                   \
-        .def("__repr__",                                                      \
-             [](const gko::matrix::Name<ValueType> &o) {                      \
-                 auto str = std::string("pygko.matrix.Name object");          \
-                 return str;                                                  \
-             })                                                               \
-        .def("get_num_stored_elements",                                       \
-             &gko::matrix::Name<ValueType>::get_num_stored_elements,          \
-             "Get the number of non zero elements")                           \
-        .def("get_size", &gko::matrix::Name<ValueType>::get_size,             \
-             "Get the size of the matrix")
-
-void init_coo(py::module_ &module_matrix)
+template <template <typename ValueType, typename IndexType> class MatrixType,
+          typename ValueType, typename IndexType>
+void init_matrix(py::module_ &module, const std::string matrix_type,
+                 const std::string value_type, const std::string index_type)
 {
-    GKO_MATRIX_BINDING(Coo);
+    std::string matrix_type_repr = "pygko.matrix." + matrix_type + " object";
+    std::string value_index_str = value_type + "_" + index_type;
+    std::string pyclass_name = matrix_type + "_" + value_index_str;
 
-    module_matrix.def("read_Coo", [](const std::string &fn,
-                                     std::shared_ptr<gko::Executor> exec) {
-        return gko::share(
-            gko::read<gko::matrix::Coo<ValueType>>(std::ifstream(fn), exec));
+    py::class_<MatrixType<ValueType, IndexType>,
+               std::shared_ptr<MatrixType<ValueType, IndexType>>, gko::LinOp>(
+        module, pyclass_name.c_str(), py::buffer_protocol())
+        .def(py::init([](std::shared_ptr<gko::Executor> exec) {
+            return MatrixType<ValueType, IndexType>::create(exec);
+        }))
+        .def(py::init([](std::shared_ptr<gko::Executor> exec, py::tuple dim,
+                         gko::array<ValueType> &vals,
+                         gko::array<IndexType> &cols,
+                         gko::array<IndexType> &rows) {
+            return gko::share(MatrixType<ValueType, IndexType>::create(
+                exec, gko::dim<2>{dim[0].cast<size_t>(), dim[1].cast<size_t>()},
+                vals, cols, rows));
+        }))
+        .def(py::init([](std::shared_ptr<gko::Executor> exec, py::tuple dim,
+                         py::buffer data, py::buffer cols, py::buffer rows) {
+            /* Request a buffer descriptor from Python */
+            py::buffer_info data_info = data.request();
+            check_buffer_dtype<ValueType>(data_info);
+
+            py::buffer_info cols_info = cols.request();
+            check_buffer_dtype<IndexType>(cols_info);
+
+            py::buffer_info rows_info = rows.request();
+            check_buffer_dtype<IndexType>(rows_info);
+
+            auto ref = gko::ReferenceExecutor::create();
+
+            /* create a view into numpy data */
+            auto nnz = data_info.shape[0];
+
+            auto data_view = gko::array<ValueType>::view(
+                ref, nnz, (ValueType *)data_info.ptr);
+            auto cols_view = gko::array<IndexType>::view(
+                ref, nnz, (IndexType *)cols_info.ptr);
+
+            auto rows_view = gko::array<IndexType>::view(
+                ref, rows_info.shape[0], (IndexType *)rows_info.ptr);
+
+            return gko::share(MatrixType<ValueType, IndexType>::create(
+                exec, gko::dim<2>{dim[0].cast<size_t>(), dim[1].cast<size_t>()},
+                data_view, cols_view, rows_view));
+        }))
+        .def("__repr__",
+             [=](const MatrixType<ValueType, IndexType> &o) {
+                 return matrix_type_repr;
+             })
+        .def("get_num_stored_elements",
+             &MatrixType<ValueType, IndexType>::get_num_stored_elements,
+             "Get the number of non zero elements")
+        .def("get_size", &MatrixType<ValueType, IndexType>::get_size,
+             "Get the size of the matrix");
+
+    std::string read_fn = "read_" + matrix_type + "_" + value_index_str;
+    module.def(read_fn.c_str(), [](const std::string &fn,
+                                   std::shared_ptr<gko::Executor> exec) {
+        return gko::share(gko::read<MatrixType<ValueType, IndexType>>(
+            std::ifstream(fn), exec));
     });
 }
 
-void init_csr(py::module_ &module_matrix)
+void init_sparse_all_types(py::module_ &module)
 {
-    GKO_MATRIX_BINDING(Csr);
+#define DECLARE_COO_MATRIX(ValueType, IndexType)         \
+    init_matrix<gko::matrix::Coo, ValueType, IndexType>( \
+        module, "Coo", #ValueType, #IndexType);
+    PYGKO_INSTANTIATE_FOR_EACH_NON_COMPLEX_VALUE_AND_INDEX_TYPE(
+        DECLARE_COO_MATRIX);
 
-    module_matrix.def("read_Csr", [](const std::string &fn,
-                                     std::shared_ptr<gko::Executor> exec) {
-        return gko::share(
-            gko::read<gko::matrix::Csr<ValueType>>(std::ifstream(fn), exec));
-    });
+#define DECLARE_CSR_MATRIX(ValueType, IndexType)         \
+    init_matrix<gko::matrix::Csr, ValueType, IndexType>( \
+        module, "Csr", #ValueType, #IndexType);
+    PYGKO_INSTANTIATE_FOR_EACH_NON_COMPLEX_VALUE_AND_INDEX_TYPE(
+        DECLARE_CSR_MATRIX);
 }

@@ -7,7 +7,7 @@
 #include "utils.hpp"
 
 template <typename ValueType>
-void init_array(py::module_ &module, const std::string &typestr)
+void init_array(py::module_ &module, const std::string typestr)
 {
     std::string pyclass_name = std::string("array_") + typestr;
 
