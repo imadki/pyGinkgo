@@ -28,8 +28,15 @@ void check_buffer_dtype(const py::buffer_info &info)
     _macro(double)
 #endif
 
+// cuda half operation is supported from arch 5.3
+#if GINKGO_ENABLE_HALF && (!defined(__CUDA_ARCH__) || __CUDA_ARCH__ >= 530)
+#define PYGKO_ADAPT_HF(_macro) _macro
+#else
+#define PYGKO_ADAPT_HF(_macro)
+#endif
+
 #define PYGKO_INSTANTIATE_FOR_EACH_NON_COMPLEX_VALUE_TYPE(_macro) \
-    _macro(half);                                                 \
+    PYGKO_ADAPT_HF(_macro(half));                                 \
     PYGKO_INSTANTIATE_FOR_EACH_NON_COMPLEX_VALUE_TYPE_BASE(_macro)
 
 /**
