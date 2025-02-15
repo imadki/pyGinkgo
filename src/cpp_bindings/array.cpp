@@ -24,19 +24,13 @@ void init_array(py::module_ &module, const std::string &typestr)
                 // https://pybind11.readthedocs.io/en/stable/advanced/pycpp/numpy.html#arrays
                 /* Request a buffer descriptor from Python */
                 py::buffer_info info = b.request();
-
-                if (info.format != py::format_descriptor<ValueType>::format()) {
-                    throw std::runtime_error("Incompatible dtype");
-                }
-
-                auto ref = gko::ReferenceExecutor::create();
+                check_buffer_dtype<ValueType>(info);
 
                 if (info.ndim != 1) {
                     throw std::runtime_error("Only 1D arrays are supported");
                 }
 
                 auto elems = info.shape[0];
-
                 return gko::array<ValueType>(exec, (ValueType *)info.ptr,
                                              (ValueType *)info.ptr + elems);
             }))
@@ -56,8 +50,25 @@ void init_array(py::module_ &module, const std::string &typestr)
         .def("fill", &gko::array<ValueType>::fill,
              "Fill the array with the given value.")
         .def("get_size", &gko::array<ValueType>::get_size)
-        .def("at", [](const gko::array<ValueType> &arr, int idx) {
-            return arr.get_const_data()[idx];
+        .def("at", [](const gko::array<ValueType> &arr,
+                      int idx) { return arr.get_const_data()[idx]; })
+        .def("__repr__", [](const gko::array<ValueType> &arr) {
+            auto str = std::string("pygko.base.array object of size ");
+            auto elems = arr.get_size();
+            str += std::to_string(elems);
+            if (arr.get_executor() == arr.get_executor()->get_master()) {
+                str += " on host";
+                if (elems < 10) {
+                    str += " [ ";
+                    auto data = arr.get_const_data();
+                    for (int i = 0; i < elems; i++) {
+                        str += std::to_string(data[i]);
+                        str += " ";
+                    }
+                    str += " ] ";
+                }
+            }
+            return str;
         });
 
     module.def(
@@ -68,9 +79,6 @@ void init_array(py::module_ &module, const std::string &typestr)
 
 void init_array_all_types(py::module_ &module)
 {
-    // init_array<double>(module, "double");
-    // init_array<float>(module, "float");
-    // init_array<int>(module, "int");
 #define DECLARE_ARRAY_VALUE(ValueType) \
     init_array<ValueType>(module, #ValueType);
     PYGKO_INSTANTIATE_FOR_EACH_NON_COMPLEX_VALUE_TYPE(DECLARE_ARRAY_VALUE);

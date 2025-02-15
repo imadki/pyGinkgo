@@ -102,8 +102,8 @@ void init_dense(py::module_ &module_matrix, const std::string typestr)
                              str += std::to_string(o.at(i));
                              str += " ";
                          }
+                         str += " ] ";
                      }
-                     str += " ] ";
                  }
                  return str;
              })
