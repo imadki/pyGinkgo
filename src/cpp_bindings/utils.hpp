@@ -31,3 +31,15 @@ void check_buffer_dtype(const py::buffer_info &info)
 #define PYGKO_INSTANTIATE_FOR_EACH_NON_COMPLEX_VALUE_TYPE(_macro) \
     _macro(half);                                                 \
     PYGKO_INSTANTIATE_FOR_EACH_NON_COMPLEX_VALUE_TYPE_BASE(_macro)
+
+/**
+ * Instantiates a template for each index type compiled by Ginkgo.
+ *
+ * @param _macro  A macro which expands the template instantiation
+ *                (not including the leading `template` specifier).
+ *                Should take one argument, which is replaced by the
+ *                value type.
+ */
+#define PYGKO_INSTANTIATE_FOR_EACH_INDEX_TYPE(_macro) \
+    _macro(int32);                                    \
+    _macro(int64)

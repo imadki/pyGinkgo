@@ -2,12 +2,9 @@
 //
 // SPDX-FileCopyrightText: 2024 pyGinkgo authors
 
-#include <pybind11/pybind11.h>
-#include "pybind11/numpy.h"
-
-#include "ginkgo/ginkgo.hpp"
-
-namespace py = pybind11;
+#include <pybind11/numpy.h>
+#include "python.hpp"
+#include "utils.hpp"
 
 template <typename ValueType>
 void init_array(py::module_ &module, const std::string &typestr)
@@ -71,7 +68,11 @@ void init_array(py::module_ &module, const std::string &typestr)
 
 void init_array_all_types(py::module_ &module)
 {
-    init_array<double>(module, "double");
-    init_array<float>(module, "float");
-    init_array<int>(module, "int");
+    // init_array<double>(module, "double");
+    // init_array<float>(module, "float");
+    // init_array<int>(module, "int");
+#define DECLARE_ARRAY_VALUE(ValueType) \
+    init_array<ValueType>(module, #ValueType);
+    PYGKO_INSTANTIATE_FOR_EACH_NON_COMPLEX_VALUE_TYPE(DECLARE_ARRAY_VALUE);
+    PYGKO_INSTANTIATE_FOR_EACH_INDEX_TYPE(DECLARE_ARRAY_VALUE);
 }
