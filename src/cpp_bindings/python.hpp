@@ -38,7 +38,7 @@ struct npy_format_descriptor<half> {
         // https://docs.python.org/3/library/struct.html#:~:text=(3)-,e
         return "e";
     }
-    static constexpr auto name = _("float16");
+    static constexpr auto name = _("numpy.float32");
 };
 }  // namespace detail
 }  // namespace PYBIND11_NAMESPACE
@@ -54,7 +54,7 @@ public:
      * function signatures and declares a local variable
      * 'value' of type half
      */
-    PYBIND11_TYPE_CASTER(half, const_name("np.float16"));
+    PYBIND11_TYPE_CASTER(half, const_name("numpy.float32"));
 
     /**
      * Conversion part 1 (Python->C++): convert a PyObject into a half
