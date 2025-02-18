@@ -52,8 +52,8 @@ void init_array(py::module_ &module, const std::string typestr)
         .def("get_size", &gko::array<ValueType>::get_size)
         .def("at", [](const gko::array<ValueType> &arr,
                       int idx) { return arr.get_const_data()[idx]; })
-        .def("__repr__", [](const gko::array<ValueType> &arr) {
-            auto str = std::string("pygko.base.array object of size ");
+        .def("__repr__", [=](const gko::array<ValueType> &arr) {
+            auto str = "pygko.base." + pyclass_name + " object of size ";
             auto elems = arr.get_size();
             str += std::to_string(elems);
             if (arr.get_executor() == arr.get_executor()->get_master()) {

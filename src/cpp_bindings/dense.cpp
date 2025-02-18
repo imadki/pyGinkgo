@@ -90,8 +90,8 @@ void init_dense(py::module_ &module_matrix, const std::string typestr)
                 view, stride));
         }))
         .def("__repr__",
-             [](const gko::matrix::Dense<ValueType> &o) {
-                 auto str = std::string("pygko.matrix.Dense object of size ");
+             [=](const gko::matrix::Dense<ValueType> &o) {
+                 auto str = "pygko.matrix." + pyclass_name + " object of size ";
                  auto elems = o.get_num_stored_elements();
                  str += std::to_string(elems);
                  if (o.get_executor() == o.get_executor()->get_master()) {
