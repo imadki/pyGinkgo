@@ -12,8 +12,8 @@ void add_executor_classes(py::module_ &root_module)
 {
     py::class_<gko::Executor, std::shared_ptr<gko::Executor>>(root_module,
                                                               "Executor")
-        .def("syncronize", &gko::Executor::syncronize,
-             "Syncronizes the executor");
+        .def("synchronize", &gko::Executor:: synchronize,
+             "Synchronizes the executor");
 
     // CPU executors
     py::class_<gko::detail::ExecutorBase<gko::OmpExecutor>, gko::Executor,
