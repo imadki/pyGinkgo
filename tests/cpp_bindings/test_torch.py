@@ -45,14 +45,16 @@ class TestTorchInteroperability:
         ctr = getattr(pgb.base, "array_" + data_type)
         np_array = np.array([1.0, 2.0, 3.0, 4.0, 5.0], dtype=d_type_map[data_type])
         arr = ctr(executor, np_array)
-        torch_array = torch.asarray(arr)
+        # When receiving Python Buffer protocol object, torch.asarray assumes dtype to be float32
+        #   the shape of the array is also lost
+        # https://pytorch.org/docs/stable/generated/torch.asarray.html#:~:text=the%20same%20history.-,When%20obj%20is%20not,memory%20with%20the%20buffer.,-When%20obj%20is
+        torch_array = torch.asarray(arr, dtype=torch_d_type_map[data_type])
         assert torch_array.size(dim=0) == np_array.size
 
     def test_can_create_dense_from_torch_tensor(self, data_type):
         executor = pgb.ReferenceExecutor()
         ctr = getattr(pgb.matrix, "dense_" + data_type)
         data = [[1.0, 2.0], [3.0, 4.0]]
-        # TODO: the created tensor is broken for data_type = "half" and "double"
         torch_tensor = torch.tensor(data, dtype=torch_d_type_map[data_type])
         dense = ctr(executor, torch_tensor.__array__())
         assert dense.get_num_stored_elements() == 4
