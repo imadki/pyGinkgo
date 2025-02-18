@@ -31,9 +31,8 @@ class TestArray:
     def test_can_fill_array(self, data_type):
         ctr = getattr(pGB.base, "array_" + data_type)
         arr = ctr(self.ref, self.size)
-        fill_value = d_type_map[data_type](10)
-        arr.fill(fill_value)
-        assert arr.at(0) == fill_value
+        arr.fill(10)  # implicit conversion to data_type
+        assert arr.at(0) == 10  # implicit conversion to data_type
 
     def test_can_instantiate_array_from_numpy_array(self, data_type):
         np_array = np.array(self.lst, dtype=d_type_map[data_type])
@@ -41,8 +40,8 @@ class TestArray:
         arr = ctr(self.ref, np_array)
         assert arr.get_size() == len(np_array)
         for i in range(self.size):
-            expect = d_type_map[data_type](self.lst[i])
-            assert arr.at(i) == expect
+            expect = self.lst[i]
+            assert arr.at(i) == expect  # implicit conversion to data_type
 
     def test_can_copy_construct_array(self, data_type):
         ctr = getattr(pGB.base, "array_" + data_type)
@@ -64,6 +63,6 @@ class TestArray:
         ctr = getattr(pGB.base, "array_" + data_type)
         np_array = np.array(self.lst, dtype=d_type_map[data_type])
         arr = ctr(self.ref, np_array)
-        init_value = d_type_map[data_type](0.0)
-        expected_value = d_type_map[data_type](15.0)
+        init_value = 0  # implicit conversion to data_type
+        expected_value = 15  # implicit conversion to data_type
         assert pGB.base.reduce_add(arr, init_value) == expected_value
