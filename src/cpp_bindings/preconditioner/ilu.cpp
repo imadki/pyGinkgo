@@ -16,6 +16,7 @@ void init_ilu(py::module_ &module_preconditioner, const std::string value_type,
               const std::string index_type)
 {
     std::string pyclass_name = "Ilu_" + value_type + "_" + index_type;
+    std::string repr_str = "pygko.preconditioner." + pyclass_name + " object";
     py::class_<Ilu<ValueType, IndexType>,
                std::shared_ptr<Ilu<ValueType, IndexType>>, gko::LinOp>(
         module_preconditioner, pyclass_name.c_str())
@@ -34,10 +35,8 @@ void init_ilu(py::module_ &module_preconditioner, const std::string value_type,
             // Use incomplete factors to generate ILU preconditioner
             return gko::share(ilu_pre_factory->generate(par_ilu));
         }))
-        .def("__repr__", [=](const gko::solver::Gmres<ValueType> &o) {
-            auto str = "pygko.preconditioner." + pyclass_name + " object";
-            return str;
-        });
+        .def("__repr__",
+             [=](const gko::solver::Gmres<ValueType> &o) { return repr_str; });
 }
 
 void init_ilu_all_types(py::module_ &module_preconditioner)

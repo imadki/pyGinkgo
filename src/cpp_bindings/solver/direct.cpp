@@ -10,6 +10,7 @@ void init_direct(py::module_ &module_solver, const std::string value_type,
                  const std::string index_type)
 {
     std::string pyclass_name = "direct_" + value_type + "_" + index_type;
+    std::string repr_str = "pygko.solver." + pyclass_name + " object";
     py::class_<gko::experimental::solver::Direct<ValueType, IndexType>,
                std::shared_ptr<
                    gko::experimental::solver::Direct<ValueType, IndexType>>,
@@ -45,10 +46,7 @@ void init_direct(py::module_ &module_solver, const std::string value_type,
             py::arg("exec"), py::arg("system_matrix"), py::arg("factorization"))
         .def("__repr__",
              [=](const gko::experimental::solver::Direct<ValueType, IndexType>
-                     &o) {
-                 auto str = "pygko.solver." + pyclass_name + " object";
-                 return str;
-             })
+                     &o) { return repr_str; })
         .def(
             "apply",
             [](const gko::experimental::solver::Direct<ValueType, IndexType> &d,

@@ -9,6 +9,7 @@ template <typename ValueType>
 void init_gmres(py::module_ &module_solver, const std::string value_type)
 {
     std::string pyclass_name = "gmres_" + value_type;
+    std::string repr_str = "pygko.solver." + pyclass_name + " object";
     py::class_<gko::solver::Gmres<ValueType>,
                std::shared_ptr<gko::solver::Gmres<ValueType>>, gko::LinOp>(
         module_solver, pyclass_name.c_str())
@@ -68,10 +69,7 @@ void init_gmres(py::module_ &module_solver, const std::string value_type)
                  return convergence_logger;
              })
         .def("__repr__",
-             [=](const gko::solver::Gmres<ValueType> &o) {
-                 auto str = "pygko.solver." + pyclass_name + " object";
-                 return str;
-             })
+             [=](const gko::solver::Gmres<ValueType> &o) { return repr_str; })
         .def(
             "apply",
             [](const gko::solver::Gmres<ValueType> &d,
