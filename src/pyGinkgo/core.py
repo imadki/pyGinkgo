@@ -102,7 +102,8 @@ def solve(A, b, initial_guess=None, solver_args: dict = dict()):
         initial_guess = dense_ctr(b.get_executor(), (b.dim[0], 1))
         initial_guess.fill(0.0)
 
-    logger = pGB.solver.config_solve(
+    solver_ctr = getattr(pGB.solver, "config_solve_" + dtype)
+    logger = solver_ctr(
         solver_executor, A, b, initial_guess, json.dumps(solver_args)
     )
     return logger, initial_guess
