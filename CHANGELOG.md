@@ -1,4 +1,5 @@
 # Version 0.1.0 (unreleased)
+- Added parametrization to templated classes [#75](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/75)
 - Add pyTorch interoperability [#56](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/56)
 - Add direct solver bindings [#72](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/72)
 - Add ILU preconditioner bindings [#55](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/55)

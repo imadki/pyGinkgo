@@ -3,14 +3,15 @@
 // SPDX-FileCopyrightText: 2024 pyGinkgo authors
 
 #include "python.hpp"
+#include "utils.hpp"
 
-namespace py = pybind11;
-
-void init_logger(py::module_ &logger_module)
+template <typename ValueType>
+void init_logger(py::module_ &logger_module, const std::string value_type)
 {
+    std::string pyclass_name = "convergence_logger_" + value_type;
     py::class_<gko::log::Convergence<ValueType>,
                std::shared_ptr<gko::log::Convergence<ValueType>>>(
-        logger_module, "convergence_logger")
+        logger_module, pyclass_name.c_str())
         .def(
             py::init([]() {
                 return gko::share(gko::log::Convergence<ValueType>::create());
@@ -32,4 +33,11 @@ void init_logger(py::module_ &logger_module)
         .def("get_num_iterations",
              &gko::log::Convergence<ValueType>::get_num_iterations,
              "Returns whether the number of iterations");
+}
+
+void init_logger_all_types(py::module_ &logger_module)
+{
+#define DECLARE_LOGGER(ValueType) \
+    init_logger<ValueType>(logger_module, #ValueType);
+    PYGKO_INSTANTIATE_FOR_EACH_NON_COMPLEX_VALUE_TYPE(DECLARE_LOGGER);
 }

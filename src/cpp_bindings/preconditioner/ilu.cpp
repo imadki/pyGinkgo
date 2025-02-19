@@ -3,16 +3,23 @@
 // SPDX-FileCopyrightText: 2024 pyGinkgo authors
 
 #include "../python.hpp"
+#include "../utils.hpp"
 
+template <typename ValueType, typename IndexType>
 using Ilu =
     gko::preconditioner::Ilu<gko::solver::LowerTrs<ValueType, IndexType>,
                              gko::solver::UpperTrs<ValueType, IndexType>,
                              false>;
 
-void init_ilu(py::module_ &module_preconditioner)
+template <typename ValueType, typename IndexType>
+void init_ilu(py::module_ &module_preconditioner, const std::string value_type,
+              const std::string index_type)
 {
-    py::class_<Ilu, std::shared_ptr<Ilu>, gko::LinOp>(module_preconditioner,
-                                                      "Ilu")
+    std::string pyclass_name = "Ilu_" + value_type + "_" + index_type;
+    std::string repr_str = "pygko.preconditioner." + pyclass_name + " object";
+    py::class_<Ilu<ValueType, IndexType>,
+               std::shared_ptr<Ilu<ValueType, IndexType>>, gko::LinOp>(
+        module_preconditioner, pyclass_name.c_str())
         .def(py::init([](std::shared_ptr<gko::Executor> exec,
                          std::shared_ptr<const gko::LinOp> system_matrix) {
             auto par_ilu_fact =
@@ -23,13 +30,20 @@ void init_ilu(py::module_ &module_preconditioner)
 
             // Generate an ILU preconditioner factory by setting lower and upper
             // triangular solver - in this case the exact triangular solves
-            auto ilu_pre_factory = Ilu::build().on(exec);
+            auto ilu_pre_factory = Ilu<ValueType, IndexType>::build().on(exec);
 
             // Use incomplete factors to generate ILU preconditioner
             return gko::share(ilu_pre_factory->generate(par_ilu));
         }))
-        .def("__repr__", [](const gko::solver::Gmres<ValueType> &o) {
-            auto str = std::string("pygko.preconditioner.Ilu object");
-            return str;
-        });
+        .def("__repr__",
+             [=](const gko::solver::Gmres<ValueType> &o) { return repr_str; });
+}
+
+void init_ilu_all_types(py::module_ &module_preconditioner)
+{
+#define DECLARE_ILU_PRECONDITIONER(ValueType, IndexType)              \
+    init_ilu<ValueType, IndexType>(module_preconditioner, #ValueType, \
+                                   #IndexType);
+    PYGKO_INSTANTIATE_FOR_EACH_NON_COMPLEX_VALUE_AND_INDEX_TYPE(
+        DECLARE_ILU_PRECONDITIONER);
 }

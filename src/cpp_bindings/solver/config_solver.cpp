@@ -6,12 +6,14 @@
 #include "pybind11/numpy.h"
 
 #include "../python.hpp"
+#include "../utils.hpp"
 
 #include <ginkgo/extensions/config/json_config.hpp>
 #include "ginkgo/ginkgo.hpp"
 
 namespace py = pybind11;
 
+template <typename ValueType>
 std::shared_ptr<const gko::log::Convergence<ValueType>> config_solve(
     std::shared_ptr<gko::Executor> exec, std::shared_ptr<gko::LinOp> A,
     std::shared_ptr<gko::LinOp> b, std::shared_ptr<gko::LinOp> x,
@@ -41,7 +43,17 @@ std::shared_ptr<const gko::log::Convergence<ValueType>> config_solve(
     return logger;
 }
 
-void init_config_solver(py::module_ &m)
+template <typename ValueType>
+void init_config_solver(py::module_ &m, const std::string value_type)
 {
-    m.def("config_solve", &config_solve, "wrapper for config solve");
+    std::string pyfunc_name = "config_solve_" + value_type;
+    m.def(pyfunc_name.c_str(), &config_solve<ValueType>,
+          "wrapper for config solve");
+}
+
+void init_config_solver_all_types(py::module_ &m)
+{
+#define DECLARE_CONFIG_SOLVER(ValueType) \
+    init_config_solver<ValueType>(m, #ValueType);
+    PYGKO_INSTANTIATE_FOR_EACH_NON_COMPLEX_VALUE_TYPE(DECLARE_CONFIG_SOLVER);
 }

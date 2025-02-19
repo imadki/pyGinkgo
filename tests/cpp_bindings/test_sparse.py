@@ -8,6 +8,8 @@ import numpy as np
 
 import pyGinkgo.pyGinkgoBindings as pGB
 
+from test_utils import di_type_map, d_type_map, i_type_map
+
 
 def coo_rows_to_csr_rows(coo_rows: list) -> list:
     # https://stackoverflow.com/a/71339835/8302811
@@ -21,6 +23,8 @@ def coo_rows_to_csr_rows(coo_rows: list) -> list:
 
 
 @pytest.mark.parametrize("matrix_format", ["Coo", "Csr"])
+@pytest.mark.parametrize("value_type", d_type_map.keys())
+@pytest.mark.parametrize("index_type", i_type_map.keys())
 class TestSparseMatrix:
     # test a 5x5 symmetric matrix
     # A =
@@ -64,43 +68,57 @@ class TestSparseMatrix:
         else:
             return self.coo_rows
 
-    def test_can_create_sparse_matrix(self, matrix_format):
-        ctr = getattr(pGB.matrix, matrix_format)
-        sparse = ctr(self.ref)
+    def test_can_create_sparse_matrix(self, matrix_format, value_type, index_type):
+        matrix_cls = getattr(pGB.matrix, f"{matrix_format}_{value_type}_{index_type}")
+        sparse = matrix_cls(self.ref)
         assert sparse == sparse
 
-    def test_can_create_sparse_from_np_arrays(self, matrix_format):
-        ctr = getattr(pGB.matrix, matrix_format)
-        coeffs = np.array(self.values, dtype=np.double)
-        rows = np.array(self.get_rows(matrix_format), dtype=np.int32)
-        cols = np.array(self.cols, dtype=np.int32)
+    def test_can_create_sparse_from_np_arrays(
+        self, matrix_format, value_type, index_type
+    ):
+        matrix_cls = getattr(pGB.matrix, f"{matrix_format}_{value_type}_{index_type}")
+        coeffs = np.array(self.values, dtype=di_type_map[value_type])
+        rows = np.array(self.get_rows(matrix_format), dtype=di_type_map[index_type])
+        cols = np.array(self.cols, dtype=di_type_map[index_type])
 
         print(rows)
-        sparse = ctr(self.ref, (5, 5), coeffs, cols, rows)
+        sparse = matrix_cls(self.ref, (5, 5), coeffs, cols, rows)
         assert sparse == sparse
 
-    def test_can_create_sparse_from_gko_arrays(self, matrix_format):
-        ctr = getattr(pGB.matrix, matrix_format)
-        coeffs = pGB.base.array_double(self.ref, np.array(self.values, dtype=np.double))
-        rows = pGB.base.array_int(
-            self.ref, np.array(self.get_rows(matrix_format), dtype=np.int32)
+    def test_can_create_sparse_from_gko_arrays(
+        self, matrix_format, value_type, index_type
+    ):
+        matrix_cls = getattr(pGB.matrix, f"{matrix_format}_{value_type}_{index_type}")
+        val_arr_cls = getattr(pGB.base, f"array_{value_type}")
+        idx_arr_cls = getattr(pGB.base, f"array_{index_type}")
+        coeffs = val_arr_cls(
+            self.ref, np.array(self.values, dtype=di_type_map[value_type])
         )
-        cols = pGB.base.array_int(self.ref, np.array(self.cols, dtype=np.int32))
+        rows = idx_arr_cls(
+            self.ref,
+            np.array(self.get_rows(matrix_format), dtype=di_type_map[index_type]),
+        )
+        cols = idx_arr_cls(self.ref, np.array(self.cols, dtype=di_type_map[index_type]))
 
-        sparse = ctr(self.ref, (5, 5), coeffs, cols, rows)
+        sparse = matrix_cls(self.ref, (5, 5), coeffs, cols, rows)
         assert sparse == sparse
         assert sparse.get_num_stored_elements() == coeffs.get_size()
 
-    def test_can_apply_to_dense(self, matrix_format):
-        ctr = getattr(pGB.matrix, matrix_format)
-        coeffs = np.array(self.values, dtype=np.double)
-        rows = np.array(self.get_rows(matrix_format), dtype=np.int32)
-        cols = np.array(self.cols, dtype=np.int32)
+    def test_can_apply_to_dense(self, matrix_format, value_type, index_type):
+        matrix_cls = getattr(pGB.matrix, f"{matrix_format}_{value_type}_{index_type}")
+        coeffs = np.array(self.values, dtype=di_type_map[value_type])
+        rows = np.array(self.get_rows(matrix_format), dtype=di_type_map[index_type])
+        cols = np.array(self.cols, dtype=di_type_map[index_type])
 
-        sparse = ctr(self.ref, (5, 5), coeffs, cols, rows)
+        sparse = matrix_cls(self.ref, (5, 5), coeffs, cols, rows)
 
-        dense_b = pGB.matrix.dense(self.ref, np.array(self.dense, dtype=np.double))
-        dense_x = pGB.matrix.dense(self.ref, np.array([0, 0, 0, 0, 0], dtype=np.double))
+        dense_cls = getattr(pGB.matrix, f"dense_{value_type}")
+        dense_b = dense_cls(
+            self.ref, np.array(self.dense, dtype=di_type_map[value_type])
+        )
+        dense_x = dense_cls(
+            self.ref, np.array([0, 0, 0, 0, 0], dtype=di_type_map[value_type])
+        )
 
         sparse.apply(dense_b, dense_x)
         assert dense_x.at(0) == 31.0
@@ -109,8 +127,8 @@ class TestSparseMatrix:
         assert dense_x.at(3) == 49.0
         assert dense_x.at(4) == 39.0
 
-    def test_can_read_from_mtx_file(self, matrix_format):
-        reader = getattr(pGB.matrix, "read_" + matrix_format)
+    def test_can_read_from_mtx_file(self, matrix_format, value_type, index_type):
+        reader = getattr(pGB.matrix, f"read_{matrix_format}_{value_type}_{index_type}")
         fn = os.path.dirname(os.path.realpath(__file__)) + "/sparse_example.mtx"
         sparse = reader(fn, self.ref)
 
