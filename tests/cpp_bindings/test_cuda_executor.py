@@ -7,13 +7,7 @@ import numpy as np
 
 import pyGinkgo.pyGinkgoBindings as pGB
 
-from test_utils import verify_dense_vec
-
-d_type_map = {
-    "half": np.float16,
-    "float": np.float32,
-    "double": np.float64,
-}
+from test_utils import verify_dense_vec, d_type_map
 
 
 @pytest.mark.parametrize("data_type", list(d_type_map.keys()))

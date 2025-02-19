@@ -2,6 +2,7 @@
 #
 # SPDX-FileCopyrightText: 2024 pyGinkgo authors
 
+import pytest
 import numpy as np
 
 try:
@@ -12,13 +13,9 @@ except ImportError:
     torch_avail = False
 
 import pyGinkgo.pyGinkgoBindings as pgb
-import pytest
 
-d_type_map = {
-    "half": np.float16,
-    "float": np.float32,
-    "double": np.float64,
-}
+from test_utils import d_type_map
+
 
 torch_d_type_map = {
     "half": torch.float16,

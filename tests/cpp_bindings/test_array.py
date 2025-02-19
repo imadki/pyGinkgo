@@ -7,14 +7,7 @@ import pytest
 import numpy as np
 
 import pyGinkgo.pyGinkgoBindings as pGB
-
-d_type_map = {
-    "int32": np.int32,
-    "int64": np.longlong,
-    "half": np.float16,
-    "float": np.float32,
-    "double": np.float64,
-}
+from test_utils import di_type_map as d_type_map
 
 
 @pytest.mark.parametrize("data_type", list(d_type_map.keys()))

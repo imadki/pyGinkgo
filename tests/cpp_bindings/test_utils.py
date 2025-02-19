@@ -19,3 +19,17 @@ def verify_dense_vec(mtx, values: Union[list, np.ndarray]):
 
 def verify_within_precision(a, b, precision=1e-3):
     assert abs(a - b) <= precision
+
+
+d_type_map = {
+    "half": np.float16,
+    "float": np.float32,
+    "double": np.float64,
+}
+
+i_type_map = {
+    "int32": np.int32,
+    "int64": np.longlong,
+}
+
+di_type_map = {**d_type_map, **i_type_map}

@@ -7,27 +7,33 @@ import numpy as np
 
 import pyGinkgo.pyGinkgoBindings as pgb
 
+from test_utils import d_type_map
+
 
 @pytest.mark.parametrize("solver_name", ["direct"])
+@pytest.mark.parametrize("data_type", list(d_type_map.keys()))
 class TestDirectSolverBinding:
     ref = pgb.ReferenceExecutor()
     values = [1.0, 0.0, 0.0, 0.0, 2.0, 0.0, 0.0, 0.0, 3.0]
-    mtx = pgb.matrix.dense_double(ref, (3, 3), np.array(values), 3)
     dim = (3, 3)
-    exp = np.array([1, 1 / 2.0, 1 / 3.0])
 
     solver_args = {"direct": {"factorization": "Cholesky"}}
 
-    def test_direct_solver(self, solver_name):
-        solver_ctr = getattr(pgb.solver, solver_name)
+    def test_direct_solver(self, solver_name, data_type):
+        ctr = getattr(pgb.matrix, "dense_" + data_type)
+        mtx = ctr(
+            self.ref, (3, 3), np.array(self.values, dtype=d_type_map[data_type]), 3
+        )
+        exp = np.array([1, 1 / 2.0, 1 / 3.0], dtype=d_type_map[data_type])
+        solver_ctr = getattr(pgb.solver, f"{solver_name}_{data_type}_int32")
         args = self.solver_args[solver_name]
-        solver = solver_ctr(exec=self.ref, system_matrix=self.mtx, **args)
+        solver = solver_ctr(exec=self.ref, system_matrix=mtx, **args)
 
-        rhs = pgb.matrix.dense_double(self.mtx.get_executor(), (self.dim[0], 1))
+        rhs = ctr(mtx.get_executor(), (self.dim[0], 1))
         rhs.fill(1.0)
-        x = pgb.matrix.dense_double(self.mtx.get_executor(), (self.dim[0], 1))
+        x = ctr(mtx.get_executor(), (self.dim[0], 1))
         x.fill(0.0)
         solver.apply(rhs, x)
 
         res = np.array(x)
-        assert np.all(self.exp) == np.all(res)
+        assert np.all(exp) == np.all(res)

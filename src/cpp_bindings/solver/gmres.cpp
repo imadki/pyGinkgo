@@ -3,12 +3,15 @@
 // SPDX-FileCopyrightText: 2024 pyGinkgo authors
 
 #include "../python.hpp"
+#include "../utils.hpp"
 
-void init_gmres(py::module_ &module_solver)
+template <typename ValueType>
+void init_gmres(py::module_ &module_solver, const std::string value_type)
 {
+    std::string pyclass_name = "gmres_" + value_type;
     py::class_<gko::solver::Gmres<ValueType>,
                std::shared_ptr<gko::solver::Gmres<ValueType>>, gko::LinOp>(
-        module_solver, "gmres")
+        module_solver, pyclass_name.c_str())
         .def(py::init([](std::shared_ptr<gko::Executor> exec,
                          std::shared_ptr<const gko::LinOp> system_matrix,
                          size_t max_iters, size_t krylov_dim,
@@ -65,8 +68,8 @@ void init_gmres(py::module_ &module_solver)
                  return convergence_logger;
              })
         .def("__repr__",
-             [](const gko::solver::Gmres<ValueType> &o) {
-                 auto str = std::string("pygko.solver.Gmres object");
+             [=](const gko::solver::Gmres<ValueType> &o) {
+                 auto str = "pygko.solver." + pyclass_name + " object";
                  return str;
              })
         .def(
@@ -75,4 +78,11 @@ void init_gmres(py::module_ &module_solver)
                std::shared_ptr<const gko::LinOp> b,
                std::shared_ptr<gko::LinOp> x) { d.apply(b, x); },
             "");
+}
+
+void init_gmres_all_types(py::module_ &module_solver)
+{
+#define DECLARE_GMRES_SOLVER(ValueType) \
+    init_gmres<ValueType>(module_solver, #ValueType);
+    PYGKO_INSTANTIATE_FOR_EACH_NON_COMPLEX_VALUE_TYPE(DECLARE_GMRES_SOLVER);
 }

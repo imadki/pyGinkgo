@@ -8,6 +8,8 @@ import numpy as np
 
 import pyGinkgo.pyGinkgoBindings as pGB
 
+from test_utils import di_type_map, d_type_map, i_type_map
+
 
 def coo_rows_to_csr_rows(coo_rows: list) -> list:
     # https://stackoverflow.com/a/71339835/8302811
@@ -20,18 +22,9 @@ def coo_rows_to_csr_rows(coo_rows: list) -> list:
     return [0] + ret
 
 
-d_type_map = {
-    "int32": np.int32,
-    "int64": np.longlong,
-    "half": np.float16,
-    "float": np.float32,
-    "double": np.float64,
-}
-
-
 @pytest.mark.parametrize("matrix_format", ["Coo", "Csr"])
-@pytest.mark.parametrize("value_type", ["half", "float", "double"])
-@pytest.mark.parametrize("index_type", ["int32", "int64"])
+@pytest.mark.parametrize("value_type", d_type_map.keys())
+@pytest.mark.parametrize("index_type", i_type_map.keys())
 class TestSparseMatrix:
     # test a 5x5 symmetric matrix
     # A =
@@ -84,9 +77,9 @@ class TestSparseMatrix:
         self, matrix_format, value_type, index_type
     ):
         ctr = getattr(pGB.matrix, f"{matrix_format}_{value_type}_{index_type}")
-        coeffs = np.array(self.values, dtype=d_type_map[value_type])
-        rows = np.array(self.get_rows(matrix_format), dtype=d_type_map[index_type])
-        cols = np.array(self.cols, dtype=d_type_map[index_type])
+        coeffs = np.array(self.values, dtype=di_type_map[value_type])
+        rows = np.array(self.get_rows(matrix_format), dtype=di_type_map[index_type])
+        cols = np.array(self.cols, dtype=di_type_map[index_type])
 
         print(rows)
         sparse = ctr(self.ref, (5, 5), coeffs, cols, rows)
@@ -99,13 +92,13 @@ class TestSparseMatrix:
         val_arr_ctr = getattr(pGB.base, f"array_{value_type}")
         idx_arr_ctr = getattr(pGB.base, f"array_{index_type}")
         coeffs = val_arr_ctr(
-            self.ref, np.array(self.values, dtype=d_type_map[value_type])
+            self.ref, np.array(self.values, dtype=di_type_map[value_type])
         )
         rows = idx_arr_ctr(
             self.ref,
-            np.array(self.get_rows(matrix_format), dtype=d_type_map[index_type]),
+            np.array(self.get_rows(matrix_format), dtype=di_type_map[index_type]),
         )
-        cols = idx_arr_ctr(self.ref, np.array(self.cols, dtype=d_type_map[index_type]))
+        cols = idx_arr_ctr(self.ref, np.array(self.cols, dtype=di_type_map[index_type]))
 
         sparse = ctr(self.ref, (5, 5), coeffs, cols, rows)
         assert sparse == sparse
@@ -113,18 +106,18 @@ class TestSparseMatrix:
 
     def test_can_apply_to_dense(self, matrix_format, value_type, index_type):
         ctr = getattr(pGB.matrix, f"{matrix_format}_{value_type}_{index_type}")
-        coeffs = np.array(self.values, dtype=d_type_map[value_type])
-        rows = np.array(self.get_rows(matrix_format), dtype=d_type_map[index_type])
-        cols = np.array(self.cols, dtype=d_type_map[index_type])
+        coeffs = np.array(self.values, dtype=di_type_map[value_type])
+        rows = np.array(self.get_rows(matrix_format), dtype=di_type_map[index_type])
+        cols = np.array(self.cols, dtype=di_type_map[index_type])
 
         sparse = ctr(self.ref, (5, 5), coeffs, cols, rows)
 
         dense_ctr = getattr(pGB.matrix, f"dense_{value_type}")
         dense_b = dense_ctr(
-            self.ref, np.array(self.dense, dtype=d_type_map[value_type])
+            self.ref, np.array(self.dense, dtype=di_type_map[value_type])
         )
         dense_x = dense_ctr(
-            self.ref, np.array([0, 0, 0, 0, 0], dtype=d_type_map[value_type])
+            self.ref, np.array([0, 0, 0, 0, 0], dtype=di_type_map[value_type])
         )
 
         sparse.apply(dense_b, dense_x)

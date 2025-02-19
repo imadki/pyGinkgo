@@ -8,13 +8,7 @@ import numpy as np
 
 import pyGinkgo.pyGinkgoBindings as pGB
 
-from test_utils import verify_dense_vec, verify_within_precision
-
-d_type_map = {
-    "half": np.float16,
-    "float": np.float32,
-    "double": np.float64,
-}
+from test_utils import verify_dense_vec, verify_within_precision, d_type_map
 
 d_precision_map = {
     "half": 1e-3,
