@@ -31,20 +31,21 @@ class TestIterativeSolverBinding:
 
     def test_unpreconditioned_solver(self, solver_name, data_type):
         fn = os.path.dirname(os.path.realpath(__file__)) + "/fv1.mtx"
-        reader_ctr = getattr(pgb.matrix, f"read_Coo_{data_type}_int32")
-        mtx = reader_ctr(fn, self.ref)
-        solver_ctr = getattr(pgb.solver, f"{solver_name}_{data_type}")
+        reader_cls = getattr(pgb.matrix, f"read_Coo_{data_type}_int32")
+        mtx = reader_cls(fn, self.ref)
+
+        solver_cls = getattr(pgb.solver, f"{solver_name}_{data_type}")
         args = self.solver_args[solver_name]
-        solver = solver_ctr(exec=self.ref, system_matrix=mtx, **args)
+        solver = solver_cls(exec=self.ref, system_matrix=mtx, **args)
         logger = solver.initialize_logger()
         assert not logger.has_converged()
 
         dim = mtx.get_size()
         assert dim[0] == dim[1]
-        arr_ctr = getattr(pgb.matrix, f"dense_{data_type}")
-        rhs = arr_ctr(mtx.get_executor(), (dim[0], 1))
+        dense_cls = getattr(pgb.matrix, f"dense_{data_type}")
+        rhs = dense_cls(mtx.get_executor(), (dim[0], 1))
         rhs.fill(1.0)
-        initial_guess = arr_ctr(mtx.get_executor(), (dim[0], 1))
+        initial_guess = dense_cls(mtx.get_executor(), (dim[0], 1))
         initial_guess.fill(0.0)
         solver.apply(rhs, initial_guess)
 
@@ -55,16 +56,16 @@ class TestIterativeSolverBinding:
 
     def test_ilu_preconditioned_solver(self, solver_name, data_type):
         fn = os.path.dirname(os.path.realpath(__file__)) + "/fv1.mtx"
-        reader_ctr = getattr(pgb.matrix, f"read_Coo_{data_type}_int32")
-        mtx = reader_ctr(fn, self.ref)
+        reader_cls = getattr(pgb.matrix, f"read_Coo_{data_type}_int32")
+        mtx = reader_cls(fn, self.ref)
 
-        solver_ctr = getattr(pgb.solver, f"{solver_name}_{data_type}")
+        solver_cls = getattr(pgb.solver, f"{solver_name}_{data_type}")
         args = self.solver_args[solver_name]
 
-        precond_ctr = getattr(pgb.preconditioner, f"Ilu_{data_type}_int32")
-        ilu = precond_ctr(self.ref, mtx)
+        precond_cls = getattr(pgb.preconditioner, f"Ilu_{data_type}_int32")
+        ilu = precond_cls(self.ref, mtx)
 
-        solver = solver_ctr(
+        solver = solver_cls(
             exec=self.ref, preconditioner=ilu, system_matrix=mtx, **args
         )
         logger = solver.initialize_logger()
@@ -72,10 +73,10 @@ class TestIterativeSolverBinding:
 
         dim = mtx.get_size()
         assert dim[0] == dim[1]
-        arr_ctr = getattr(pgb.matrix, f"dense_{data_type}")
-        rhs = arr_ctr(mtx.get_executor(), (dim[0], 1))
+        dense_cls = getattr(pgb.matrix, f"dense_{data_type}")
+        rhs = dense_cls(mtx.get_executor(), (dim[0], 1))
         rhs.fill(1.0)
-        initial_guess = arr_ctr(mtx.get_executor(), (dim[0], 1))
+        initial_guess = dense_cls(mtx.get_executor(), (dim[0], 1))
         initial_guess.fill(0.0)
         solver.apply(rhs, initial_guess)
 

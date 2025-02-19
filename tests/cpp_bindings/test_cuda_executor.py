@@ -18,9 +18,9 @@ class TestCuda:
 
         executor = pGB.CudaExecutor()
         np_array = np.array([1.0, 2.0, 3.0, 4.0, 5.0], dtype=d_type_map[data_type])
-        ctr = getattr(pGB.base, "array_" + data_type)
-        arr = ctr(executor, np_array)
-        arr_copy = ctr(executor, arr)
+        array_cls = getattr(pGB.base, "array_" + data_type)
+        arr = array_cls(executor, np_array)
+        arr_copy = array_cls(executor, arr)
         assert arr.get_size() == arr_copy.get_size()
         assert pGB.base.reduce_add(arr, 0.0) == 15.0
 
@@ -31,8 +31,8 @@ class TestCuda:
         master = pGB.ReferenceExecutor()
         executor = pGB.CudaExecutor(master=master)
         np_array = np.array([1.0, 2.0, 3.0, 4.0, 5.0], dtype=d_type_map[data_type])
-        ctr = getattr(pGB.matrix, "dense_" + data_type)
-        dense = ctr(executor, np_array)
+        dense_cls = getattr(pGB.matrix, "dense_" + data_type)
+        dense = dense_cls(executor, np_array)
         dense_on_master = dense.copy_to_host()
         assert dense.get_executor() == executor
         assert dense_on_master.get_executor() == master

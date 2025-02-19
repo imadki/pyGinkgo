@@ -24,39 +24,39 @@ class TestDense:
     ref = pGB.ReferenceExecutor()
 
     def test_can_create_dense_linop(self, data_type):
-        ctr = getattr(pGB.matrix, "dense_" + data_type)
-        dense = ctr(self.ref)
+        dense_cls = getattr(pGB.matrix, "dense_" + data_type)
+        dense = dense_cls(self.ref)
         assert dense == dense
 
     def test_can_create_dense_linop_with_dim(self, data_type):
-        ctr = getattr(pGB.matrix, "dense_" + data_type)
-        dense = ctr(self.ref, (len(self.values), 1))
+        dense_cls = getattr(pGB.matrix, "dense_" + data_type)
+        dense = dense_cls(self.ref, (len(self.values), 1))
         assert dense == dense
 
     def test_can_create_dense_linop_with_dim_stride(self, data_type):
-        ctr = getattr(pGB.matrix, "dense_" + data_type)
-        dense = ctr(self.ref, (len(self.values), 1), 1)
+        dense_cls = getattr(pGB.matrix, "dense_" + data_type)
+        dense = dense_cls(self.ref, (len(self.values), 1), 1)
         assert dense == dense
 
     def test_can_create_dense_from_1D_np_array_with_default_exec(self, data_type):
-        ctr = getattr(pGB.matrix, "dense_" + data_type)
-        dense = ctr(np.array(self.values, dtype=d_type_map[data_type]))
+        dense_cls = getattr(pGB.matrix, "dense_" + data_type)
+        dense = dense_cls(np.array(self.values, dtype=d_type_map[data_type]))
         verify_dense_vec(dense, self.values)
 
     def test_can_copy_construct(self, data_type):
-        ctr = getattr(pGB.matrix, "dense_" + data_type)
-        dense_a = ctr(np.array(self.values, dtype=d_type_map[data_type]))
-        dense_b = ctr(self.ref, dense_a)
+        dense_cls = getattr(pGB.matrix, "dense_" + data_type)
+        dense_a = dense_cls(np.array(self.values, dtype=d_type_map[data_type]))
+        dense_b = dense_cls(self.ref, dense_a)
         verify_dense_vec(dense_b, self.values)
 
     def test_can_create_dense_from_1D_np_array(self, data_type):
-        ctr = getattr(pGB.matrix, "dense_" + data_type)
-        dense = ctr(self.ref, np.array(self.values, dtype=d_type_map[data_type]))
+        dense_cls = getattr(pGB.matrix, "dense_" + data_type)
+        dense = dense_cls(self.ref, np.array(self.values, dtype=d_type_map[data_type]))
         verify_dense_vec(dense, self.values)
 
     def test_can_create_dense_from_1D_np_array_with_dim_stride(self, data_type):
-        ctr = getattr(pGB.matrix, "dense_" + data_type)
-        dense = ctr(
+        dense_cls = getattr(pGB.matrix, "dense_" + data_type)
+        dense = dense_cls(
             self.ref,
             (len(self.values), 1),
             np.array(self.values, dtype=d_type_map[data_type]),
@@ -76,15 +76,15 @@ class TestDense:
         verify_within_precision(dense.at(2, 2), 0.9575, d_precision_map[data_type])
 
     def test_can_create_dense_from_2D_np_array_with_default_exec(self, data_type):
-        ctr = getattr(pGB.matrix, "dense_" + data_type)
-        dense = ctr(np.array(self.values2d, dtype=d_type_map[data_type]))
+        dense_cls = getattr(pGB.matrix, "dense_" + data_type)
+        dense = dense_cls(np.array(self.values2d, dtype=d_type_map[data_type]))
         assert dense.at(0, 1) == 2.0
         assert dense.at(0, 2) == -1.0
         assert dense.at(1, 1) == 4.0
 
     def test_can_create_dense_from_1D_np_array_with_stride(self, data_type):
-        ctr = getattr(pGB.matrix, "dense_" + data_type)
-        dense = ctr(
+        dense_cls = getattr(pGB.matrix, "dense_" + data_type)
+        dense = dense_cls(
             self.ref, (3, 3), np.array([self.values], dtype=d_type_map[data_type]), 3
         )
 
@@ -94,8 +94,8 @@ class TestDense:
         assert dense.at(2, 1) == 6
 
     def test_dense_support_basic_functionality(self, data_type):
-        ctr = getattr(pGB.matrix, "dense_" + data_type)
-        dense = ctr(
+        dense_cls = getattr(pGB.matrix, "dense_" + data_type)
+        dense = dense_cls(
             self.ref, (3, 3), np.array([self.values], dtype=d_type_map[data_type]), 3
         )
 
@@ -108,36 +108,36 @@ class TestDense:
         assert dense.at(1, 2) == dense.at(5)
 
     def test_can_apply_to_transpose(self, data_type):
-        ctr = getattr(pGB.matrix, "dense_" + data_type)
+        dense_cls = getattr(pGB.matrix, "dense_" + data_type)
         aT = np.array([self.values], dtype=d_type_map[data_type])
         a = aT.T
-        dense_a = ctr(aT)
-        dense_b = ctr(a)
-        result = ctr(self.ref, (1, 1))
+        dense_a = dense_cls(aT)
+        dense_b = dense_cls(a)
+        result = dense_cls(self.ref, (1, 1))
         dense_a.apply(dense_b, result)
         assert result.at(0) == aT.dot(a)[0, 0]
 
     def test_add_scaled(self, data_type):
-        ctr = getattr(pGB.matrix, "dense_" + data_type)
+        dense_cls = getattr(pGB.matrix, "dense_" + data_type)
         a = np.array(self.values, dtype=d_type_map[data_type])
-        dense_a = ctr(a)
+        dense_a = dense_cls(a)
         alpha = 2.0
-        dense_alpha = ctr(np.array([alpha], dtype=d_type_map[data_type]))
+        dense_alpha = dense_cls(np.array([alpha], dtype=d_type_map[data_type]))
         dense_a.add_scaled(dense_alpha, dense_a)
         verify_dense_vec(dense_a, (1 + alpha) * a)
 
     def test_sub_scaled(self, data_type):
-        ctr = getattr(pGB.matrix, "dense_" + data_type)
+        dense_cls = getattr(pGB.matrix, "dense_" + data_type)
         a = np.array(self.values, dtype=d_type_map[data_type])
-        dense_a = ctr(a)
+        dense_a = dense_cls(a)
         alpha = 0.5
-        dense_alpha = ctr(np.array([alpha], dtype=d_type_map[data_type]))
+        dense_alpha = dense_cls(np.array([alpha], dtype=d_type_map[data_type]))
         dense_a.sub_scaled(dense_alpha, dense_a)
         verify_dense_vec(dense_a, (1 - alpha) * a)
 
     def test_dense_can_return_size(self, data_type):
-        ctr = getattr(pGB.matrix, "dense_" + data_type)
-        dense = ctr(
+        dense_cls = getattr(pGB.matrix, "dense_" + data_type)
+        dense = dense_cls(
             self.ref, (3, 3), np.array(self.values, dtype=d_type_map[data_type]), 3
         )
         assert dense.get_size()[0] == 3

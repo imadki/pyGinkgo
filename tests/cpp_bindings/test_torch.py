@@ -29,19 +29,19 @@ torch_d_type_map = {
 class TestTorchInteroperability:
     def test_can_create_array_from_torch(self, data_type):
         executor = pgb.ReferenceExecutor()
-        ctr = getattr(pgb.base, "array_" + data_type)
+        array_cls = getattr(pgb.base, "array_" + data_type)
         np_array = np.array([1.0, 2.0, 3.0, 4.0, 5.0], dtype=d_type_map[data_type])
         torch_array = torch.asarray(np_array)
-        arr = ctr(executor, torch_array)
-        arr_copy = ctr(executor, arr)
+        arr = array_cls(executor, torch_array)
+        arr_copy = array_cls(executor, arr)
         assert arr.get_size() == arr_copy.get_size()
         assert pgb.base.reduce_add(arr, 0.0) == 15.0
 
     def test_can_create_torch_array_from_gko_array(self, data_type):
         executor = pgb.ReferenceExecutor()
-        ctr = getattr(pgb.base, "array_" + data_type)
+        array_cls = getattr(pgb.base, "array_" + data_type)
         np_array = np.array([1.0, 2.0, 3.0, 4.0, 5.0], dtype=d_type_map[data_type])
-        arr = ctr(executor, np_array)
+        arr = array_cls(executor, np_array)
         # When receiving Python Buffer protocol object, torch.asarray assumes dtype to be float32
         #   the shape of the array is also lost
         # https://pytorch.org/docs/stable/generated/torch.asarray.html#:~:text=the%20same%20history.-,When%20obj%20is%20not,memory%20with%20the%20buffer.,-When%20obj%20is
@@ -50,10 +50,10 @@ class TestTorchInteroperability:
 
     def test_can_create_dense_from_torch_tensor(self, data_type):
         executor = pgb.ReferenceExecutor()
-        ctr = getattr(pgb.matrix, "dense_" + data_type)
+        dense_cls = getattr(pgb.matrix, "dense_" + data_type)
         data = [[1.0, 2.0], [3.0, 4.0]]
         torch_tensor = torch.tensor(data, dtype=torch_d_type_map[data_type])
-        dense = ctr(executor, torch_tensor.__array__())
+        dense = dense_cls(executor, torch_tensor.__array__())
         assert dense.get_num_stored_elements() == 4
         assert dense.at(0, 1) == 2.0
         assert dense.at(1, 1) == 4.0

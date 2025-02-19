@@ -20,18 +20,18 @@ class TestDirectSolverBinding:
     solver_args = {"direct": {"factorization": "Cholesky"}}
 
     def test_direct_solver(self, solver_name, data_type):
-        ctr = getattr(pgb.matrix, "dense_" + data_type)
-        mtx = ctr(
+        dense_cls = getattr(pgb.matrix, "dense_" + data_type)
+        mtx = dense_cls(
             self.ref, (3, 3), np.array(self.values, dtype=d_type_map[data_type]), 3
         )
         exp = np.array([1, 1 / 2.0, 1 / 3.0], dtype=d_type_map[data_type])
-        solver_ctr = getattr(pgb.solver, f"{solver_name}_{data_type}_int32")
+        solver_cls = getattr(pgb.solver, f"{solver_name}_{data_type}_int32")
         args = self.solver_args[solver_name]
-        solver = solver_ctr(exec=self.ref, system_matrix=mtx, **args)
+        solver = solver_cls(exec=self.ref, system_matrix=mtx, **args)
 
-        rhs = ctr(mtx.get_executor(), (self.dim[0], 1))
+        rhs = dense_cls(mtx.get_executor(), (self.dim[0], 1))
         rhs.fill(1.0)
-        x = ctr(mtx.get_executor(), (self.dim[0], 1))
+        x = dense_cls(mtx.get_executor(), (self.dim[0], 1))
         x.fill(0.0)
         solver.apply(rhs, x)
 

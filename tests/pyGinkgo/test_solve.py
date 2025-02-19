@@ -27,16 +27,16 @@ class TestSolve:
         self.executor = pGB.ReferenceExecutor()
         self.fn = os.path.dirname(os.path.realpath(__file__)) + "/fv1.mtx"
 
-        self.reader_ctr = getattr(pGB.matrix, f"read_Coo_{data_type}_int32")
-        self.mtx = self.reader_ctr(self.fn, self.executor)
+        self.reader_cls = getattr(pGB.matrix, f"read_Coo_{data_type}_int32")
+        self.mtx = self.reader_cls(self.fn, self.executor)
         self.dim = self.mtx.get_size()
         self.rows = self.dim[0]
         self.cols = self.dim[1]
 
-        self.arr_ctr = getattr(pGB.matrix, f"dense_{data_type}")
-        self.rhs = self.arr_ctr(self.executor, (self.rows, 1))
+        self.dense_cls = getattr(pGB.matrix, f"dense_{data_type}")
+        self.rhs = self.dense_cls(self.executor, (self.rows, 1))
         self.rhs.fill(1.0)
-        self.initial_guess = self.arr_ctr(self.executor, (self.rows, 1))
+        self.initial_guess = self.dense_cls(self.executor, (self.rows, 1))
         self.initial_guess.fill(0.0)
 
     def test_can_default_solve(self):

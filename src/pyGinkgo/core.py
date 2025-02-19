@@ -35,9 +35,9 @@ def as_array(obj, executor: str = "Reference", dtype="float"):
             + str(valid_executor)
         )
 
-    ctr = getattr(pGB.base, "array_" + dtype)
+    array_cls = getattr(pGB.base, "array_" + dtype)
     executor = getattr(pGB, executor + "Executor")()
-    return ctr(executor, obj)
+    return array_cls(executor, obj)
 
 
 def as_tensor(obj, executor: str = "Reference", dtype="float"):
@@ -61,9 +61,9 @@ def as_tensor(obj, executor: str = "Reference", dtype="float"):
         if isinstance(obj, torch.Tensor):
             obj = obj.__array__()
 
-    ctr = getattr(pGB.base, "dense_" + dtype)
+    array_cls = getattr(pGB.base, "dense_" + dtype)
     executor = getattr(pGB, executor + "Executor")()
-    return ctr(executor, obj)
+    return array_cls(executor, obj)
 
 
 def solve(A, b, initial_guess=None, solver_args: dict = dict()):
@@ -96,14 +96,14 @@ def solve(A, b, initial_guess=None, solver_args: dict = dict()):
 
     # TODO: Create a better way to check the dtype of the matrix
     dtype = str(type(A)).split('_')[1]
-    dense_ctr = getattr(pGB.matrix, f"dense_{dtype}")
+    dense_cls = getattr(pGB.matrix, f"dense_{dtype}")
 
     if not initial_guess:
-        initial_guess = dense_ctr(b.get_executor(), (b.dim[0], 1))
+        initial_guess = dense_cls(b.get_executor(), (b.dim[0], 1))
         initial_guess.fill(0.0)
 
-    solver_ctr = getattr(pGB.solver, "config_solve_" + dtype)
-    logger = solver_ctr(
+    solver_cls = getattr(pGB.solver, "config_solve_" + dtype)
+    logger = solver_cls(
         solver_executor, A, b, initial_guess, json.dumps(solver_args)
     )
     return logger, initial_guess
