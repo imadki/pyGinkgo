@@ -48,13 +48,12 @@ class TestCuda:
         with pytest.raises(AttributeError):
             executor.device_id = 1
 
-    def test_can_syncronize():
+    def test_can_synchronize(self, data_type):
         if pGB.CudaExecutor.get_num_devices() < 1:
             pytest.skip("CUDA is not available")
 
         executor = pGB.CudaExecutor(0)
-        executor.syncronize()
-
+        executor.synchronize()
 
     def test_master(self, data_type):
         if pGB.CudaExecutor.get_num_devices() < 1:
