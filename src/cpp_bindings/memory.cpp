@@ -27,7 +27,7 @@ void add_allocator_classes(py::module_ &root_module)
         .def(py::init());
 #endif
 #ifdef GINKGO_BUILD_HIP
-    // TODO: implement HIPAllocatorBase binding,
+    // TODO: implement HipAllocatorBase binding,
     //    to be able to define custom allocator
     py::class_<gko::HipAllocatorBase, gko::Allocator,
                std::shared_ptr<gko::HipAllocatorBase>>(root_module,
