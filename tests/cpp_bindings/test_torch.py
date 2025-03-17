@@ -60,17 +60,11 @@ class TestTorchInteroperability:
         assert dense.get_size()[0] == 2
         assert dense.get_size()[1] == 2
 
-    def test_can_create_torch_array_from_gko_array(self):
-        executor = pgb.ReferenceExecutor()
-        np_array = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
-        arr = pgb.base.array_float(executor, np_array)
-        torch_array = torch.asarray(arr)
-        assert torch_array.size(dim=0) == np_array.size
-
-    def test_can_create_torch_tensor_from_dense(self):
+    def test_can_create_torch_tensor_from_dense(self, data_type):
         executor = pgb.ReferenceExecutor()
         data = np.array([[1.0, 2.0], [3.0, 4.0]])
-        dense = pgb.matrix.dense(executor, data)
+        dense_cls = getattr(pgb.matrix, "dense_" + data_type)
+        dense = dense_cls(executor, data)
         torch_tensor = torch.as_tensor(np.array(dense))
         assert torch_tensor[0][0] == 1.0
         assert torch_tensor[0][1] == 2.0

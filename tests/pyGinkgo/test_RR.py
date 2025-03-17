@@ -15,7 +15,7 @@ import os
 class TestSolve:
     executor = pGB.ReferenceExecutor()
     fn = os.path.dirname(os.path.realpath(__file__)) + "/fv1.mtx"
-    mtx = pGB.matrix.read_Coo(fn, executor)
+    mtx = pGB.matrix.read_Coo_float_int(fn, executor)
     dim = mtx.get_size()
     rows = dim[0]
     cols = dim[1]
