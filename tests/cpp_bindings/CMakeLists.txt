@@ -27,9 +27,5 @@ if(GINKGO_BUILD_CUDA)
   pyginkgo_bindings_test(cuda_executor)
 endif()
 if(GINKGO_BUILD_HIP)
-  add_test(
-    NAME pyginkgo_bindings_hip_executor_test
-    COMMAND ${PYTHON_EXECUTABLE} -m pytest
-            ${CMAKE_CURRENT_SOURCE_DIR}/test_hip_executor.py
-    WORKING_DIRECTORY ${PYGINKGO_TESTS_WORK_DIR})
+  pyginkgo_bindings_test(hip_executor)
 endif()

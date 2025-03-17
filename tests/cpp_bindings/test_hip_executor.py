@@ -43,6 +43,8 @@ def test_device_id():
 
     executor = pGB.HipExecutor(0)
     assert executor.device_id == 0
+    # Test if executor.device_id is immutable
+    # trying to change it should raise an Attribute error
     with pytest.raises(AttributeError):
         executor.device_id = 1
 
