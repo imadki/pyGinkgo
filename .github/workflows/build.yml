@@ -11,7 +11,7 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest-large
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
@@ -41,7 +41,7 @@ jobs:
       run: cmake --preset develop -DGINKGO_BUILD_OMP=OFF
 
     - name: Build with CMake
-      run: cmake --build --preset develop
+      run: cmake --build --preset develop -j 2
 
     - name: Run specific test
       run: ctest --preset develop
