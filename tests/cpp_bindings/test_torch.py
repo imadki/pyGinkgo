@@ -62,7 +62,7 @@ class TestTorchInteroperability:
 
     def test_can_create_torch_tensor_from_dense(self, data_type):
         executor = pgb.ReferenceExecutor()
-        data = np.array([[1.0, 2.0], [3.0, 4.0]])
+        data = np.array([[1.0, 2.0], [3.0, 4.0]], dtype=d_type_map[data_type])
         dense_cls = getattr(pgb.matrix, "dense_" + data_type)
         dense = dense_cls(executor, data)
         torch_tensor = torch.as_tensor(np.array(dense))

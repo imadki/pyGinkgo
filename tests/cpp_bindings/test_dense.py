@@ -119,14 +119,16 @@ class TestDense:
 
     def test_can_transpose(self, data_type):
         dense_cls = getattr(pGB.matrix, "dense_" + data_type)
-        dense_a = dense_cls(self.ref, (3, 3), np.array([self.values]), 3)
+        dense_a = dense_cls(
+            self.ref, (3, 3), np.array([self.values], dtype=d_type_map[data_type]), 3
+        )
         dense_aT = dense_a.T()
-        dense_a(0, 1) == dense_aT(1, 0)
-        dense_a(0, 2) == dense_aT(2, 0)
-        dense_a(1, 2) == dense_aT(2, 1)
-        dense_a(0, 0) == dense_aT(0, 0)
-        dense_a(1, 1) == dense_aT(1, 1)
-        dense_a(2, 2) == dense_aT(2, 2)
+        dense_a.at(0, 1) == dense_aT.at(1, 0)
+        dense_a.at(0, 2) == dense_aT.at(2, 0)
+        dense_a.at(1, 2) == dense_aT.at(2, 1)
+        dense_a.at(0, 0) == dense_aT.at(0, 0)
+        dense_a.at(1, 1) == dense_aT.at(1, 1)
+        dense_a.at(2, 2) == dense_aT.at(2, 2)
 
     def test_add_scaled(self, data_type):
         dense_cls = getattr(pGB.matrix, "dense_" + data_type)
