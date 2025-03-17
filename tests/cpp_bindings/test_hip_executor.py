@@ -12,7 +12,7 @@ from test_utils import verify_dense_vec
 
 def test_array_hip():
     if pGB.HipExecutor.get_num_devices() < 1:
-        pytest.skip("CUDA is not available")
+        pytest.skip("HIP is not available")
 
     executor = pGB.HipExecutor()
     np_array = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
@@ -24,7 +24,7 @@ def test_array_hip():
 
 def test_dense_copy_to_host():
     if pGB.HipExecutor.get_num_devices() < 1:
-        pytest.skip("CUDA is not available")
+        pytest.skip("HIP is not available")
 
     master = pGB.ReferenceExecutor()
     executor = pGB.HipExecutor(master=master)
@@ -39,7 +39,7 @@ def test_dense_copy_to_host():
 
 def test_device_id():
     if pGB.HipExecutor.get_num_devices() < 1:
-        pytest.skip("CUDA is not available")
+        pytest.skip("HIP is not available")
 
     executor = pGB.HipExecutor(0)
     assert executor.device_id == 0
