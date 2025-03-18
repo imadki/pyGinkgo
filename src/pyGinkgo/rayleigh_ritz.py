@@ -21,21 +21,25 @@ def RR1(X, AX, BX):
     - hX     : Eigenvectors
     - Lambda : Eigenvalues
     """
+    # TODO extract from input
+    dtype = np.float32
     executor = pGB.ReferenceExecutor()
     XT = X.T()
 
     # compute G1 = X.T @ AX
-    G1 = pGB.matrix.dense(X)
+    dimG1 = (X.get_size()[1], AX.get_size()[1])
+    G1 = pGB.matrix.dense_float(executor, dimG1)
     XT.apply(AX, G1)
 
     # compute G2 = X.T @ BX
-    G2 = pGB.matrix.dense(X)
+    dimG2 = (X.get_size()[1], AX.get_size()[1])
+    G2 = pGB.matrix.dense_float(executor, dimG2)
     XT.apply(BX, G2)
 
     # compute G2P G2' = L^(-1) @ G1
     # Find L s.t. L @ L.T = G2
-    direct1 = pGB.solver.direct(executor, G2, factorization="Cholesky")
-    G2P = pGB.matrix.dense(X)
+    direct1 = pGB.solver.direct_float_int32(executor, G2, factorization="Cholesky")
+    G2P = pGB.matrix.dense_float(executor, dimG2)
     direct1.apply(G1, G2P)
     G2PT = G2P.T()
 
@@ -43,17 +47,17 @@ def RR1(X, AX, BX):
     # direct2 = pGB.solver.direct(executor, G2, factorization="Cholesky")
 
     # compute G2PP G2'' = L^(-1) @ G2P.T = L^(-1) @ G1 @ L^(-T)
-    G2PP = pGB.matrix.dense(X)
+    G2PP = pGB.matrix.dense_float(executor, dimG2)
     direct1.apply(G2PT, G2PP)
 
     torchG2 = torch.as_tensor(np.array(G2PP))
     L, Q = torch.linalg.eigh(torchG2)
-    Lambda = pGB.matrix.dense(executor, L.__array__())
-    hY = pGB.matrix.dense(executor, Q.__array__())
+    Lambda = pGB.matrix.dense_float(executor, L.__array__())
+    hY = pGB.matrix.dense_float(executor, Q.__array__())
 
     G2T = G2.T()
-    direct3 = pGB.solver.direct(executor, G2T, factorization="Cholesky")
-    hX = pGB.matrix.dense(hY)
+    direct3 = pGB.solver.direct_float_int32(executor, G2T, factorization="Cholesky")
+    hX = pGB.matrix.dense_float(hY)
     direct3.apply(hY, hX)
 
     return hX, Lambda
