@@ -162,7 +162,7 @@ void init_dense(py::module_ &module_matrix, const std::string typestr)
                     dim, /* Number of dimensions */
                     // TODO: potential mistake:
                     {rows, cols}, /* Buffer dimensions */
-                    {sizeof(ValueType), sizeof(ValueType) * rows}
+                    {sizeof(ValueType) * cols, sizeof(ValueType)}
                     /* Strides (in bytes) for each index */
                 );
             }
