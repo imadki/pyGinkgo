@@ -9,6 +9,7 @@ include(cmake/AutoEnableDevice.cmake)
 enable_testing()
 
 # Find Python interpreter and library
+set(Python_FIND_VIRTUALENV "FIRST")
 find_package(Python COMPONENTS Interpreter Development)
 
 # copy all generated files to pyGinkgo that makes testing and installing easier
