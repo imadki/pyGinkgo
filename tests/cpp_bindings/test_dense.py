@@ -21,6 +21,7 @@ d_precision_map = {
 class TestDense:
     values = [1.0, 2.0, -1.0, 3.0, 4.0, -1.0, 5.0, 6.0, -1.0]
     values2d = [[1.0, 2.0, -1.0], [3.0, 4.0, -1.0], [5.0, 6.0, -1.0]]
+    values2d2 = [[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]]
     ref = pGB.ReferenceExecutor()
 
     def test_can_create_dense_linop(self, data_type):
@@ -80,7 +81,26 @@ class TestDense:
         dense = dense_cls(np.array(self.values2d, dtype=d_type_map[data_type]))
         assert dense.at(0, 1) == 2.0
         assert dense.at(0, 2) == -1.0
+        assert dense.at(1, 0) == 3.0
         assert dense.at(1, 1) == 4.0
+        assert dense.at(1, 2) == -1.0
+
+    def test_can_create_dense_from_2D2_np_array_with_default_exec(self, data_type):
+        dense_cls = getattr(pGB.matrix, "dense_" + data_type)
+        np_array = np.array(self.values2d2, dtype=d_type_map[data_type])
+        dense = dense_cls(np_array)
+        assert dense.at(0, 0) == np_array[0][0]
+        assert dense.at(0, 1) == np_array[0][1]
+        assert dense.at(1, 0) == np_array[1][0]
+        assert dense.at(1, 1) == np_array[1][1]
+        assert dense.at(2, 0) == np_array[2][0]
+        assert dense.at(2, 1) == np_array[2][1]
+
+        # test if conversion is invariant
+        np_array_in = np.array(self.values2d2, dtype=d_type_map[data_type])
+        np_array_out = np.array(dense, dtype=d_type_map[data_type])
+
+        assert (np_array_out == np_array_in).all()
 
     def test_can_create_dense_from_1D_np_array_with_stride(self, data_type):
         dense_cls = getattr(pGB.matrix, "dense_" + data_type)
