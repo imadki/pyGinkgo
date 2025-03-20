@@ -98,6 +98,35 @@ def eigen_solve(A,solver_args=None):
     hY = dense_cls(exec_obj, Q.__array__())
     return Lambda, hY
 
+def generate_solver(A, solver_args: dict = dict()):
+    """Generate a solver based on the system matrix A
+
+    Parameters: A - The system matrix
+                solver_args - A dictionary that is forwarded to the solver containing
+                    arguments, eg {'max_iters': 100, 'tolerance': 1e-6}
+    Returns: the solver
+    """
+
+    if not solver_args:
+        solver_args = {
+            "type": "solver::Gmres",
+            "preconditioner": {
+                "type": "preconditioner::Ilu",
+                "l_solver_type": "solver::LowerTrs",
+                "reverse_apply": False,
+                "factorization": {"type": "factorization::ParIlu"},
+            },
+            "criteria": [
+                {"type": "Iteration", "max_iters": 1000},
+                {"type": "ResidualNorm", "reduction_factor": 1e-7},
+            ],
+        }
+    solver_executor = A.get_executor()
+
+    solver = pGB.solver.config_solver(
+        solver_executor, A, json.dumps(solver_args)
+    )
+    return solver
 
 def config_solve(A,b,x,solver_args=None):
     if not solver_args:

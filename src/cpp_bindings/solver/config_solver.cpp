@@ -13,11 +13,10 @@
 
 namespace py = pybind11;
 
-template <typename ValueType>
-std::shared_ptr<const gko::log::Convergence<ValueType>> config_solve(
-    std::shared_ptr<gko::Executor> exec, std::shared_ptr<gko::LinOp> A,
-    std::shared_ptr<gko::LinOp> b, std::shared_ptr<gko::LinOp> x,
-    std::string json)
+
+std::shared_ptr<gko::LinOp> config_solver(std::shared_ptr<gko::Executor> exec,
+                                          std::shared_ptr<gko::LinOp> A,
+                                          std::string json)
 {
     auto config = gko::ext::config::parse_json(nlohmann::json::parse(json));
     // Create the registry, which allows passing the existing data into config
@@ -32,6 +31,18 @@ std::shared_ptr<const gko::log::Convergence<ValueType>> config_solve(
 
     // Create solver
     auto solver = solver_gen->generate(A);
+
+    return solver;
+}
+
+template <typename ValueType>
+std::shared_ptr<const gko::log::Convergence<ValueType>> config_solve(
+    std::shared_ptr<gko::Executor> exec, std::shared_ptr<gko::LinOp> A,
+    std::shared_ptr<gko::LinOp> b, std::shared_ptr<gko::LinOp> x,
+    std::string json)
+{
+    // Create solver
+    auto solver = config_solver(exec, A, json);
 
     // Add logger
     std::shared_ptr<const gko::log::Convergence<ValueType>> logger =
@@ -56,4 +67,8 @@ void init_config_solver_all_types(py::module_ &m)
 #define DECLARE_CONFIG_SOLVER(ValueType) \
     init_config_solver<ValueType>(m, #ValueType);
     PYGKO_INSTANTIATE_FOR_EACH_NON_COMPLEX_VALUE_TYPE(DECLARE_CONFIG_SOLVER);
+#undef DECLARE_CONFIG_SOLVER
+
+    m.def("config_solver", &config_solver,
+          "wrapper for generating config solver");
 }
