@@ -96,3 +96,34 @@ class TestSolve:
         npresult = np.array(result)
         assert len(npresult) > 0
         assert len(np.nonzero(npresult)[0]) == len(npresult)
+
+    def test_generate_solver_is_the_same_as_solve(self):
+        solver_args = {
+            "type": "solver::Cg",
+            "criteria": [
+                {"type": "Iteration", "max_iters": 2},
+            ],
+        }
+
+        # prepare the two same initial guess.
+        initial_guess_1 = self.dense_cls(self.executor, (self.rows, 1))
+        initial_guess_1.fill(0.0)
+        initial_guess_2 = self.dense_cls(self.executor, (self.rows, 1))
+        initial_guess_2.fill(0.0)
+        logger, result = pg.solve(
+            self.mtx, self.rhs, initial_guess_1, solver_args=solver_args
+        )
+
+        solver = pg.generate_solver(self.mtx, solver_args=solver_args)
+        solver.apply(self.rhs, initial_guess_2)
+
+        assert logger.get_num_iterations() == 2
+
+        npresult_1_host = np.array(result.copy_to_host())
+        npresult_2_host = np.array(initial_guess_2.copy_to_host())
+
+        assert (
+            np.linalg.norm(npresult_1_host - npresult_2_host)
+            / np.linalg.norm(npresult_1_host)
+            < 1e-7
+        )
