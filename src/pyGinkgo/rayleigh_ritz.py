@@ -44,11 +44,9 @@ def RR1(X, AX, BX, dtype="float", executor="Reference"):
     LT = L.T()
 
     # compute G2PP G2'' = L^(-1) @ G2P.T = L^(-1) @ G1 @ L^(-T)
-    # G2PP = triangular_solve(L, G2P.T(), executor=executor,  kind="Lower", dtype=dtype)
     _, G2PP = pg.solve(L, G2P.T(), kind="triangular", solver_args={"type": "Lower"})
 
     Lambda, hY = pg.eigen_solve(G2PP)
 
-    # hX = triangular_solve(LT, hY, executor=executor,  kind="Upper", dtype=dtype)
     _, hX = pg.solve(LT, hY, kind="triangular", solver_args={"type": "Upper"})
     return hX, Lambda
