@@ -17,16 +17,6 @@ def mul(a, b, dtype="float", executor="Reference"):
     a.apply(b, res)
     return res
 
-def triangular_solve(a,b, executor="Reference", kind="Upper", dtype="float", itype="int32"):
-    ctor = getattr(pGB.solver, f"{kind}Trs_{dtype}_{itype}")
-    exec_obj = getattr(pGB, executor + "Executor")()
-    trs = ctor(exec_obj, a)
-    dim = (a.get_size()[1], b.get_size()[1])
-    res = pg.as_tensor(executor=executor, dim=dim, dtype=dtype)
-    #G2P = pGB.matrix.dense_float(executor, dim)
-    trs.apply(b, res)
-    return res
-
 def RR1(X, AX, BX, dtype="float", executor="Reference"):
     """
     Computes m least dominant generalized eigenpairs of
@@ -50,16 +40,15 @@ def RR1(X, AX, BX, dtype="float", executor="Reference"):
     # compute G2P G2' = L^(-1) @ G1
     # Find L s.t. L @ L.T = G2
     L = pg.factor(G2, kind="Lower")
-    G2P = triangular_solve(L, G1, executor=executor,  kind="Lower", dtype=dtype)
+    _, G2P = pg.solve(L, G1, kind="triangular", solver_args={"type": "Lower"})
     LT = L.T()
 
     # compute G2PP G2'' = L^(-1) @ G2P.T = L^(-1) @ G1 @ L^(-T)
-    G2PP = triangular_solve(L, G2P.T(), executor=executor,  kind="Lower", dtype=dtype)
+    # G2PP = triangular_solve(L, G2P.T(), executor=executor,  kind="Lower", dtype=dtype)
+    _, G2PP = pg.solve(L, G2P.T(), kind="triangular", solver_args={"type": "Lower"})
 
-    torchG2 = torch.as_tensor(np.array(G2PP))
-    L, Q = torch.linalg.eigh(torchG2)
-    Lambda = pGB.matrix.dense_float(exec_obj, L.__array__())
-    hY = pGB.matrix.dense_float(exec_obj, Q.__array__())
+    Lambda, hY = pg.eigen_solve(G2PP)
 
-    hX = triangular_solve(LT, hY, executor=executor,  kind="Upper", dtype=dtype)
+    # hX = triangular_solve(LT, hY, executor=executor,  kind="Upper", dtype=dtype)
+    _, hX = pg.solve(LT, hY, kind="triangular", solver_args={"type": "Upper"})
     return hX, Lambda
