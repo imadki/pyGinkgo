@@ -12,6 +12,9 @@ void init_sparse_all_types(py::module_ &);
 void init_logger_all_types(py::module_ &);
 void init_gmres_all_types(py::module_ &);
 void init_direct_all_types(py::module_ &);
+void init_LowerTrs_all_types(py::module_ &);
+void init_UpperTrs_all_types(py::module_ &);
+void init_factorization(py::module_ &);
 void init_config_solver_all_types(py::module_ &);
 void init_ilu_all_types(py::module_ &);
 void add_allocator_classes(py::module_ &);
@@ -66,6 +69,12 @@ PYBIND11_MODULE(pyGinkgoBindings, m)
     init_gmres_all_types(module_solver);
     init_direct_all_types(module_solver);
     init_config_solver_all_types(module_solver);
+    init_LowerTrs_all_types(module_solver);
+    init_UpperTrs_all_types(module_solver);
+
+    py::module_ module_factorization = m.def_submodule(
+        "factorization", "Submodule for Ginkgos factorization type bindings");
+    init_factorization(module_factorization);
 
     py::module_ module_preconditioner = m.def_submodule(
         "preconditioner", "Submodule for Ginkgos preconditioner type bindings");

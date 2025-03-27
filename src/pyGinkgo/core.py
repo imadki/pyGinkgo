@@ -40,7 +40,7 @@ def as_array(obj, executor: str = "Reference", dtype="float"):
     return array_cls(executor, obj)
 
 
-def as_tensor(obj, executor: str = "Reference", dtype="float"):
+def as_tensor(obj=None, dim=None, executor: str = "Reference", dtype="float"):
     """create a ginkgo array from a given object"""
     if not dtype in valid_value_types:
         raise ValueError(
@@ -49,10 +49,10 @@ def as_tensor(obj, executor: str = "Reference", dtype="float"):
             + " possible choices are: "
             + str(valid_value_types)
         )
-    if not executor in valid_executor:
+    if isinstance(executor,str) and  not executor in valid_executor:
         raise ValueError(
             "Not a valid executor: "
-            + dtype
+            + executor
             + " possible choices are: "
             + str(valid_executor)
         )
@@ -61,9 +61,29 @@ def as_tensor(obj, executor: str = "Reference", dtype="float"):
         if isinstance(obj, torch.Tensor):
             obj = obj.__array__()
 
-    array_cls = getattr(pGB.base, "dense_" + dtype)
+    array_cls = getattr(pGB.matrix, "dense_" + dtype)
     executor = getattr(pGB, executor + "Executor")()
-    return array_cls(executor, obj)
+    if obj:
+        return array_cls(executor, obj)
+    else:
+        return array_cls(executor, dim)
+
+
+def factor(A, kind="Upper", executor="Reference"):
+    if isinstance(executor,str) and  not executor in valid_executor:
+        raise ValueError(
+            "Not a valid executor: "
+            + executor
+            + " possible choices are: "
+            + str(valid_executor)
+        )
+
+    executor = getattr(pGB, executor + "Executor")()
+    factorization = pGB.factorization.factorization(executor, A)
+    if kind == "Upper":
+        return factorization.get_upper_factor()
+    if kind == "Lower":
+        return factorization.get_lower_factor()
 
 
 def solve(A, b, initial_guess=None, solver_args: dict = dict()):

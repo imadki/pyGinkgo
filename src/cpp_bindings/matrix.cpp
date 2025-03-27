@@ -66,6 +66,12 @@ void init_matrix(py::module_ &module, const std::string matrix_type,
         .def("get_num_stored_elements",
              &MatrixType<ValueType, IndexType>::get_num_stored_elements,
              "Get the number of non zero elements")
+        .def(
+            "T",
+            [](MatrixType<ValueType, IndexType> &m) {
+                return gko::share(m.transpose());
+            },
+            "Computes the transpose of a matrix")
         .def("get_size", &MatrixType<ValueType, IndexType>::get_size,
              "Get the size of the matrix");
 

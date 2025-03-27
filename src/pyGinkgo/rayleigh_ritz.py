@@ -2,13 +2,32 @@
 #
 # SPDX-FileCopyrightText: 2024 pyGinkgo authors
 
+import pyGinkgo as pg
 from pyGinkgo import pyGinkgoBindings as pGB
 
 import torch
 import numpy as np
 
 
-def RR1(X, AX, BX):
+def mul(a, b, dtype="float", executor="Reference"):
+    """ helper function to perform a @ b """
+    dimRes = (a.get_size()[0], b.get_size()[1])
+    # executor = a.get_executor()
+    res = pg.as_tensor(executor=executor, dim=dimRes, dtype=dtype)
+    a.apply(b, res)
+    return res
+
+def triangular_solve(a,b, executor="Reference", kind="Upper", dtype="float", itype="int32"):
+    ctor = getattr(pGB.solver, f"{kind}Trs_{dtype}_{itype}")
+    exec_obj = getattr(pGB, executor + "Executor")()
+    trs = ctor(exec_obj, a)
+    dim = (a.get_size()[1], b.get_size()[1])
+    res = pg.as_tensor(executor=executor, dim=dim, dtype=dtype)
+    #G2P = pGB.matrix.dense_float(executor, dim)
+    trs.apply(b, res)
+    return res
+
+def RR1(X, AX, BX, dtype="float", executor="Reference"):
     """
     Computes m least dominant generalized eigenpairs of
     (A,B) with respect to the range of X using a
@@ -21,43 +40,26 @@ def RR1(X, AX, BX):
     - hX     : Eigenvectors
     - Lambda : Eigenvalues
     """
-    # TODO extract from input
-    dtype = np.float32
-    executor = pGB.ReferenceExecutor()
     XT = X.T()
-
     # compute G1 = X.T @ AX
-    dimG1 = (X.get_size()[1], AX.get_size()[1])
-    G1 = pGB.matrix.dense_float(executor, dimG1)
-    XT.apply(AX, G1)
-
+    G1 = mul(XT, AX, dtype=dtype, executor=executor)
     # compute G2 = X.T @ BX
-    dimG2 = (X.get_size()[1], AX.get_size()[1])
-    G2 = pGB.matrix.dense_float(executor, dimG2)
-    XT.apply(BX, G2)
+    G2 = mul(XT, BX, dtype=dtype, executor=executor)
 
+    exec_obj = pGB.ReferenceExecutor()
     # compute G2P G2' = L^(-1) @ G1
     # Find L s.t. L @ L.T = G2
-    direct1 = pGB.solver.direct_float_int32(executor, G2, factorization="Cholesky")
-    G2P = pGB.matrix.dense_float(executor, dimG2)
-    direct1.apply(G1, G2P)
-    G2PT = G2P.T()
-
-    # TODO: remove
-    # direct2 = pGB.solver.direct(executor, G2, factorization="Cholesky")
+    L = pg.factor(G2, kind="Lower")
+    G2P = triangular_solve(L, G1, executor=executor,  kind="Lower", dtype=dtype)
+    LT = L.T()
 
     # compute G2PP G2'' = L^(-1) @ G2P.T = L^(-1) @ G1 @ L^(-T)
-    G2PP = pGB.matrix.dense_float(executor, dimG2)
-    direct1.apply(G2PT, G2PP)
+    G2PP = triangular_solve(L, G2P.T(), executor=executor,  kind="Lower", dtype=dtype)
 
     torchG2 = torch.as_tensor(np.array(G2PP))
     L, Q = torch.linalg.eigh(torchG2)
-    Lambda = pGB.matrix.dense_float(executor, L.__array__())
-    hY = pGB.matrix.dense_float(executor, Q.__array__())
+    Lambda = pGB.matrix.dense_float(exec_obj, L.__array__())
+    hY = pGB.matrix.dense_float(exec_obj, Q.__array__())
 
-    G2T = G2.T()
-    direct3 = pGB.solver.direct_float_int32(executor, G2T, factorization="Cholesky")
-    hX = pGB.matrix.dense_float(hY)
-    direct3.apply(hY, hX)
-
+    hX = triangular_solve(LT, hY, executor=executor,  kind="Upper", dtype=dtype)
     return hX, Lambda

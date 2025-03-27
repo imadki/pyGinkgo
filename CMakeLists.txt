@@ -59,7 +59,7 @@ if(NOT ginkgo_FOUND)
   FetchContent_Declare(
     ginkgo
     GIT_REPOSITORY https://github.com/ginkgo-project/ginkgo.git
-    GIT_TAG v1.9.0
+    GIT_TAG transposed_coo
     EXCLUDE_FROM_ALL)
   FetchContent_MakeAvailable(ginkgo)
 endif()

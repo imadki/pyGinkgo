@@ -21,6 +21,7 @@ pyginkgo_bindings_test(sparse)
 pyginkgo_bindings_test(iterative_solver)
 pyginkgo_bindings_test(direct_solver)
 pyginkgo_bindings_test(torch)
+pyginkgo_bindings_test(factorization)
 
 # add CUDA specific tests, if building with CUDA enabled
 if(GINKGO_BUILD_CUDA)
