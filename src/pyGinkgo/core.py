@@ -122,8 +122,10 @@ def generate_solver(A, solver_args: dict = dict()):
             ],
         }
     solver_executor = A.get_executor()
-
-    solver = pGB.solver.config_solver(
+     # TODO: Create a better way to check the dtype of the matrix
+    dtype = str(type(A)).split('_')[1]
+    solver_cls = getattr(pGB.solver, "config_solver_" + dtype)
+    solver = solver_cls(
         solver_executor, A, json.dumps(solver_args)
     )
     return solver
