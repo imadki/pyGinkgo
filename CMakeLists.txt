@@ -9,6 +9,7 @@ include(cmake/AutoEnableDevice.cmake)
 enable_testing()
 
 # Find Python interpreter and library
+set(Python_FIND_VIRTUALENV "FIRST")
 find_package(Python COMPONENTS Interpreter Development)
 
 # copy all generated files to pyGinkgo that makes testing and installing easier
@@ -58,7 +59,7 @@ if(NOT ginkgo_FOUND)
   FetchContent_Declare(
     ginkgo
     GIT_REPOSITORY https://github.com/ginkgo-project/ginkgo.git
-    GIT_TAG v1.9.0
+    GIT_TAG transposed_coo
     EXCLUDE_FROM_ALL)
   FetchContent_MakeAvailable(ginkgo)
 endif()
@@ -104,8 +105,10 @@ if(${ENABLE_PYGINKGOBINDINGS_STUBS})
 endif()
 
 # Generating the virtual installation within the build folder
-set(PYGINKGO_PYTHON_FILES ${PROJECT_SOURCE_DIR}/src/pyGinkgo/__init__.py
-                          ${PROJECT_SOURCE_DIR}/src/pyGinkgo/core.py)
+set(PYGINKGO_PYTHON_FILES
+    ${PROJECT_SOURCE_DIR}/src/pyGinkgo/__init__.py
+    ${PROJECT_SOURCE_DIR}/src/pyGinkgo/core.py
+    ${PROJECT_SOURCE_DIR}/src/pyGinkgo/rayleigh_ritz.py)
 add_custom_target(
   pyGinkgo_virtual_installation ALL
   DEPENDS pyGinkgoBindings

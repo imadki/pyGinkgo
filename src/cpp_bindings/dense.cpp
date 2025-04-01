@@ -120,6 +120,22 @@ void init_dense(py::module_ &module_matrix, const std::string typestr)
                      return std::make_shared<gko::matrix::Dense<ValueType>>(m);
                  }
              })
+        .def(
+            "T",
+            [](gko::matrix::Dense<ValueType> &m) {
+                return gko::share(m.transpose());
+            },
+            "Computes and returns transpose of the matrix")
+        .def(
+            "convert_to_csr",
+            [](gko::matrix::Dense<ValueType> &m) {
+                auto exec = m.get_executor();
+                auto csr =
+                    gko::share(gko::matrix::Csr<ValueType, int>::create(exec));
+                m.convert_to(csr);
+                return csr;
+            },
+            "Computes and returns transpose of the matrix")
         .def_buffer([](gko::matrix::Dense<ValueType> &m) -> py::buffer_info {
             // buffer info needs data on host, thus if data is on device it
             // should be copied to host first
@@ -156,7 +172,7 @@ void init_dense(py::module_ &module_matrix, const std::string typestr)
                     dim, /* Number of dimensions */
                     // TODO: potential mistake:
                     {rows, cols}, /* Buffer dimensions */
-                    {sizeof(ValueType), sizeof(ValueType) * rows}
+                    {sizeof(ValueType) * cols, sizeof(ValueType)}
                     /* Strides (in bytes) for each index */
                 );
             }

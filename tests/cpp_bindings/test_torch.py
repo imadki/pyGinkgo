@@ -59,3 +59,19 @@ class TestTorchInteroperability:
         assert dense.at(1, 1) == 4.0
         assert dense.get_size()[0] == 2
         assert dense.get_size()[1] == 2
+
+    def test_can_create_torch_tensor_from_dense(self, data_type):
+        executor = pgb.ReferenceExecutor()
+        data = np.array([[1.0, 2.0], [3.0, 4.0]], dtype=d_type_map[data_type])
+        dense_cls = getattr(pgb.matrix, "dense_" + data_type)
+        dense = dense_cls(executor, data)
+        torch_tensor = torch.tensor(data, dtype=torch_d_type_map[data_type])
+        assert torch_tensor[0][0].item() == 1.0
+        assert torch_tensor[0][1].item() == 2.0
+        assert torch_tensor[1][0].item() == 3.0
+        assert torch_tensor[1][1].item() == 4.0
+        torch_tensor = torch.tensor(np.array(dense), dtype=torch_d_type_map[data_type])
+        assert torch_tensor[0][0].item() == 1.0
+        assert torch_tensor[0][1].item() == 2.0
+        assert torch_tensor[1][0].item() == 3.0
+        assert torch_tensor[1][1].item() == 4.0

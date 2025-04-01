@@ -4,6 +4,7 @@
 
 from pyGinkgo import pyGinkgoBindings as pGB
 import json
+import numpy as np
 
 try:
     import torch
@@ -40,7 +41,7 @@ def as_array(obj, executor: str = "Reference", dtype="float"):
     return array_cls(executor, obj)
 
 
-def as_tensor(obj, executor: str = "Reference", dtype="float"):
+def as_tensor(obj=None, dim=None, executor: str = "Reference", dtype="float"):
     """create a ginkgo array from a given object"""
     if not dtype in valid_value_types:
         raise ValueError(
@@ -49,35 +50,56 @@ def as_tensor(obj, executor: str = "Reference", dtype="float"):
             + " possible choices are: "
             + str(valid_value_types)
         )
-    if not executor in valid_executor:
-        raise ValueError(
-            "Not a valid executor: "
-            + dtype
-            + " possible choices are: "
-            + str(valid_executor)
-        )
+    if isinstance(executor,str):
+        if not executor in valid_executor:
+            raise ValueError(
+                "Not a valid executor: "
+                + executor
+                + " possible choices are: "
+                + str(valid_executor)
+            )
+        executor = getattr(pGB, executor + "Executor")()
 
     if torch_avail:
         if isinstance(obj, torch.Tensor):
             obj = obj.__array__()
 
-    array_cls = getattr(pGB.base, "dense_" + dtype)
+    array_cls = getattr(pGB.matrix, "dense_" + dtype)
+    if obj:
+        return array_cls(executor, obj)
+    else:
+        return array_cls(executor, dim)
+
+
+def factor(A, kind="Upper", executor="Reference"):
+    if isinstance(executor,str) and  not executor in valid_executor:
+        raise ValueError(
+            "Not a valid executor: "
+            + executor
+            + " possible choices are: "
+            + str(valid_executor)
+        )
+
     executor = getattr(pGB, executor + "Executor")()
-    return array_cls(executor, obj)
+    factorization = pGB.factorization.factorization(executor, A)
+    if kind == "Upper":
+        return factorization.get_upper_factor()
+    if kind == "Lower":
+        return factorization.get_lower_factor()
 
 
-def solve(A, b, initial_guess=None, solver_args: dict = dict()):
-    """Solve a given linear system, where A is the system matrix and b the RHS
+def eigen_solve(A,solver_args=None):
+    exec_obj = A.get_executor()
+    torchA = torch.as_tensor(np.array(A))
+    dtype = str(type(A)).split('_')[1]
+    L, Q = torch.linalg.eigh(torchA)
+    dense_cls = getattr(pGB.matrix, f"dense_float")
+    Lambda = dense_cls(exec_obj, L.__array__())
+    hY = dense_cls(exec_obj, Q.__array__())
+    return Lambda, hY
 
-    Parameters: A - The system matrix
-                b - The right hand side vector
-                initial_guess - The initial guess
-                solver - The solver
-                solver_args - A dictionary that is forwarded to the solver containing
-                    arguments, eg {'max_iters': 100, 'tolerance': 1e-6}
-    Returns: tuple of a logger object and solution vector
-    """
 
+def config_solve(A,b,x,solver_args=None):
     if not solver_args:
         solver_args = {
             "type": "solver::Gmres",
@@ -92,18 +114,48 @@ def solve(A, b, initial_guess=None, solver_args: dict = dict()):
                 {"type": "ResidualNorm", "reduction_factor": 1e-7},
             ],
         }
+
     solver_executor = A.get_executor()
-
-    # TODO: Create a better way to check the dtype of the matrix
     dtype = str(type(A)).split('_')[1]
-    dense_cls = getattr(pGB.matrix, f"dense_{dtype}")
-
-    if not initial_guess:
-        initial_guess = dense_cls(b.get_executor(), (b.dim[0], 1))
-        initial_guess.fill(0.0)
-
+    # TODO: Create a better way to check the dtype of the matrix
     solver_cls = getattr(pGB.solver, "config_solve_" + dtype)
     logger = solver_cls(
-        solver_executor, A, b, initial_guess, json.dumps(solver_args)
+        solver_executor, A, b, x, json.dumps(solver_args)
     )
-    return logger, initial_guess
+
+    return logger, x
+
+def triangular_solve(A,b,x,solver_args):
+    kind = solver_args["type"]
+    dtype = str(type(A)).split('_')[1]
+    itype = str(type(A)).split('_')[2]
+    s = f"{kind}Trs_{dtype}_int32" # TODO why does it fail for + itype
+    ctor = getattr(pGB.solver, s)
+    exec_obj = A.get_executor()
+    trs = ctor(exec_obj, A)
+    trs.apply(b, x)
+    return None, x
+
+def solve(A, b, initial_guess=None, solver_args: dict = dict(), kind="config"):
+    """Solve a given linear system, where A is the system matrix and b the RHS
+
+    Parameters: A - The system matrix
+                b - The right hand side vector
+                initial_guess - The initial guess
+                solver - The solver
+                solver_args - A dictionary that is forwarded to the solver containing
+                    arguments, eg {'max_iters': 100, 'tolerance': 1e-6}
+                kind - the underlying solver, eg. config
+    Returns: tuple of a logger object and solution vector
+    """
+
+    ctor = globals()[kind+"_solve"]
+
+    if not initial_guess:
+        dtype = str(type(A)).split('_')[1]
+        dense_cls = getattr(pGB.matrix, f"dense_{dtype}")
+        dim = (A.get_size()[1], b.get_size()[1])
+        initial_guess = dense_cls(b.get_executor(), dim)
+        initial_guess.fill(0.0)
+
+    return ctor(A,b,x=initial_guess,solver_args=solver_args)
