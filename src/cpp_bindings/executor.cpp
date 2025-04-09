@@ -106,4 +106,43 @@ void add_executor_classes(py::module_ &root_module)
 
         .def_static("get_num_devices", &gko::HipExecutor::get_num_devices);
 #endif
+#ifdef GINKGO_BUILD_SYCL
+    py::class_<gko::detail::ExecutorBase<gko::DpcppExecutor>, gko::Executor,
+               std::shared_ptr<gko::detail::ExecutorBase<gko::DpcppExecutor>>>(
+        root_module, "DpcppExecutorBase");
+
+    py::class_<gko::DpcppExecutor,
+               gko::detail::ExecutorBase<gko::DpcppExecutor>,
+               std::shared_ptr<gko::DpcppExecutor>>(root_module,
+                                                    "DpcppExecutor")
+        .def(py::init([](int dev_id, std::shared_ptr<gko::Executor> master,
+                         std::string device_type,
+                         dpcpp_queue_property property) {
+                 return gko::DpcppExecutor::create(dev_id, master, device_type,
+                                                   property);
+             }),
+             // The first two are the deviation from the original library
+             py::arg_v("device_id", 0),
+             py::arg_v("master", gko::ReferenceExecutor::create(),
+                       "ReferenceExecutor()"),
+             py::arg_v("device_type", "all", "all"),
+             py::arg_v("dpcpp_queue_property", dpcpp_queue_property::in_order,
+                       "in_order"),
+             "The default arguments are:\n"
+             "    device_id: 0\n"
+             "    master: ReferenceExecutor()\n"
+             "    device_type: all\n"
+             "    dpcpp_queue_property: in_order")
+
+        .def_property_readonly(
+            "master",
+            [](std::shared_ptr<gko::DpcppExecutor> self)
+                -> std::shared_ptr<gko::Executor>
+            // Hopefully there would be no problems with converting val to lval
+            { return self->get_master(); })
+
+        .def_property_readonly("device_id", &gko::DpcppExecutor::get_device_id)
+
+        .def_static("get_num_devices", &gko::DpcppExecutor::get_num_devices);
+#endif
 }

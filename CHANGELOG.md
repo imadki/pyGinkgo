@@ -1,4 +1,5 @@
 # Version 0.1.0 (unreleased)
+- Add DPCPP (SYCL) Executor bindings [#79](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/79)
 - Added parametrization to templated classes [#75](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/75)
 - Add pyTorch interoperability [#56](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/56)
 - Add direct solver bindings [#72](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/72)
