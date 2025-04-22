@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 //
-// SPDX-FileCopyrightText: 2024 pyGinkgo authors
+// SPDX-FileCopyrightText: 2025 pyGinkgo authors
 
 // TODO: might require placement in a separate dedicated folder
 

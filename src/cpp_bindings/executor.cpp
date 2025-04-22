@@ -56,16 +56,13 @@ void add_executor_classes(py::module_ &root_module)
              "    master: ReferenceExecutor()\n"
              "    allocator: CudaAllocator()\n"
              "    stream: cuda_stream()")
-
         .def_property_readonly(
             "master",
             [](std::shared_ptr<gko::CudaExecutor> self)
                 -> std::shared_ptr<gko::Executor>
             // Hopefully there would be no problems with converting val to lval
             { return self->get_master(); })
-
         .def_property_readonly("device_id", &gko::CudaExecutor::get_device_id)
-
         .def_static("get_num_devices", &gko::CudaExecutor::get_num_devices);
 #endif
 #ifdef GINKGO_BUILD_HIP
@@ -94,16 +91,13 @@ void add_executor_classes(py::module_ &root_module)
              "    master: ReferenceExecutor()\n"
              "    allocator: HipAllocator()\n"
              "    stream: hip_stream()")
-
         .def_property_readonly(
             "master",
             [](std::shared_ptr<gko::HipExecutor> self)
                 -> std::shared_ptr<gko::Executor>
             // Hopefully there would be no problems with converting val to lval
             { return self->get_master(); })
-
         .def_property_readonly("device_id", &gko::HipExecutor::get_device_id)
-
         .def_static("get_num_devices", &gko::HipExecutor::get_num_devices);
 #endif
 #ifdef GINKGO_BUILD_SYCL
@@ -133,16 +127,13 @@ void add_executor_classes(py::module_ &root_module)
              "    master: ReferenceExecutor()\n"
              "    device_type: all\n"
              "    dpcpp_queue_property: in_order")
-
         .def_property_readonly(
             "master",
             [](std::shared_ptr<gko::DpcppExecutor> self)
                 -> std::shared_ptr<gko::Executor>
             // Hopefully there would be no problems with converting val to lval
             { return self->get_master(); })
-
         .def_property_readonly("device_id", &gko::DpcppExecutor::get_device_id)
-
         .def_static("get_num_devices", &gko::DpcppExecutor::get_num_devices);
 #endif
 }
