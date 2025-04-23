@@ -19,6 +19,7 @@ void init_config_solver_all_types(py::module_ &);
 void init_ilu_all_types(py::module_ &);
 void add_allocator_classes(py::module_ &);
 void add_stream_classes(py::module_ &);
+void add_dpcpp_queue_property_enum(py::module_ &);
 void add_executor_classes(py::module_ &);
 
 PYBIND11_MODULE(pyGinkgoBindings, m)
@@ -27,6 +28,7 @@ PYBIND11_MODULE(pyGinkgoBindings, m)
 
     add_allocator_classes(m);
     add_stream_classes(m);
+    add_dpcpp_queue_property_enum(m);
     add_executor_classes(m);
 
     // Declaring common types

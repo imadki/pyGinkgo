@@ -71,6 +71,9 @@ endif()
 if(GINKGO_BUILD_HIP)
   add_compile_definitions(GINKGO_BUILD_HIP)
 endif()
+if(GINKGO_BUILD_SYCL)
+  add_compile_definitions(GINKGO_BUILD_SYCL)
+endif()
 
 add_subdirectory(src/cpp_bindings)
 
