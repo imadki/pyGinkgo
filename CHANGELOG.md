@@ -6,7 +6,7 @@
 - Add HIP Executor bindings [#68](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/68)
 - Add ILU preconditioner bindings [#55](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/55)
 - Aligning tests with code [#65](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/65)
-- Add file config solver bindings [#64](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/64)
+- Add file config solver bindings [#64](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/64) and the version without convergence logger [#77](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/77)
 - Add GMRES solver bindings [#51](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/51)
 - Add stubs generation [#58](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/58)
 - Add simplified CMakePresets [#49](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/49)
