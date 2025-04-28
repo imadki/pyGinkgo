@@ -33,7 +33,13 @@ PyGinkgo is a Python binding for the Ginkgo framework, providing access to Ginkg
    cmake ..
 
    # Build the project using the specified number of cores (replace "number of cores" with the desired value)
+   # (Here we are still within the build directory)
    cmake --build . -j=number_of_cores
+   ```
+3. **Install the module**:
+   ```bash
+   # (Here we are still within the build directory)
+   cmake --install .
    ```
 
 ### Running the tests
