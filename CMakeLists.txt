@@ -107,6 +107,27 @@ if(${ENABLE_PYGINKGOBINDINGS_STUBS})
     COMMENT "Generating stub files at ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 endif()
 
+option(
+  ENABLE_PYGINKGOBINDINGS_DEV_STUBS
+  "Whether the stub (interface) files are to be generated for pyGinkgoBindings\
+   at src/pyGinkgo folder" OFF)
+if(${ENABLE_PYGINKGOBINDINGS_DEV_STUBS})
+  message("Enabled stubs generation for pyGinkgoBindings at\
+     '${PROJECT_SOURCE_DIR}/src/pyGinkgo/pyGinkgoBindings'")
+  add_custom_command(
+    TARGET pyGinkgoBindings
+    POST_BUILD
+    WORKING_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+    VERBATIM
+    COMMAND
+      ${PYTHON_EXECUTABLE} -c
+      "import pybind11_stubgen, distutils.dir_util; pybind11_stubgen.main();\
+       distutils.dir_util.copy_tree('./pyGinkgoBindings',\
+       '${PROJECT_SOURCE_DIR}/src/pyGinkgo/pyGinkgoBindings', update=1)"
+      pyGinkgoBindings "-o./"
+    COMMENT "Generating stub files at ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
+endif()
+
 # Generating the virtual installation within the build folder
 set(PYGINKGO_PYTHON_FILES
     ${PROJECT_SOURCE_DIR}/src/pyGinkgo/__init__.py
