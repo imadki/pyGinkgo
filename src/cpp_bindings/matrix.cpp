@@ -73,7 +73,17 @@ void init_matrix(py::module_ &module, const std::string matrix_type,
             },
             "Computes the transpose of a matrix")
         .def("get_size", &MatrixType<ValueType, IndexType>::get_size,
-             "Get the size of the matrix");
+             "Get the size of the matrix")
+        .def(
+            "convert_to_dense",
+            [](MatrixType<ValueType, IndexType> &m) {
+                auto exec = m.get_executor();
+                auto dense =
+                    gko::share(gko::matrix::Dense<ValueType>::create(exec));
+                m.convert_to(dense);
+                return dense;
+            },
+            "Returns dense representation of the matrix");
 
     std::string read_fn = "read_" + matrix_type + "_" + value_index_str;
     module.def(read_fn.c_str(), [](const std::string &fn,

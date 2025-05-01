@@ -43,7 +43,14 @@ PYBIND11_MODULE(pyGinkgoBindings, m)
             "apply",
             [](const gko::LinOp &m, std::shared_ptr<const gko::LinOp> b,
                std::shared_ptr<gko::LinOp> x) { m.apply(b, x); },
-            "");
+            py::arg("b"), py::arg("x"),
+            "Applies a linear operator to a vector (or a sequence of "
+            "vectors).\n\n"
+            "Performs the operation x = op(b), where op is this linear "
+            "operator.\n\n"
+            "@param b  the input vector(s) on which the operator is applied\n"
+            "@param x  the output vector(s) where the result is stored\n\n"
+            "@return this");
 
     py::class_<gko::dim<2>>(m, "dim2")
         .def(py::init<unsigned long, unsigned long>())

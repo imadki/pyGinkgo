@@ -6,17 +6,29 @@ import numpy as np
 
 import pyGinkgo.pyGinkgoBindings as pgb
 
+from test_utils import verify_dense_vec
+
 
 class TestFactorizationBinding:
     ref = pgb.ReferenceExecutor()
     values = [[2.0, 1.0, 1.0], [1.0, 2.0, 1.0], [1.0, 1.0, 2.0]]
 
     def test_factorization(self):
-        dense = pgb.matrix.dense_float(
-            self.ref, np.array(self.values, dtype=np.float32)
-        )
+        np_array = np.array(self.values, dtype=np.float32)
+        dense = pgb.matrix.dense_float(self.ref, np_array)
         factorization = pgb.factorization.factorization(
             self.ref, dense.convert_to_csr()
         )
+
         lower = factorization.get_lower_factor()
-        assert lower.get_num_stored_elements() == 6
+        upper = factorization.get_upper_factor()
+
+        mul_res = pgb.matrix.dense_float(
+            self.ref, np.zeros((3, 3), dtype=np.float32)
+        ).convert_to_csr()
+        lower.apply(upper, mul_res)
+
+        # lower @ upper == dense
+        verify_dense_vec(
+            mul_res.convert_to_dense(), np_array.reshape(-1), precision=1e-6
+        )
