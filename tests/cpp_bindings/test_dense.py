@@ -8,7 +8,7 @@ import numpy as np
 
 import pyGinkgo.pyGinkgoBindings as pGB
 
-from test_utils import verify_dense_vec, verify_within_precision, d_type_map
+from test_utils import verify_dense_vec, d_type_map
 
 d_precision_map = {
     "half": 1e-3,
@@ -72,9 +72,9 @@ class TestDense:
         dense = read_func(fn, self.ref)
 
         assert dense.get_num_stored_elements() == 12
-        verify_within_precision(dense.at(0, 2), 0.2785, d_precision_map[data_type])
-        verify_within_precision(dense.at(2), 0.2785, d_precision_map[data_type])
-        verify_within_precision(dense.at(2, 2), 0.9575, d_precision_map[data_type])
+        assert dense.at(0, 2) == pytest.approx(0.2785, abs=d_precision_map[data_type])
+        assert dense.at(2) == pytest.approx(0.2785, abs=d_precision_map[data_type])
+        assert dense.at(2, 2) == pytest.approx(0.9575, abs=d_precision_map[data_type])
 
     def test_can_create_dense_from_2D_np_array_with_default_exec(self, data_type):
         dense_cls = getattr(pGB.matrix, "dense_" + data_type)
