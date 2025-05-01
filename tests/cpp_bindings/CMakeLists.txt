@@ -9,7 +9,7 @@ cmake_path(GET CMAKE_LIBRARY_OUTPUT_DIRECTORY PARENT_PATH
 function(pyginkgo_bindings_test TEST)
   add_test(
     NAME pyginkgo_bindings_test_${TEST}
-    COMMAND ${PYTHON_EXECUTABLE} -m pytest
+    COMMAND ${PYTHON_EXECUTABLE} -m pytest -vv
             ${CMAKE_CURRENT_SOURCE_DIR}/test_${TEST}.py
     WORKING_DIRECTORY ${PYGINKGO_TESTS_WORK_DIR})
 endfunction()
