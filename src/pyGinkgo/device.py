@@ -11,7 +11,7 @@ class DeviceType(StrEnum):
     dpcpp = auto()
     
 
-def device(type: str = "cpu", index: Optional[int] = None):
+def device(type: str = "cpu", index: Optional[int] = None) -> pGB.Executor:
     """
     Get Ginkgo executor device.
 

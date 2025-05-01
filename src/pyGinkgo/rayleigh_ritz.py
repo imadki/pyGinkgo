@@ -9,15 +9,15 @@ import torch
 import numpy as np
 
 
-def mul(a, b, dtype="float", executor="Reference"):
+def mul(a, b, dtype="float", device="cpu"):
     """ helper function to perform a @ b """
     dimRes = (a.get_size()[0], b.get_size()[1])
     # executor = a.get_executor()
-    res = pg.as_tensor(executor=executor, dim=dimRes, dtype=dtype)
+    res = pg.as_tensor(device=device, dim=dimRes, dtype=dtype)
     a.apply(b, res)
     return res
 
-def RR1(X, AX, BX, dtype="float", executor="Reference"):
+def RR1(X, AX, BX, dtype="float", device="cpu"):
     """
     Computes m least dominant generalized eigenpairs of
     (A,B) with respect to the range of X using a
@@ -32,11 +32,10 @@ def RR1(X, AX, BX, dtype="float", executor="Reference"):
     """
     XT = X.T()
     # compute G1 = X.T @ AX
-    G1 = mul(XT, AX, dtype=dtype, executor=executor)
+    G1 = mul(XT, AX, dtype=dtype, device=device)
     # compute G2 = X.T @ BX
-    G2 = mul(XT, BX, dtype=dtype, executor=executor)
+    G2 = mul(XT, BX, dtype=dtype, device=device)
 
-    exec_obj = pGB.ReferenceExecutor()
     # compute G2P G2' = L^(-1) @ G1
     # Find L s.t. L @ L.T = G2
     L = pg.factor(G2, kind="Lower")

@@ -5,6 +5,7 @@
 from pyGinkgo import pyGinkgoBindings as pGB
 import json
 import numpy as np
+import pyGinkgo as pg
 
 try:
     import torch
@@ -16,10 +17,9 @@ except ImportError:
 valid_value_types = ["half", "float", "double"]
 valid_index_types = ["int32", "int64"]
 valid_dtypes = valid_value_types + valid_index_types
-valid_executor = ["Reference", "Cuda"]
 
 
-def as_array(obj, executor: str = "Reference", dtype="float"):
+def as_array(obj, device: str | pGB.Executor = "cpu", dtype="float"):
     """create a ginkgo array from a given object"""
     if not dtype in valid_dtypes:
         raise ValueError(
@@ -28,20 +28,16 @@ def as_array(obj, executor: str = "Reference", dtype="float"):
             + " possible choices are: "
             + str(valid_dtypes)
         )
-    if not executor in valid_executor:
-        raise ValueError(
-            "Not a valid executor: "
-            + dtype
-            + " possible choices are: "
-            + str(valid_executor)
-        )
-
+    if isinstance(device, str):
+        executor = pg.device(device)
+    else:
+        executor = device
+    
     array_cls = getattr(pGB.base, "array_" + dtype)
-    executor = getattr(pGB, executor + "Executor")()
     return array_cls(executor, obj)
 
 
-def as_tensor(obj=None, dim=None, executor: str = "Reference", dtype="float"):
+def as_tensor(obj=None, dim=None, device: str | pGB.Executor = "cpu", dtype="float"):
     """create a ginkgo array from a given object"""
     if not dtype in valid_value_types:
         raise ValueError(
@@ -50,15 +46,10 @@ def as_tensor(obj=None, dim=None, executor: str = "Reference", dtype="float"):
             + " possible choices are: "
             + str(valid_value_types)
         )
-    if isinstance(executor,str):
-        if not executor in valid_executor:
-            raise ValueError(
-                "Not a valid executor: "
-                + executor
-                + " possible choices are: "
-                + str(valid_executor)
-            )
-        executor = getattr(pGB, executor + "Executor")()
+    if isinstance(device, str):
+        executor = pg.device(device)
+    else:
+        executor = device
 
     if torch_avail:
         if isinstance(obj, torch.Tensor):
@@ -71,16 +62,12 @@ def as_tensor(obj=None, dim=None, executor: str = "Reference", dtype="float"):
         return array_cls(executor, dim)
 
 
-def factor(A, kind="Upper", executor="Reference"):
-    if isinstance(executor,str) and  not executor in valid_executor:
-        raise ValueError(
-            "Not a valid executor: "
-            + executor
-            + " possible choices are: "
-            + str(valid_executor)
-        )
-
-    executor = getattr(pGB, executor + "Executor")()
+def factor(A, kind="Upper", device: str | pGB.Executor = "cpu"):
+    if isinstance(device, str):
+        executor = pg.device(device)
+    else:
+        executor = device
+    
     factorization = pGB.factorization.factorization(executor, A)
     if kind == "Upper":
         return factorization.get_upper_factor()
