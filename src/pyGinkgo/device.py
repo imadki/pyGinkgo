@@ -3,15 +3,18 @@ from pyGinkgo import pyGinkgoBindings as pGB
 from enum import StrEnum, auto
 from typing import Optional
 
-class DeviceType(StrEnum):
+class ExecutorType(StrEnum):
     cpu = auto()
     omp = auto()
     cuda = auto()
     hip = auto()
     dpcpp = auto()
+
+
+DeviceType = ExecutorType | pGB.Executor | str
     
 
-def device(type: str = "cpu", index: Optional[int] = None) -> pGB.Executor:
+def device(type: DeviceType = "cpu", index: Optional[int] = None) -> pGB.Executor:
     """
     Get Ginkgo executor device.
 
@@ -23,7 +26,12 @@ def device(type: str = "cpu", index: Optional[int] = None) -> pGB.Executor:
     index : int, optional
         The index of the device to set. Default is 0.
         It can only be specified when type doesn't include it already.
+
+    If type is a Ginkgo executor, it will be returned as is.
     """
+    if isinstance(type, pGB.Executor):
+        return type
+
     params = type.split(":")
 
     if len(params) + (index is not None) > 2:
@@ -37,28 +45,28 @@ def device(type: str = "cpu", index: Optional[int] = None) -> pGB.Executor:
     
     # Making device type case independent
     type = params[0].lower()
-    if DeviceType.cpu in type:
+    if ExecutorType.cpu in type:
         return pGB.ReferenceExecutor()
-    elif DeviceType.omp in type:
+    elif ExecutorType.omp in type:
         return pGB.OmpExecutor()
     
     # All the other types require an index
     if index is None:
         index = 0
     
-    if DeviceType.cuda in type:
+    if ExecutorType.cuda in type:
         return pGB.CudaExecutor(
             device_id=index,
         )
-    elif DeviceType.hip in type:
+    elif ExecutorType.hip in type:
         return pGB.HipExecutor(
             device_id=index,
         )
-    elif DeviceType.dpcpp in type:
+    elif ExecutorType.dpcpp in type:
         return pGB.DpcppExecutor(
             device_id=index,
         )
 
     raise ValueError(
-        f"Unknown device type: {type}. Valid types are: {', '.join(t for t in DeviceType)}."
+        f"Unknown device type: {type}. Valid types are: {', '.join(t for t in ExecutorType)}."
     )

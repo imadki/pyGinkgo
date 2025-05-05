@@ -5,6 +5,7 @@
 import os
 import json
 import numpy as np
+from typing import Optional
 
 import valid_types
 import pyGinkgo as pg
@@ -18,7 +19,7 @@ except ImportError:
     torch_avail = False
 
 
-def as_array(obj, device: str | pGB.Executor = "cpu", dtype="float"):
+def as_array(obj, device: pg.DeviceType = "cpu", dtype="float"):
     """create a ginkgo array from a given object"""
     if not dtype in valid_types.dtype:
         raise ValueError(
@@ -26,16 +27,19 @@ def as_array(obj, device: str | pGB.Executor = "cpu", dtype="float"):
             "Possible choices are: " +
             ', '.join(t for t in valid_types.dtype)
         )
-    if isinstance(device, str):
-        executor = pg.device(device)
-    else:
-        executor = device
+    
+    executor = pg.device(device)
     
     array_cls = getattr(pGB.base, "array_" + dtype)
     return array_cls(executor, obj)
 
 
-def as_tensor(obj=None, dim=None, device: str | pGB.Executor = "cpu", dtype="float"):
+def as_tensor(
+    obj = None,
+    dim: Optional[tuple] = None,
+    device: pg.DeviceType = "cpu",
+    dtype: valid_types.ValueType | str = "float"
+):
     """create a ginkgo array from a given object"""
     if not dtype in valid_types.ValueType:
         raise ValueError(
@@ -43,10 +47,8 @@ def as_tensor(obj=None, dim=None, device: str | pGB.Executor = "cpu", dtype="flo
             "Possible choices are: " +
             ', '.join(t for t in valid_types.ValueType)
         )
-    if isinstance(device, str):
-        executor = pg.device(device)
-    else:
-        executor = device
+    
+    executor = pg.device(device)
 
     if torch_avail:
         if isinstance(obj, torch.Tensor):
@@ -64,7 +66,7 @@ def read(
     format: valid_types.MatrixFormat | str = "dense",
     dtype: valid_types.ValueType | str = "double",
     itype: valid_types.IndexType | str = "int32",
-    device: str | pg.DeviceType | pGB.Executor = "cpu",
+    device: pg.DeviceType = "cpu",
 ):
     """Read a matrix from a file
 
@@ -79,11 +81,7 @@ def read(
     # Processing filepath
     filepath = os.path.abspath(path)
     
-    # Processing device
-    if isinstance(device, pGB.Executor):
-        executor = device
-    else:
-        executor = pg.device(device)
+    executor = pg.device(device)
 
     # Checking if the format is valid
     if format not in valid_types.MatrixFormat:
