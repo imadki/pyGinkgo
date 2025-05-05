@@ -2,10 +2,13 @@
 #
 # SPDX-FileCopyrightText: 2024 pyGinkgo authors
 
-from pyGinkgo import pyGinkgoBindings as pGB
+import os
 import json
 import numpy as np
+
+import valid_types
 import pyGinkgo as pg
+from pyGinkgo import pyGinkgoBindings as pGB
 
 try:
     import torch
@@ -14,19 +17,14 @@ try:
 except ImportError:
     torch_avail = False
 
-valid_value_types = ["half", "float", "double"]
-valid_index_types = ["int32", "int64"]
-valid_dtypes = valid_value_types + valid_index_types
-
 
 def as_array(obj, device: str | pGB.Executor = "cpu", dtype="float"):
     """create a ginkgo array from a given object"""
-    if not dtype in valid_dtypes:
+    if not dtype in valid_types.dtype:
         raise ValueError(
-            "Not a valid dtype: "
-            + dtype
-            + " possible choices are: "
-            + str(valid_dtypes)
+            f"Not a valid dtype: {dtype}. " +
+            "Possible choices are: " +
+            ', '.join(t for t in valid_types.dtype)
         )
     if isinstance(device, str):
         executor = pg.device(device)
@@ -39,12 +37,11 @@ def as_array(obj, device: str | pGB.Executor = "cpu", dtype="float"):
 
 def as_tensor(obj=None, dim=None, device: str | pGB.Executor = "cpu", dtype="float"):
     """create a ginkgo array from a given object"""
-    if not dtype in valid_value_types:
+    if not dtype in valid_types.ValueType:
         raise ValueError(
-            "Not a valid dtype: "
-            + dtype
-            + " possible choices are: "
-            + str(valid_value_types)
+            f"Not a valid dtype: {dtype}. " +
+            "Possible choices are: " +
+            ', '.join(t for t in valid_types.ValueType)
         )
     if isinstance(device, str):
         executor = pg.device(device)
@@ -60,6 +57,65 @@ def as_tensor(obj=None, dim=None, device: str | pGB.Executor = "cpu", dtype="flo
         return array_cls(executor, obj)
     else:
         return array_cls(executor, dim)
+
+
+def read(
+    path: str | bytes | os.PathLike,
+    format: valid_types.MatrixFormat | str = "dense",
+    dtype: valid_types.ValueType | str = "double",
+    itype: valid_types.IndexType | str = "int32",
+    device: str | pg.DeviceType | pGB.Executor = "cpu",
+):
+    """Read a matrix from a file
+
+    Parameters: path - The path to the file
+                format - The format of the file, eg. dense, Csr, Coo
+                dtype - The data type of the matrix, eg. float, double, etc.
+                itype - The index type of the matrix, eg. int32, int64, etc.
+                device - The device to use for the matrix
+    Returns: the matrix
+    """
+
+    # Processing filepath
+    filepath = os.path.abspath(path)
+    
+    # Processing device
+    if isinstance(device, pGB.Executor):
+        executor = device
+    else:
+        executor = pg.device(device)
+
+    # Checking if the format is valid
+    if format not in valid_types.MatrixFormat:
+        raise ValueError(
+            f"Not a valid matrix format: {format}. " +
+            "Possible choices are: " +
+            ', '.join(t for t in valid_types.MatrixFormat)
+        )
+
+    # Checking if the format is dtype
+    if dtype not in valid_types.ValueType:
+        raise ValueError(
+            f"Not a valid dtype: {dtype}. " +
+            "Possible choices are: " +
+            ', '.join(t for t in valid_types.ValueType)
+        )
+
+    # Processing format
+    if format == "dense":
+        read_func = getattr(pGB.matrix, f"read_dense_{dtype}")
+    else:
+        # Checking if the itype is valid
+        if itype not in valid_types.IndexType:
+            raise ValueError(
+                f"Not a valid itype: {itype}. " +
+                "Possible choices are: " +
+                ', '.join(t for t in valid_types.IndexType)
+            )
+
+        read_func = getattr(pGB.matrix, f"read_{format}_{dtype}_{itype}")
+
+    return read_func(filepath, executor)
 
 
 def factor(A, kind="Upper", device: str | pGB.Executor = "cpu"):

@@ -5,6 +5,6 @@
 from .pyGinkgoBindings import *
 
 from .core import *
-from .device import device
+from .device import *
 #from .solver import *
 from .rayleigh_ritz import *
