@@ -38,7 +38,8 @@ def as_tensor(
     obj = None,
     dim: Optional[tuple] = None,
     device: types.DeviceType = "cpu",
-    dtype: types.ValueType | str = "float"
+    dtype: types.ValueType | str = "float",
+    fill: Optional[float] = None,
 ):
     """create a ginkgo array from a given object"""
     if not dtype in types.ValueType:
@@ -58,7 +59,12 @@ def as_tensor(
     if obj:
         return array_cls(executor, obj)
     else:
-        return array_cls(executor, dim)
+        res = array_cls(executor, dim)
+        
+        if fill is not None:
+            res.fill(fill)
+        
+        return res
 
 
 def read(

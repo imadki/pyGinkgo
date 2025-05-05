@@ -32,7 +32,9 @@ class TestDense:
     def test_can_create_dense_linop_with_dim(self, data_type):
         dense_cls = getattr(pGB.matrix, "dense_" + data_type)
         dense = dense_cls(self.ref, (len(self.values), 1))
+        dense.fill(42.0)
         assert dense == dense
+        assert dense.at(0, 0) == 42.0
 
     def test_can_create_dense_linop_with_dim_stride(self, data_type):
         dense_cls = getattr(pGB.matrix, "dense_" + data_type)
