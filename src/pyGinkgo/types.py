@@ -1,5 +1,7 @@
 from enum import StrEnum, auto
 
+from . import pyGinkgoBindings as pGB
+
 class ValueType(StrEnum):
     half = auto()
     float = auto()
@@ -17,3 +19,12 @@ class MatrixFormat(StrEnum):
     Csr = auto()
     Coo = auto()
     
+
+class ExecutorType(StrEnum):
+    cpu = auto()
+    omp = auto()
+    cuda = auto()
+    hip = auto()
+    dpcpp = auto()
+
+DeviceType = ExecutorType | pGB.Executor | str

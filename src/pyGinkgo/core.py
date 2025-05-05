@@ -7,7 +7,7 @@ import json
 import numpy as np
 from typing import Optional
 
-import valid_types
+from . import types
 import pyGinkgo as pg
 from pyGinkgo import pyGinkgoBindings as pGB
 
@@ -19,13 +19,13 @@ except ImportError:
     torch_avail = False
 
 
-def as_array(obj, device: pg.DeviceType = "cpu", dtype="float"):
+def as_array(obj, device: types.DeviceType = "cpu", dtype="float"):
     """create a ginkgo array from a given object"""
-    if not dtype in valid_types.dtype:
+    if not dtype in types.dtype:
         raise ValueError(
             f"Not a valid dtype: {dtype}. " +
             "Possible choices are: " +
-            ', '.join(t for t in valid_types.dtype)
+            ', '.join(t for t in types.dtype)
         )
     
     executor = pg.device(device)
@@ -37,15 +37,15 @@ def as_array(obj, device: pg.DeviceType = "cpu", dtype="float"):
 def as_tensor(
     obj = None,
     dim: Optional[tuple] = None,
-    device: pg.DeviceType = "cpu",
-    dtype: valid_types.ValueType | str = "float"
+    device: types.DeviceType = "cpu",
+    dtype: types.ValueType | str = "float"
 ):
     """create a ginkgo array from a given object"""
-    if not dtype in valid_types.ValueType:
+    if not dtype in types.ValueType:
         raise ValueError(
             f"Not a valid dtype: {dtype}. " +
             "Possible choices are: " +
-            ', '.join(t for t in valid_types.ValueType)
+            ', '.join(t for t in types.ValueType)
         )
     
     executor = pg.device(device)
@@ -63,10 +63,10 @@ def as_tensor(
 
 def read(
     path: str | bytes | os.PathLike,
-    format: valid_types.MatrixFormat | str = "dense",
-    dtype: valid_types.ValueType | str = "double",
-    itype: valid_types.IndexType | str = "int32",
-    device: pg.DeviceType = "cpu",
+    format: types.MatrixFormat | str = "dense",
+    dtype: types.ValueType | str = "double",
+    itype: types.IndexType | str = "int32",
+    device: types.DeviceType = "cpu",
 ):
     """Read a matrix from a file
 
@@ -84,19 +84,19 @@ def read(
     executor = pg.device(device)
 
     # Checking if the format is valid
-    if format not in valid_types.MatrixFormat:
+    if format not in types.MatrixFormat:
         raise ValueError(
             f"Not a valid matrix format: {format}. " +
             "Possible choices are: " +
-            ', '.join(t for t in valid_types.MatrixFormat)
+            ', '.join(t for t in types.MatrixFormat)
         )
 
     # Checking if the format is dtype
-    if dtype not in valid_types.ValueType:
+    if dtype not in types.ValueType:
         raise ValueError(
             f"Not a valid dtype: {dtype}. " +
             "Possible choices are: " +
-            ', '.join(t for t in valid_types.ValueType)
+            ', '.join(t for t in types.ValueType)
         )
 
     # Processing format
@@ -104,11 +104,11 @@ def read(
         read_func = getattr(pGB.matrix, f"read_dense_{dtype}")
     else:
         # Checking if the itype is valid
-        if itype not in valid_types.IndexType:
+        if itype not in types.IndexType:
             raise ValueError(
                 f"Not a valid itype: {itype}. " +
                 "Possible choices are: " +
-                ', '.join(t for t in valid_types.IndexType)
+                ', '.join(t for t in types.IndexType)
             )
 
         read_func = getattr(pGB.matrix, f"read_{format}_{dtype}_{itype}")

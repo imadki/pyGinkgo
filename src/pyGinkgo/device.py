@@ -1,20 +1,9 @@
-from pyGinkgo import pyGinkgoBindings as pGB
-
-from enum import StrEnum, auto
+from . import types
+from . import pyGinkgoBindings as pGB
 from typing import Optional
-
-class ExecutorType(StrEnum):
-    cpu = auto()
-    omp = auto()
-    cuda = auto()
-    hip = auto()
-    dpcpp = auto()
-
-
-DeviceType = ExecutorType | pGB.Executor | str
     
 
-def device(type: DeviceType = "cpu", index: Optional[int] = None) -> pGB.Executor:
+def device(type: types.DeviceType = "cpu", index: Optional[int] = None) -> pGB.Executor:
     """
     Get Ginkgo executor device.
 
@@ -45,28 +34,30 @@ def device(type: DeviceType = "cpu", index: Optional[int] = None) -> pGB.Executo
     
     # Making device type case independent
     type = params[0].lower()
-    if ExecutorType.cpu in type:
+    if types.ExecutorType.cpu in type:
         return pGB.ReferenceExecutor()
-    elif ExecutorType.omp in type:
+    elif types.ExecutorType.omp in type:
         return pGB.OmpExecutor()
     
     # All the other types require an index
     if index is None:
         index = 0
     
-    if ExecutorType.cuda in type:
+    if types.ExecutorType.cuda in type:
         return pGB.CudaExecutor(
             device_id=index,
         )
-    elif ExecutorType.hip in type:
+    elif types.ExecutorType.hip in type:
         return pGB.HipExecutor(
             device_id=index,
         )
-    elif ExecutorType.dpcpp in type:
+    elif types.ExecutorType.dpcpp in type:
         return pGB.DpcppExecutor(
             device_id=index,
         )
 
     raise ValueError(
-        f"Unknown device type: {type}. Valid types are: {', '.join(t for t in ExecutorType)}."
+        f"Unknown device type: {type}." +
+        "Valid types are: " +
+        ', '.join(t for t in types.ExecutorType)
     )
