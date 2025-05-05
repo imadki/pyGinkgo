@@ -146,7 +146,8 @@ add_custom_target(
 ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 
 # adding tests
-include(CTest) # https://cmake.org/pipermail/cmake/2015-January/059742.html
+include(CTest) # https://cmake.org/pipermail/cmake/2015-January/059742.html -
+               # removing the issue with checking with dart availability
 add_subdirectory(tests/cpp_bindings)
 add_subdirectory(tests/pyGinkgo)
 

@@ -35,6 +35,7 @@ def device(type: str = "cpu", index: Optional[int] = None) -> pGB.Executor:
         except ValueError:
             raise ValueError("Invalid device index. It should be an integer.")
     
+    # Making device type case independent
     type = params[0].lower()
     if DeviceType.cpu in type:
         return pGB.ReferenceExecutor()
