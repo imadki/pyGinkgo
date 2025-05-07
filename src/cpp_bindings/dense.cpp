@@ -223,6 +223,8 @@ void init_dense(py::module_ &module_matrix, const std::string typestr)
              "Returns an element at row, column index.")
         .def("get_size", &gko::matrix::Dense<ValueType>::get_size,
              "Returns the dimension of the dense matrix.")
+        .def_property_readonly("size", &gko::matrix::Dense<ValueType>::get_size,
+                               "Returns the dimension of the dense matrix.")
         .def("get_num_stored_elements",
              &gko::matrix::Dense<ValueType>::get_num_stored_elements,
              "Returns the number of elements explicitly stored in the "

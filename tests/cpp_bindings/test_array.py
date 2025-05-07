@@ -36,6 +36,14 @@ class TestArray:
             expect = self.lst[i]
             assert arr.at(i) == expect  # implicit conversion to data_type
 
+    def test_size_property(self, data_type):
+        np_array = np.array(self.lst, dtype=d_type_map[data_type])
+        array_cls = getattr(pGB.base, "array_" + data_type)
+        arr = array_cls(self.ref, np_array)
+        assert arr.size == len(np_array)
+        with pytest.raises(AttributeError):
+            arr.size = 10
+
     def test_can_copy_construct_array(self, data_type):
         array_cls = getattr(pGB.base, "array_" + data_type)
         np_array = np.array(self.lst, dtype=d_type_map[data_type])

@@ -50,6 +50,7 @@ void init_array(py::module_ &module, const std::string typestr)
         .def("fill", &gko::array<ValueType>::fill,
              "Fill the array with the given value.")
         .def("get_size", &gko::array<ValueType>::get_size)
+        .def_property_readonly("size", &gko::array<ValueType>::get_size)
         .def("at", [](const gko::array<ValueType> &arr,
                       int idx) { return arr.get_const_data()[idx]; })
         .def("__repr__", [=](const gko::array<ValueType> &arr) {

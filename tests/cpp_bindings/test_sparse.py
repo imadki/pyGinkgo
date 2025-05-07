@@ -81,7 +81,6 @@ class TestSparseMatrix:
         rows = np.array(self.get_rows(matrix_format), dtype=di_type_map[index_type])
         cols = np.array(self.cols, dtype=di_type_map[index_type])
 
-        print(rows)
         sparse = matrix_cls(self.ref, (5, 5), coeffs, cols, rows)
         assert sparse == sparse
 
@@ -133,3 +132,21 @@ class TestSparseMatrix:
         sparse = reader(fn, self.ref)
 
         assert sparse == sparse
+
+    def test_can_get_size(self, matrix_format, value_type, index_type):
+        reader = getattr(pGB.matrix, f"read_{matrix_format}_{value_type}_{index_type}")
+        fn = os.path.dirname(os.path.realpath(__file__)) + "/sparse_example.mtx"
+        sparse = reader(fn, self.ref)
+
+        assert sparse.get_size()[0] == 19
+        assert sparse.get_size()[1] == 19
+
+    def test_size_property(self, matrix_format, value_type, index_type):
+        reader = getattr(pGB.matrix, f"read_{matrix_format}_{value_type}_{index_type}")
+        fn = os.path.dirname(os.path.realpath(__file__)) + "/sparse_example.mtx"
+        sparse = reader(fn, self.ref)
+
+        assert sparse.get_size()[0] == 19
+        assert sparse.get_size()[1] == 19
+        with pytest.raises(AttributeError):
+            sparse.size = pGB.dim2(4, 4)

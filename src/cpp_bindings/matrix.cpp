@@ -74,6 +74,9 @@ void init_matrix(py::module_ &module, const std::string matrix_type,
             "Computes the transpose of a matrix")
         .def("get_size", &MatrixType<ValueType, IndexType>::get_size,
              "Get the size of the matrix")
+        .def_property_readonly("size",
+                               &MatrixType<ValueType, IndexType>::get_size,
+                               "Get the size of the matrix")
         .def(
             "convert_to_dense",
             [](MatrixType<ValueType, IndexType> &m) {

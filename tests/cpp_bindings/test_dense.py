@@ -177,3 +177,13 @@ class TestDense:
         )
         assert dense.get_size()[0] == 3
         assert dense.get_size()[1] == 3
+
+    def test_dense_size_property(self, data_type):
+        dense_cls = getattr(pGB.matrix, "dense_" + data_type)
+        dense = dense_cls(
+            self.ref, (3, 3), np.array(self.values, dtype=d_type_map[data_type]), 3
+        )
+        assert dense.size[0] == 3
+        assert dense.size[1] == 3
+        with pytest.raises(AttributeError):
+            dense.size = pGB.dim2(4, 4)
