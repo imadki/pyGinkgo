@@ -33,7 +33,7 @@ void init_gmres(py::module_ &module_solver, const std::string value_type)
                  return gko::share(fact->generate(system_matrix));
              }),
              py::arg("exec"), py::arg("system_matrix"), py::arg("max_iters"),
-             py::arg("krylov_dim"), py::arg("tolerance"),
+             py::arg("krylov_dim"), py::arg("reduction_factor"),
              py::arg("relative_stop_mode"))
         .def(py::init([](std::shared_ptr<gko::Executor> exec,
                          std::shared_ptr<const gko::LinOp> system_matrix,
@@ -58,7 +58,7 @@ void init_gmres(py::module_ &module_solver, const std::string value_type)
              }),
              py::arg("exec"), py::arg("system_matrix"),
              py::arg("preconditioner"), py::arg("max_iters"),
-             py::arg("krylov_dim"), py::arg("tolerance"),
+             py::arg("krylov_dim"), py::arg("reduction_factor"),
              py::arg("relative_stop_mode"))
         .def("initialize_logger",
              [](gko::solver::Gmres<ValueType> &o) {

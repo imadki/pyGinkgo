@@ -24,7 +24,7 @@ class TestIterativeSolverBinding:
         "gmres": {
             "krylov_dim": 10,
             "max_iters": 1000,
-            "tolerance": 1e-06,
+            "reduction_factor": 1e-06,
             "relative_stop_mode": False,
         },
     }
@@ -51,7 +51,7 @@ class TestIterativeSolverBinding:
 
         assert logger.has_converged()
         assert logger.get_num_iterations() < args["max_iters"]
-        assert logger.get_residual_norm() < args["tolerance"]
+        assert logger.get_residual_norm() < args["reduction_factor"]
         assert logger.get_residual_norm() > 0.0
 
     def test_ilu_preconditioned_solver(self, solver_name, data_type):
@@ -82,5 +82,5 @@ class TestIterativeSolverBinding:
 
         assert logger.has_converged()
         assert logger.get_num_iterations() < args["max_iters"]
-        assert logger.get_residual_norm() < args["tolerance"]
+        assert logger.get_residual_norm() < args["reduction_factor"]
         assert logger.get_residual_norm() > 0.0
