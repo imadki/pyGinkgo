@@ -138,7 +138,7 @@ def factor(A, kind="Upper", device: str | pGB.Executor = "cpu"):
 def eigen_solve(A,solver_args=None):
     exec_obj = A.get_executor()
     torchA = torch.as_tensor(np.array(A))
-    dtype = str(type(A)).split('_')[1]
+    dtype = type(A).__name__.split('_')[1]
     L, Q = torch.linalg.eigh(torchA)
     dense_cls = getattr(pGB.matrix, f"dense_float")
     Lambda = dense_cls(exec_obj, L.__array__())
@@ -169,7 +169,7 @@ def generate_solver(A, solver_args: dict = dict()):
         }
     solver_executor = A.get_executor()
      # TODO: Create a better way to check the dtype of the matrix
-    dtype = str(type(A)).split('_')[1]
+    dtype = type(A).__name__.split('_')[1]
     solver_cls = getattr(pGB.solver, "config_solver_" + dtype)
     solver = solver_cls(
         solver_executor, A, json.dumps(solver_args)
@@ -192,7 +192,7 @@ def config_solve(A,b,x,solver_args=None):
         }
 
     solver_executor = A.get_executor()
-    dtype = str(type(A)).split('_')[1]
+    dtype = type(A).__name__.split('_')[1]
     # TODO: Create a better way to check the dtype of the matrix
     solver_cls = getattr(pGB.solver, "config_solve_" + dtype)
     logger = solver_cls(
@@ -203,8 +203,8 @@ def config_solve(A,b,x,solver_args=None):
 
 def triangular_solve(A,b,x,solver_args):
     kind = solver_args["type"]
-    dtype = str(type(A)).split('_')[1]
-    itype = str(type(A)).split('_')[2]
+    dtype = type(A).__name__.split('_')[1]
+    itype = type(A).__name__.split('_')[2] # This might fix the TODO
     s = f"{kind}Trs_{dtype}_int32" # TODO why does it fail for + itype
     ctor = getattr(pGB.solver, s)
     exec_obj = A.get_executor()
@@ -228,7 +228,7 @@ def solve(A, b, initial_guess=None, solver_args: dict = dict(), kind="config"):
     ctor = globals()[kind+"_solve"]
 
     if not initial_guess:
-        dtype = str(type(A)).split('_')[1]
+        dtype = type(A).__name__.split('_')[1]
         dense_cls = getattr(pGB.matrix, f"dense_{dtype}")
         dim = (A.get_size()[1], b.get_size()[1])
         initial_guess = dense_cls(b.get_executor(), dim)
