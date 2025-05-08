@@ -15,9 +15,9 @@ dtype = {*ValueType, *IndexType}
 
 class MatrixFormat(StrEnum):
     dense = auto()
-    # TODO: it makes sense to make them lower case
-    Csr = auto()
-    Coo = auto()
+    # TODO: it makes sense to make them the same casing
+    Csr = "Csr"
+    Coo = "Coo"
     
 
 class ExecutorType(StrEnum):

@@ -134,7 +134,9 @@ set(PYGINKGO_PYTHON_FILES
     ${PROJECT_SOURCE_DIR}/src/pyGinkgo/core.py
     ${PROJECT_SOURCE_DIR}/src/pyGinkgo/types.py
     ${PROJECT_SOURCE_DIR}/src/pyGinkgo/device.py
-    ${PROJECT_SOURCE_DIR}/src/pyGinkgo/rayleigh_ritz.py)
+    ${PROJECT_SOURCE_DIR}/src/pyGinkgo/solver.py
+    ${PROJECT_SOURCE_DIR}/src/pyGinkgo/rayleigh_ritz.py
+    ${PROJECT_SOURCE_DIR}/src/pyGinkgo/preconditioner.py)
 # TODO: it seems reasonable to be to start using glob recuse above
 
 add_custom_target(
