@@ -6,7 +6,7 @@ import os
 import pytest
 import numpy as np
 
-import pyGinkgo.pyGinkgoBindings as pgb
+import pyGinkgo.pyGinkgoBindings as pGB
 
 d_type_map = {
     # "half": np.float16, # TODO: GMRES and ILU GMRES do not converge with half precision
@@ -18,7 +18,7 @@ d_type_map = {
 @pytest.mark.parametrize("solver_name", ["gmres"])
 @pytest.mark.parametrize("data_type", list(d_type_map.keys()))
 class TestIterativeSolverBinding:
-    ref = pgb.ReferenceExecutor()
+    ref = pGB.ReferenceExecutor()
 
     solver_args = {
         "gmres": {
@@ -31,10 +31,10 @@ class TestIterativeSolverBinding:
 
     def test_unpreconditioned_solver(self, solver_name, data_type):
         fn = os.path.dirname(os.path.realpath(__file__)) + "/fv1.mtx"
-        reader_cls = getattr(pgb.matrix, f"read_Coo_{data_type}_int32")
+        reader_cls = getattr(pGB.matrix, f"read_Coo_{data_type}_int32")
         mtx = reader_cls(fn, self.ref)
 
-        solver_cls = getattr(pgb.solver, f"{solver_name}_{data_type}")
+        solver_cls = getattr(pGB.solver, f"{solver_name}_{data_type}")
         args = self.solver_args[solver_name]
         solver = solver_cls(exec=self.ref, system_matrix=mtx, **args)
         logger = solver.initialize_logger()
@@ -42,27 +42,28 @@ class TestIterativeSolverBinding:
 
         dim = mtx.get_size()
         assert dim[0] == dim[1]
-        dense_cls = getattr(pgb.matrix, f"dense_{data_type}")
+        dense_cls = getattr(pGB.matrix, f"dense_{data_type}")
         rhs = dense_cls(mtx.get_executor(), (dim[0], 1))
         rhs.fill(1.0)
         initial_guess = dense_cls(mtx.get_executor(), (dim[0], 1))
         initial_guess.fill(0.0)
-        solver.apply(rhs, initial_guess)
+        _, result = solver.apply(rhs, initial_guess)
 
         assert logger.has_converged()
         assert logger.get_num_iterations() < args["max_iters"]
         assert logger.get_residual_norm() < args["reduction_factor"]
         assert logger.get_residual_norm() > 0.0
+        assert result == initial_guess
 
     def test_ilu_preconditioned_solver(self, solver_name, data_type):
         fn = os.path.dirname(os.path.realpath(__file__)) + "/fv1.mtx"
-        reader_cls = getattr(pgb.matrix, f"read_Coo_{data_type}_int32")
+        reader_cls = getattr(pGB.matrix, f"read_Coo_{data_type}_int32")
         mtx = reader_cls(fn, self.ref)
 
-        solver_cls = getattr(pgb.solver, f"{solver_name}_{data_type}")
+        solver_cls = getattr(pGB.solver, f"{solver_name}_{data_type}")
         args = self.solver_args[solver_name]
 
-        precond_cls = getattr(pgb.preconditioner, f"Ilu_{data_type}_int32")
+        precond_cls = getattr(pGB.preconditioner, f"Ilu_{data_type}_int32")
         ilu = precond_cls(self.ref, mtx)
 
         solver = solver_cls(
@@ -73,14 +74,15 @@ class TestIterativeSolverBinding:
 
         dim = mtx.get_size()
         assert dim[0] == dim[1]
-        dense_cls = getattr(pgb.matrix, f"dense_{data_type}")
+        dense_cls = getattr(pGB.matrix, f"dense_{data_type}")
         rhs = dense_cls(mtx.get_executor(), (dim[0], 1))
         rhs.fill(1.0)
         initial_guess = dense_cls(mtx.get_executor(), (dim[0], 1))
         initial_guess.fill(0.0)
-        solver.apply(rhs, initial_guess)
+        _, result = solver.apply(rhs, initial_guess)
 
         assert logger.has_converged()
         assert logger.get_num_iterations() < args["max_iters"]
         assert logger.get_residual_norm() < args["reduction_factor"]
         assert logger.get_residual_norm() > 0.0
+        assert result == initial_guess

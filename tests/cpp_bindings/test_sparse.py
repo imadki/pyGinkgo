@@ -150,3 +150,13 @@ class TestSparseMatrix:
         assert sparse.get_size()[1] == 19
         with pytest.raises(AttributeError):
             sparse.size = pGB.dim2(4, 4)
+
+    def test_can_convert_to_dense(self, matrix_format, value_type, index_type):
+        matrix_cls = getattr(pGB.matrix, f"{matrix_format}_{value_type}_{index_type}")
+        coeffs = np.array(self.values, dtype=di_type_map[value_type])
+        rows = np.array(self.get_rows(matrix_format), dtype=di_type_map[index_type])
+        cols = np.array(self.cols, dtype=di_type_map[index_type])
+
+        sparse = matrix_cls(self.ref, (5, 5), coeffs, cols, rows)
+        dense = sparse.convert_to_dense()
+        assert dense == dense
