@@ -19,6 +19,8 @@ except ImportError:
     torch_avail = False
 
 
+# TODO: add tests for the functions in this file
+
 def as_array(obj, device: types.DeviceType = "cpu", dtype="float"):
     """create a ginkgo array from a given object"""
     if not dtype in types.dtype:
