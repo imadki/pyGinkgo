@@ -4,19 +4,20 @@
 
 import os
 import pytest
-import numpy as np
 
+import pyGinkgo as pg
 import pyGinkgo.pyGinkgoBindings as pGB
-
-d_type_map = {
-    # "half": np.float16, # TODO: GMRES and ILU GMRES do not converge with half precision
-    "float": np.float32,
-    "double": np.float64,
-}
 
 
 @pytest.mark.parametrize("solver_name", ["gmres"])
-@pytest.mark.parametrize("data_type", list(d_type_map.keys()))
+@pytest.mark.parametrize(
+    "data_type",
+    [
+        # pg.types.ValueType.half, # TODO: GMRES and ILU GMRES do not converge with half precision
+        pg.types.ValueType.float,
+        pg.types.ValueType.double,
+    ],
+)
 class TestIterativeSolverBinding:
     ref = pGB.ReferenceExecutor()
 
@@ -29,7 +30,7 @@ class TestIterativeSolverBinding:
         },
     }
 
-    def test_unpreconditioned_solver(self, solver_name, data_type):
+    def test_unpreconditioned_solver(self, solver_name, data_type: pg.types.ValueType):
         fn = os.path.dirname(os.path.realpath(__file__)) + "/fv1.mtx"
         reader_cls = getattr(pGB.matrix, f"read_Coo_{data_type}_int32")
         mtx = reader_cls(fn, self.ref)
@@ -55,7 +56,9 @@ class TestIterativeSolverBinding:
         assert logger.get_residual_norm() > 0.0
         assert result == initial_guess
 
-    def test_ilu_preconditioned_solver(self, solver_name, data_type):
+    def test_ilu_preconditioned_solver(
+        self, solver_name, data_type: pg.types.ValueType
+    ):
         fn = os.path.dirname(os.path.realpath(__file__)) + "/fv1.mtx"
         reader_cls = getattr(pGB.matrix, f"read_Coo_{data_type}_int32")
         mtx = reader_cls(fn, self.ref)

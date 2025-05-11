@@ -6,29 +6,31 @@
 import pytest
 import numpy as np
 
+import pyGinkgo as pg
 import pyGinkgo.pyGinkgoBindings as pGB
-from test_utils import di_type_map as d_type_map
 
 
-@pytest.mark.parametrize("data_type", list(d_type_map.keys()))
+@pytest.mark.parametrize("data_type", list(pg.types.dtype))
 class TestArray:
     ref = pGB.ReferenceExecutor()
     size = 5
     lst = [1.0, 2.0, 3.0, 4.0, 5.0]
 
-    def test_init_empty_array(self, data_type):
+    def test_init_empty_array(self, data_type: pg.types.ValueType):
         array_cls = getattr(pGB.base, "array_" + data_type)
         arr = array_cls(self.ref, self.size)
         assert arr.get_size() == self.size
 
-    def test_can_fill_array(self, data_type):
+    def test_can_fill_array(self, data_type: pg.types.ValueType):
         array_cls = getattr(pGB.base, "array_" + data_type)
         arr = array_cls(self.ref, self.size)
         arr.fill(10)  # implicit conversion to data_type
         assert arr.at(0) == 10  # implicit conversion to data_type
 
-    def test_can_instantiate_array_from_numpy_array(self, data_type):
-        np_array = np.array(self.lst, dtype=d_type_map[data_type])
+    def test_can_instantiate_array_from_numpy_array(
+        self, data_type: pg.types.ValueType
+    ):
+        np_array = np.array(self.lst, dtype=data_type.numpy_type)
         array_cls = getattr(pGB.base, "array_" + data_type)
         arr = array_cls(self.ref, np_array)
         assert arr.get_size() == len(np_array)
@@ -36,33 +38,33 @@ class TestArray:
             expect = self.lst[i]
             assert arr.at(i) == expect  # implicit conversion to data_type
 
-    def test_size_property(self, data_type):
-        np_array = np.array(self.lst, dtype=d_type_map[data_type])
+    def test_size_property(self, data_type: pg.types.ValueType):
+        np_array = np.array(self.lst, dtype=data_type.numpy_type)
         array_cls = getattr(pGB.base, "array_" + data_type)
         arr = array_cls(self.ref, np_array)
         assert arr.size == len(np_array)
         with pytest.raises(AttributeError):
             arr.size = 10
 
-    def test_can_copy_construct_array(self, data_type):
+    def test_can_copy_construct_array(self, data_type: pg.types.ValueType):
         array_cls = getattr(pGB.base, "array_" + data_type)
-        np_array = np.array(self.lst, dtype=d_type_map[data_type])
+        np_array = np.array(self.lst, dtype=data_type.numpy_type)
         arr = array_cls(self.ref, np_array)
         arr_copy = array_cls(self.ref, arr)
 
         assert arr.get_size() == arr_copy.get_size()
 
-    def test_can_construct_np_array_from_gko_array(self, data_type):
+    def test_can_construct_np_array_from_gko_array(self, data_type: pg.types.ValueType):
         array_cls = getattr(pGB.base, "array_" + data_type)
-        np_array = np.array(self.lst, dtype=d_type_map[data_type])
+        np_array = np.array(self.lst, dtype=data_type.numpy_type)
         arr = array_cls(self.ref, np_array)
         np_array_copy = np.array(arr)
 
         assert np.array_equal(np_array, np_array_copy)
 
-    def test_can_reduce_add_array(self, data_type):
+    def test_can_reduce_add_array(self, data_type: pg.types.ValueType):
         array_cls = getattr(pGB.base, "array_" + data_type)
-        np_array = np.array(self.lst, dtype=d_type_map[data_type])
+        np_array = np.array(self.lst, dtype=data_type.numpy_type)
         arr = array_cls(self.ref, np_array)
         init_value = 0  # implicit conversion to data_type
         expected_value = 15  # implicit conversion to data_type

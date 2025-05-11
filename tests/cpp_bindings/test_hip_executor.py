@@ -29,6 +29,7 @@ def test_dense_copy_to_host():
     master = pGB.ReferenceExecutor()
     executor = pGB.HipExecutor(master=master)
     np_array = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
+    # TODO: type should be specified
     dense = pGB.matrix.dense(executor, np_array)
     dense_on_master = dense.copy_to_host()
     assert dense.get_executor() == executor
