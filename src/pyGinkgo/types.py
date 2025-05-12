@@ -1,3 +1,7 @@
+# SPDX-License-Identifier: MIT
+#
+# SPDX-FileCopyrightText: 2025 pyGinkgo authors
+
 import numpy as np
 from typing import TypeAlias
 from enum import ReprEnum, auto

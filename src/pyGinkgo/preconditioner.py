@@ -1,3 +1,7 @@
+# SPDX-License-Identifier: MIT
+#
+# SPDX-FileCopyrightText: 2025 pyGinkgo authors
+
 from . import types
 import pyGinkgo as pg
 from . import pyGinkgoBindings as pGB

@@ -3,6 +3,7 @@
 # SPDX-FileCopyrightText: 2025 pyGinkgo authors
 
 # Most of the code is copilot generated
+# TODO: I am not sure, whether we should run those tests
 
 import pytest
 import numpy as np
