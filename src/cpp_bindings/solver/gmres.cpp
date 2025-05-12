@@ -83,7 +83,7 @@ void init_gmres(py::module_ &module_solver, const std::string value_type)
                 return std::make_tuple(logger, x);
             },
             py::arg("b"), py::arg("x"),
-            "Applies the solver on b (rhs) and x (inital guess).\n"
+            "Applies the solver on b (rhs) and x (initial guess).\n"
             "Changes the initial guess inplace.\n"
             "Returns a tuple: (logger object, result)");
 }
