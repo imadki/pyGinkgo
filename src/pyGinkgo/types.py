@@ -3,7 +3,6 @@
 # SPDX-FileCopyrightText: 2025 pyGinkgo authors
 
 import numpy as np
-from typing import TypeAlias
 from enum import ReprEnum, auto
 
 from . import pyGinkgoBindings as pGB
