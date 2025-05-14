@@ -7,9 +7,11 @@ cmake_path(GET CMAKE_LIBRARY_OUTPUT_DIRECTORY PARENT_PATH
 
 # * Function to generate bindings unit test.
 function(pyginkgo_bindings_test TEST)
+  # Correct variable according to
+  # https://cmake.org/cmake/help/latest/module/FindPython.html
   add_test(
     NAME pyginkgo_bindings_test_${TEST}
-    COMMAND ${PYTHON_EXECUTABLE} -m pytest -vv
+    COMMAND ${Python_EXECUTABLE} -m pytest -vv
             ${CMAKE_CURRENT_SOURCE_DIR}/test_${TEST}.py
     WORKING_DIRECTORY ${PYGINKGO_TESTS_WORK_DIR})
 endfunction()

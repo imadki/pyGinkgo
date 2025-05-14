@@ -11,6 +11,7 @@ enable_testing()
 # Find Python interpreter and library
 set(Python_FIND_VIRTUALENV "FIRST")
 find_package(Python COMPONENTS Interpreter Development)
+set(PYTHON_EXECUTABLE ${Python_EXECUTABLE})
 
 # copy all generated files to pyGinkgo that makes testing and installing easier
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${PROJECT_NAME})
@@ -95,13 +96,15 @@ option(
 message(
   "Stubs generation for pyGinkgoBindings is: ${ENABLE_PYGINKGOBINDINGS_STUBS}")
 if(${ENABLE_PYGINKGOBINDINGS_STUBS})
+  # Correct variable according to
+  # https://cmake.org/cmake/help/latest/module/FindPython.html
   add_custom_command(
     TARGET pyGinkgoBindings
     POST_BUILD
     WORKING_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
     VERBATIM
     COMMAND
-      ${PYTHON_EXECUTABLE} -c
+      ${Python_EXECUTABLE} -c
       "import pybind11_stubgen; pybind11_stubgen.main();" pyGinkgoBindings
       "-o./"
     COMMENT "Generating stub files at ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
@@ -114,13 +117,15 @@ option(
 if(${ENABLE_PYGINKGOBINDINGS_DEV_STUBS})
   message("Enabled stubs generation for pyGinkgoBindings at\
      '${PROJECT_SOURCE_DIR}/src/pyGinkgo/pyGinkgoBindings'")
+  # Correct variable according to
+  # https://cmake.org/cmake/help/latest/module/FindPython.html
   add_custom_command(
     TARGET pyGinkgoBindings
     POST_BUILD
     WORKING_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
     VERBATIM
     COMMAND
-      ${PYTHON_EXECUTABLE} -c
+      ${Python_EXECUTABLE} -c
       "import pybind11_stubgen, distutils.dir_util; pybind11_stubgen.main();\
        distutils.dir_util.copy_tree('./pyGinkgoBindings',\
        '${PROJECT_SOURCE_DIR}/src/pyGinkgo/pyGinkgoBindings', update=1)"
