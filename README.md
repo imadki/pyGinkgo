@@ -41,6 +41,7 @@ PyGinkgo is a Python binding for the Ginkgo framework, providing access to Ginkg
    # (Here we are still within the build directory)
    cmake --install .
    ```
+   - To install in the virtual environment, use `-DPython_ROOT_DIR=path_to_venv_bin_folder` flag during the project configuration.
 
 ### Running the tests
 You would need to install pytest to be able to run the tests. To run all tests:
@@ -82,6 +83,13 @@ In order to enable the stubs generation:
       def __init__(self, arg0: pyGinkgoBindings.Executor) -> None:
          ...
    ```
+
+#### Development stubs generation
+While working on the Python side of the project, it is also useful to have access to the stubs for the C++ code. This can be done by setting `ENABLE_PYGINKGOBINDINGS_DEV_STUBS=ON` when doing CMake configuration:
+```bash
+cmake .. -DENABLE_PYGINKGOBINDINGS_DEV_STUBS=ON
+```
+This will generate the stubs for the C++ code in the `pyGinkgoBindings` module inside the `./src/pyGinkgo/pyGinkgoBindings` folder, allowing for autocomplete and type checking by VSCode or other IDEs.
 
 ## Usage
 
