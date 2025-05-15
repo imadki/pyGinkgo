@@ -161,8 +161,9 @@ class TestSparseMatrix:
         fn = os.path.dirname(os.path.realpath(__file__)) + "/sparse_example.mtx"
         sparse = reader(fn, self.ref)
 
-        assert sparse.get_size()[0] == 19
-        assert sparse.get_size()[1] == 19
+        with pytest.deprecated_call():
+            assert sparse.get_size()[0] == 19
+            assert sparse.get_size()[1] == 19
 
     def test_size_property(
         self,
@@ -174,10 +175,25 @@ class TestSparseMatrix:
         fn = os.path.dirname(os.path.realpath(__file__)) + "/sparse_example.mtx"
         sparse = reader(fn, self.ref)
 
-        assert sparse.get_size()[0] == 19
-        assert sparse.get_size()[1] == 19
+        with pytest.deprecated_call():
+            assert sparse.get_size()[0] == 19
+            assert sparse.get_size()[1] == 19
+            with pytest.raises(AttributeError):
+                sparse.size = pGB.dim2(4, 4)
+
+    def test_shape_property(
+        self,
+        matrix_format,
+        value_type: pg.types.ValueType,
+        index_type: pg.types.IndexType,
+    ):
+        reader = getattr(pGB.matrix, f"read_{matrix_format}_{value_type}_{index_type}")
+        fn = os.path.dirname(os.path.realpath(__file__)) + "/sparse_example.mtx"
+        sparse = reader(fn, self.ref)
+
+        assert sparse.shape == (19, 19)
         with pytest.raises(AttributeError):
-            sparse.size = pGB.dim2(4, 4)
+            sparse.shape = (10, 10)
 
     def test_can_convert_to_dense(
         self,

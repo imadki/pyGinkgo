@@ -221,10 +221,34 @@ void init_dense(py::module_ &module_matrix, const std::string typestr)
              py::overload_cast<size_t, size_t>(
                  &gko::matrix::Dense<ValueType>::at, py::const_),
              "Returns an element at row, column index.")
-        .def("get_size", &gko::matrix::Dense<ValueType>::get_size,
-             "Returns the dimension of the dense matrix.")
-        .def_property_readonly("size", &gko::matrix::Dense<ValueType>::get_size,
-                               "Returns the dimension of the dense matrix.")
+        .def(
+            "get_size",
+            [](const gko::matrix::Dense<ValueType> &m) {
+                // Deprecation in favor of .shape
+                // https://stackoverflow.com/a/62559865
+                PyErr_WarnEx(PyExc_DeprecationWarning,
+                             ".get_size() is deprecated, use .shape instead",
+                             1);
+                return m.get_size();
+            },
+            "Returns the dimension of the dense matrix.")
+        .def_property_readonly(
+            "size",
+            [](const gko::matrix::Dense<ValueType> &m) {
+                // Deprecation in favor of .shape
+                // https://stackoverflow.com/a/62559865
+                PyErr_WarnEx(PyExc_DeprecationWarning,
+                             ".size is deprecated, use .shape instead", 1);
+                return m.get_size();
+            },
+            "Returns the dimension of the dense matrix.")
+        .def_property_readonly(
+            "shape",
+            [](const gko::matrix::Dense<ValueType> &m) {
+                auto size = m.get_size();
+                return py::make_tuple(size[0], size[1]);
+            },
+            "Returns the dimension of the dense matrix.")
         .def("get_num_stored_elements",
              &gko::matrix::Dense<ValueType>::get_num_stored_elements,
              "Returns the number of elements explicitly stored in the "

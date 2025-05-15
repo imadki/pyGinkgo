@@ -188,15 +188,26 @@ class TestDense:
         dense = dense_cls(
             self.ref, (3, 3), np.array(self.values, dtype=data_type.numpy_type), 3
         )
-        assert dense.get_size()[0] == 3
-        assert dense.get_size()[1] == 3
+        with pytest.deprecated_call():
+            assert dense.get_size()[0] == 3
+            assert dense.get_size()[1] == 3
 
     def test_dense_size_property(self, data_type: pg.types.ValueType):
         dense_cls = getattr(pGB.matrix, "dense_" + data_type)
         dense = dense_cls(
             self.ref, (3, 3), np.array(self.values, dtype=data_type.numpy_type), 3
         )
-        assert dense.size[0] == 3
-        assert dense.size[1] == 3
+        with pytest.deprecated_call():
+            assert dense.size[0] == 3
+            assert dense.size[1] == 3
+            with pytest.raises(AttributeError):
+                dense.size = pGB.dim2(4, 4)
+
+    def test_dense_shape_property(self, data_type: pg.types.ValueType):
+        dense_cls = getattr(pGB.matrix, "dense_" + data_type)
+        dense = dense_cls(
+            self.ref, (3, 3), np.array(self.values, dtype=data_type.numpy_type), 3
+        )
+        assert dense.shape == (3, 3)
         with pytest.raises(AttributeError):
-            dense.size = pGB.dim2(4, 4)
+            dense.shape = (4, 4)

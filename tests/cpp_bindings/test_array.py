@@ -19,7 +19,8 @@ class TestArray:
     def test_init_empty_array(self, data_type: pg.types.ValueType):
         array_cls = getattr(pGB.base, "array_" + data_type)
         arr = array_cls(self.ref, self.size)
-        assert arr.get_size() == self.size
+        with pytest.deprecated_call():
+            assert arr.get_size() == self.size
 
     def test_can_fill_array(self, data_type: pg.types.ValueType):
         array_cls = getattr(pGB.base, "array_" + data_type)
@@ -42,9 +43,18 @@ class TestArray:
         np_array = np.array(self.lst, dtype=data_type.numpy_type)
         array_cls = getattr(pGB.base, "array_" + data_type)
         arr = array_cls(self.ref, np_array)
-        assert arr.size == len(np_array)
+        with pytest.deprecated_call():
+            assert arr.size == len(np_array)
+            with pytest.raises(AttributeError):
+                arr.size = 10
+
+    def test_shape_property(self, data_type: pg.types.ValueType):
+        np_array = np.array(self.lst, dtype=data_type.numpy_type)
+        array_cls = getattr(pGB.base, "array_" + data_type)
+        arr = array_cls(self.ref, np_array)
+        assert arr.shape == (len(np_array),)
         with pytest.raises(AttributeError):
-            arr.size = 10
+            arr.shape = (10,)
 
     def test_can_copy_construct_array(self, data_type: pg.types.ValueType):
         array_cls = getattr(pGB.base, "array_" + data_type)
