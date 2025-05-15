@@ -13,6 +13,13 @@ import os
 import pytest
 
 
+d_precision_map = {
+    "half": 1e-3,
+    "float": 1e-6,
+    "double": 1e-6,
+}
+
+
 @pytest.mark.parametrize("data_type", list(pg.types.ValueType))
 class TestSolve:
     executor = pGB.ReferenceExecutor()
@@ -40,9 +47,11 @@ class TestSolve:
         denseBX = dense_cls(np.array(self.BX, dtype=data_type.numpy_type))
         hX, Lambda = pg.RR1(denseX, denseAX, denseBX)
         reshX = np.array(hX, dtype=data_type.numpy_type)
-        assert pytest.approx(Lambda.at(0), 1e-6) == self.expLambda[0]
-        assert pytest.approx(Lambda.at(1), 1e-6) == self.expLambda[1]
-        assert pytest.approx(reshX[0, 0], 1e-6) == self.exphX[0][0]
-        assert pytest.approx(reshX[0, 1], 1e-6) == self.exphX[0][1]
-        assert pytest.approx(reshX[1, 0], 1e-6) == self.exphX[1][0]
-        assert pytest.approx(reshX[1, 1], 1e-6) == self.exphX[1][1]
+
+        precision = d_precision_map[data_type]
+        assert pytest.approx(Lambda.at(0), precision) == self.expLambda[0]
+        assert pytest.approx(Lambda.at(1), precision) == self.expLambda[1]
+        assert pytest.approx(reshX[0, 0], precision) == self.exphX[0][0]
+        assert pytest.approx(reshX[0, 1], precision) == self.exphX[0][1]
+        assert pytest.approx(reshX[1, 0], precision) == self.exphX[1][0]
+        assert pytest.approx(reshX[1, 1], precision) == self.exphX[1][1]
