@@ -5,7 +5,8 @@
 import pyGinkgo as pg
 from pyGinkgo import pyGinkgoBindings as pGB
 
-import torch
+if pg.torch_avail:
+    import torch
 import numpy as np
 
 

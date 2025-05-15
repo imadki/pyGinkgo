@@ -2,45 +2,52 @@
 #
 # SPDX-FileCopyrightText: 2025 pyGinkgo authors
 
+import enum
 import numpy as np
-from enum import ReprEnum, auto
+from typing import Any
+from typing import List, Union
 
 from . import pyGinkgoBindings as pGB
 
-
-class StrEnum(str, ReprEnum):
-    """
-    Enum where members are also (and must be) strings
-    """
-
-    def __new__(cls, value: str):
-        member = str.__new__(cls, value)
-        member._value_ = value
-        return member
-
+class DatatypeEnum(str, enum.Enum):
     @staticmethod
     def _generate_next_value_(name, start, count, last_values) -> str:
-        """
-        Return the lower-cased version of the member name.
-        """
         return name
+    
+    @classmethod
+    def values(cls) -> List[str]:
+        return [member.value for member in cls]
 
 
-class DatatypeEnum(StrEnum):
-    def __new__(cls, name: str, _):
+class npauto(enum.auto):
+    def __init__(self, *args) -> None:
+        self.__args = args
+        self.__value = enum.auto.value
+    
+    @property
+    def value(self):
+        return self.__value
+    
+    @value.setter
+    def value(self, value: Any) -> None:
+        self.__value = ((value, *self.__args),)
+
+class NpDatatypeEnum(DatatypeEnum):
+    def __new__(cls, *args):
+        if len(args) == 1:
+            args = args[0]
+        name, numpy_type = args
+
         member = str.__new__(cls, name)
         member._value_ = name
+        member.numpy_type = numpy_type
         return member
     
-    def __init__(self, _: str, numpy_type):
-        self.numpy_type = numpy_type
-
-    @classmethod
-    def values(cls) -> list[str]:
-        return [member.value for member in cls]
+    def __init__(self, *_):
+        self.numpy_type: Any
     
     @classmethod
-    def numpy_types(cls) -> list:
+    def numpy_types(cls) -> List:
         return [member.numpy_type for member in cls]
 
     @classmethod
@@ -48,30 +55,30 @@ class DatatypeEnum(StrEnum):
         return {member.value: member.numpy_type for member in cls}
 
 
-class ValueType(DatatypeEnum):
-    half = (auto(), np.float16)
-    float = (auto(), np.float32)
-    double = (auto(), np.float64)
+class ValueType(NpDatatypeEnum):
+    half = npauto(np.float16) # type: ignore
+    float = npauto(np.float32) # type: ignore
+    double = npauto(np.float64) # type: ignore
 
-class IndexType(DatatypeEnum):
-    int32 = (auto(), np.int32)
+class IndexType(NpDatatypeEnum):
+    int32 = npauto(np.int32) # type: ignore
     # https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.longlong
-    int64 = (auto(), np.longlong)
+    int64 = npauto(np.longlong) # type: ignore
 
-dtype: list[DatatypeEnum] = [*ValueType, *IndexType]
+dtype: List[NpDatatypeEnum] = [*ValueType, *IndexType]
 
-class MatrixFormat(StrEnum):
-    dense = auto()
+class MatrixFormat(DatatypeEnum):
+    dense = enum.auto()
     # TODO: it makes sense to make them the same casing
     Csr = "Csr"
     Coo = "Coo"
     
 
-class ExecutorType(StrEnum):
-    cpu = auto()
-    omp = auto()
-    cuda = auto()
-    hip = auto()
-    dpcpp = auto()
+class ExecutorType(DatatypeEnum):
+    cpu = enum.auto()
+    omp = enum.auto()
+    cuda = enum.auto()
+    hip = enum.auto()
+    dpcpp = enum.auto()
 
-DeviceType = ExecutorType | pGB.Executor | str
+DeviceType = Union[ExecutorType, pGB.Executor, str]
