@@ -22,7 +22,7 @@ class TestCuda:
         array_cls = getattr(pGB.base, "array_" + data_type)
         arr = array_cls(executor, np_array)
         arr_copy = array_cls(executor, arr)
-        assert arr.get_size() == arr_copy.get_size()
+        assert arr.shape == arr_copy.shape
         assert pGB.base.reduce_add(arr, 0.0) == 15.0
 
     def test_dense_copy_to_host(self, data_type: pg.types.ValueType):
