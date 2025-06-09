@@ -34,7 +34,7 @@ class TestArray:
         np_array = np.array(self.lst, dtype=data_type.numpy_type)
         array_cls = getattr(pGB.base, "array_" + data_type)
         arr = array_cls(self.ref, np_array)
-        assert arr.get_size() == len(np_array)
+        assert arr.shape[0] == len(np_array)
         for i in range(self.size):
             expect = self.lst[i]
             assert arr.at(i) == expect  # implicit conversion to data_type
@@ -62,7 +62,7 @@ class TestArray:
         arr = array_cls(self.ref, np_array)
         arr_copy = array_cls(self.ref, arr)
 
-        assert arr.get_size() == arr_copy.get_size()
+        assert arr.shape == arr_copy.shape
 
     def test_can_construct_np_array_from_gko_array(self, data_type: pg.types.ValueType):
         array_cls = getattr(pGB.base, "array_" + data_type)

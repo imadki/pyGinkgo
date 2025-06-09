@@ -41,7 +41,7 @@ class TestIterativeSolverBinding:
         logger = solver.initialize_logger()
         assert not logger.has_converged()
 
-        dim = mtx.get_size()
+        dim = mtx.shape
         assert dim[0] == dim[1]
         dense_cls = getattr(pGB.matrix, f"dense_{data_type}")
         rhs = dense_cls(mtx.get_executor(), (dim[0], 1))
@@ -75,7 +75,7 @@ class TestIterativeSolverBinding:
         logger = solver.initialize_logger()
         assert not logger.has_converged()
 
-        dim = mtx.get_size()
+        dim = mtx.shape
         assert dim[0] == dim[1]
         dense_cls = getattr(pGB.matrix, f"dense_{data_type}")
         rhs = dense_cls(mtx.get_executor(), (dim[0], 1))

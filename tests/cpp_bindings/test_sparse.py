@@ -111,7 +111,7 @@ class TestSparseMatrix:
 
         sparse = matrix_cls(self.ref, (5, 5), coeffs, cols, rows)
         assert sparse == sparse
-        assert sparse.get_num_stored_elements() == coeffs.get_size()
+        assert sparse.get_num_stored_elements() == coeffs.shape[0]
 
     def test_can_apply_to_dense(
         self,

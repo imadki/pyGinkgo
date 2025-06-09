@@ -26,7 +26,7 @@ class TestSolve:
     # TODO replace all dense_float
     fn = os.path.dirname(os.path.realpath(__file__)) + "/fv1.mtx"
     mtx = pGB.matrix.read_Coo_float_int32(fn, executor)
-    dim = mtx.get_size()
+    dim = mtx.shape
     rows = dim[0]
     cols = dim[1]
     X = [[1.0, 4.0], [2.0, 5.0], [3.0, 6.0]]

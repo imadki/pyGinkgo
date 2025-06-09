@@ -12,7 +12,7 @@ import numpy as np
 
 def mul(a, b, dtype="float", device="cpu"):
     """ helper function to perform a @ b """
-    dimRes = (a.get_size()[0], b.get_size()[1])
+    dimRes = (a.shape[0], b.shape[1])
     # executor = a.get_executor()
     res = pg.as_tensor(device=device, dim=dimRes, dtype=dtype)
     a.apply(b, res)

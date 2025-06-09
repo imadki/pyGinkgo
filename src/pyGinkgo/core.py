@@ -232,7 +232,8 @@ def solve(A, b, initial_guess=None, solver_args: dict = dict(), kind="config"):
     if not initial_guess:
         dtype = type(A).__name__.split('_')[1]
         dense_cls = getattr(pGB.matrix, f"dense_{dtype}")
-        dim = (A.get_size()[1], b.get_size()[1])
+        # TODO: potential issue, given the difference with src/pyGinkgo/rayleigh_ritz.py:15
+        dim = (A.shape[1], b.shape[1])
         initial_guess = dense_cls(b.get_executor(), dim)
         initial_guess.fill(0.0)
 

@@ -33,7 +33,7 @@ class TestTorchInteroperability:
         torch_array = torch.asarray(np_array)
         arr = array_cls(executor, torch_array)
         arr_copy = array_cls(executor, arr)
-        assert arr.get_size() == arr_copy.get_size()
+        assert arr.shape == arr_copy.shape
         assert pGB.base.reduce_add(arr, 0.0) == 15.0
 
     def test_can_create_torch_array_from_gko_array(self, data_type: pg.types.ValueType):
@@ -56,8 +56,8 @@ class TestTorchInteroperability:
         assert dense.get_num_stored_elements() == 4
         assert dense.at(0, 1) == 2.0
         assert dense.at(1, 1) == 4.0
-        assert dense.get_size()[0] == 2
-        assert dense.get_size()[1] == 2
+        assert dense.shape[0] == 2
+        assert dense.shape[1] == 2
 
     def test_can_create_torch_tensor_from_dense(self, data_type: pg.types.ValueType):
         executor = pGB.ReferenceExecutor()
