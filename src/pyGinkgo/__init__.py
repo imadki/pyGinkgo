@@ -10,5 +10,6 @@ from .device import *
 from .rayleigh_ritz import *
 
 #from .solver import *
+from . import types
 from . import solver
 from . import preconditioner
