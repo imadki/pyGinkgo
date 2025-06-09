@@ -15,7 +15,7 @@ def device(type: types.DeviceType = "cpu", index: Optional[int] = None) -> pGB.E
     ----------
     type : str
         The type of device to set.
-        Or 'cuda:<index>' or 'hip:<index>' to set a specific device index.
+        Or use `cuda:index` or `hip:index` to set a specific device index.
     index : int, optional
         The index of the device to set. Default is 0.
         It can only be specified when type doesn't include it already.
