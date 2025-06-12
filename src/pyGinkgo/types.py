@@ -22,7 +22,7 @@ class DatatypeEnum(str, enum.Enum):
 class npauto(enum.auto):
     def __init__(self, *args) -> None:
         self.__args = args
-        self.__value = enum.auto.value
+        self.__value = enum._auto_null
     
     @property
     def value(self):
@@ -53,6 +53,9 @@ class NpDatatypeEnum(DatatypeEnum):
     @classmethod
     def type_map(cls) -> dict:
         return {member.value: member.numpy_type for member in cls}
+    
+    def __str__(self) -> str:
+        return f"{self.value}"
 
 
 class ValueType(NpDatatypeEnum):

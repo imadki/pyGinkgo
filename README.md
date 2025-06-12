@@ -8,6 +8,14 @@
 
 PyGinkgo is a Python binding for the Ginkgo framework, providing access to Ginkgo's powerful linear algebra capabilities from Python. Ginkgo is a high-performance numerical linear algebra library for sparse systems, primarily designed for developing efficient iterative solvers on complex HPC architectures.
 
+The tests successfully run on the following Python versions:
+- 3.8.20
+- 3.9.22
+- 3.10.17
+- 3.11.12
+- 3.12.3
+- 3.13.3
+
 ## Installation
 
 ### Prerequisites
