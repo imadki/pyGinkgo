@@ -103,7 +103,7 @@ def generate_solver(A, solver_args: dict = dict()):
 
     Parameters: A - The system matrix
                 solver_args - A dictionary that is forwarded to the solver containing
-                    arguments, eg {'max_iters': 100, 'tolerance': 1e-6}
+                    arguments, eg {'type': 'solver::Cg', 'criteria': {'max_iters': 100}
     Returns: the solver
     """
 
@@ -112,7 +112,6 @@ def generate_solver(A, solver_args: dict = dict()):
             "type": "solver::Gmres",
             "preconditioner": {
                 "type": "preconditioner::Ilu",
-                "l_solver_type": "solver::LowerTrs",
                 "reverse_apply": False,
                 "factorization": {"type": "factorization::ParIlu"},
             },
@@ -136,7 +135,6 @@ def config_solve(A,b,x,solver_args=None):
             "type": "solver::Gmres",
             "preconditioner": {
                 "type": "preconditioner::Ilu",
-                "l_solver_type": "solver::LowerTrs",
                 "reverse_apply": False,
                 "factorization": {"type": "factorization::ParIlu"},
             },
