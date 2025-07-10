@@ -103,7 +103,7 @@ def generate_solver(A, solver_args: dict = dict()):
 
     Parameters: A - The system matrix
                 solver_args - A dictionary that is forwarded to the solver containing
-                    arguments, eg {'type': 'solver::Cg', 'criteria': {'max_iters': 100}
+                    arguments, eg {'type': 'solver::Cg', 'criteria': {'max_iters': 100}}
     Returns: the solver
     """
 
@@ -173,7 +173,7 @@ def solve(A, b, initial_guess=None, solver_args: dict = dict(), kind="config"):
                 initial_guess - The initial guess
                 solver - The solver
                 solver_args - A dictionary that is forwarded to the solver containing
-                    arguments, eg {'max_iters': 100, 'tolerance': 1e-6}
+                    arguments, eg {'type': 'solver::Cg', 'criteria': {'max_iters': 100}}
                 kind - the underlying solver, eg. config
     Returns: tuple of a logger object and solution vector
     """
