@@ -50,7 +50,6 @@ class TestSolve:
             "type": "solver::Cg",
             "preconditioner": {
                 "type": "preconditioner::Ilu",
-                "l_solver_type": "solver::LowerTrs",
                 "reverse_apply": False,
                 "factorization": {"type": "factorization::ParIlu"},
             },
@@ -76,7 +75,6 @@ class TestSolve:
             "type": "solver::Gmres",
             "preconditioner": {
                 "type": "preconditioner::Ilu",
-                "l_solver_type": "solver::LowerTrs",
                 "reverse_apply": False,
                 "factorization": {"type": "factorization::ParIlu"},
             },
