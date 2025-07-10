@@ -22,14 +22,12 @@ void init_factorization(py::module_ &module_factorization)
             "get_upper_factor",
             [](gko::experimental::factorization::Factorization<float, int> &m) {
                 return m.get_upper_factor();
-                // return m.get_diagonal();
             },
             "Returns upper factors")
         .def(
             "get_lower_factor",
             [](gko::experimental::factorization::Factorization<float, int> &m) {
                 return m.get_lower_factor();
-                // return m.get_diagonal();
             },
             "Returns lower factors");
 }
