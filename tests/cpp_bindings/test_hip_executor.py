@@ -18,7 +18,7 @@ def test_array_hip():
     np_array = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
     arr = pGB.base.array_double(executor, np_array)
     arr_copy = pGB.base.array_double(executor, arr)
-    assert arr.get_size() == arr_copy.get_size()
+    assert arr.shape == arr_copy.shape
     assert pGB.base.reduce_add(arr, 0.0) == 15.0
 
 
@@ -29,8 +29,7 @@ def test_dense_copy_to_host():
     master = pGB.ReferenceExecutor()
     executor = pGB.HipExecutor(master=master)
     np_array = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
-    # TODO: type should be specified
-    dense = pGB.matrix.dense(executor, np_array)
+    dense = pGB.matrix.dense_double(executor, np_array)
     dense_on_master = dense.copy_to_host()
     assert dense.get_executor() == executor
     assert dense_on_master.get_executor() == master
