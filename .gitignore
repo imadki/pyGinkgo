@@ -202,8 +202,4 @@ cython_debug/
 
 src/pyGinkgo/pyGinkgoBindings/
 
-.venv_p39
-.venv_p310
-.venv_p311
-.venv_p312
-.venv_p313
+.venv_p
