@@ -94,7 +94,9 @@ option(
   "Whether the stub (interface) files are to be generated for pyGinkgoBindings"
   OFF)
 message(
-  "Stubs generation for pyGinkgoBindings is: ${ENABLE_PYGINKGOBINDINGS_STUBS}")
+  STATUS
+    "Stubs generation for pyGinkgoBindings is: ${ENABLE_PYGINKGOBINDINGS_STUBS}"
+)
 if(${ENABLE_PYGINKGOBINDINGS_STUBS})
   # Correct variable according to
   # https://cmake.org/cmake/help/latest/module/FindPython.html
@@ -115,7 +117,7 @@ option(
   "Whether the stub (interface) files are to be generated for pyGinkgoBindings\
    at src/pyGinkgo folder" OFF)
 if(${ENABLE_PYGINKGOBINDINGS_DEV_STUBS})
-  message("Enabled stubs generation for pyGinkgoBindings at\
+  message(STATUS "Enabled stubs generation for pyGinkgoBindings at\
      '${PROJECT_SOURCE_DIR}/src/pyGinkgo/pyGinkgoBindings'")
   # Correct variable according to
   # https://cmake.org/cmake/help/latest/module/FindPython.html
@@ -164,7 +166,7 @@ if(APPLE)
 endif()
 set(CMAKE_INSTALL_RPATH ${Python_SITELIB}/${PROJECT_NAME})
 
-message("Install path: ${Python_SITELIB}")
+message(STATUS "Install path: ${Python_SITELIB}")
 install(DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
         DESTINATION ${Python_SITELIB})
 install(
