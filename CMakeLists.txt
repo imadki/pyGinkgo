@@ -127,8 +127,10 @@ if(${ENABLE_PYGINKGOBINDINGS_DEV_STUBS})
     WORKING_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
     VERBATIM
     COMMAND
-      ${Python_EXECUTABLE} -c
-      "import pybind11_stubgen, distutils.dir_util; pybind11_stubgen.main();\
+      ${Python_EXECUTABLE} -c "import distutils.dir_util, os;\
+       os.path.exists('./types.py') and os.remove('./types.py'), \
+        'to resolve recompilation issue';\
+       import pybind11_stubgen; pybind11_stubgen.main();\
        distutils.dir_util.copy_tree('./pyGinkgoBindings',\
        '${PROJECT_SOURCE_DIR}/src/pyGinkgo/pyGinkgoBindings', update=1)"
       pyGinkgoBindings "-o./"
