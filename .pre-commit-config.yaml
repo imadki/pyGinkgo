@@ -1,4 +1,8 @@
 repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+    -  id: end-of-file-fixer
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.11.1 # Use the sha / tag you want to point at
     hooks:
@@ -43,3 +47,18 @@ repos:
     hooks:
       - id: clang-format
         files: ^src/.*\.(cpp|hpp)$
+  - repo: local
+    hooks:
+      # The official reuse hook only supports calling lint, so we need our own hook
+      # I do not put jupyter here because it adds another license file for jupyter notebook
+      - id: reuse-annotate
+        name: reuse-annotate
+        entry: reuse annotate --license MIT --copyright 'pyGinkgo authors' --merge-copyright
+        language: python
+        additional_dependencies: [reuse==2.1.0]
+        types_or: [c, c++, inc, python]
+        # .cmake-format.py is from OGL
+        exclude: |
+          (?x)^(
+            .cmake-format.py
+          )$
