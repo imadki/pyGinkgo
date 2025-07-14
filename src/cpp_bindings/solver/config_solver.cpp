@@ -1,15 +1,15 @@
-// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2024 - 2025 pyGinkgo authors
 //
-// SPDX-FileCopyrightText: 2024 pyGinkgo authors
+// SPDX-License-Identifier: MIT
 
+#include <ginkgo/extensions/config/json_config.hpp>
+#include <ginkgo/ginkgo.hpp>
+
+#include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
-#include "pybind11/numpy.h"
 
 #include "../python.hpp"
 #include "../utils.hpp"
-
-#include <ginkgo/extensions/config/json_config.hpp>
-#include "ginkgo/ginkgo.hpp"
 
 namespace py = pybind11;
 
