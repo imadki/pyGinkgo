@@ -58,13 +58,18 @@ ForEachMacros:
   - foreach
   - Q_FOREACH
   - BOOST_FOREACH
+IncludeBlocks: Regroup
 IncludeCategories:
-  - Regex:           '^<.*\.h>'
+  - Regex:           '^<[^.]*>' # Standard library
     Priority:        1
-  - Regex:           '^<.*'
+  - Regex:           '<ginkgo/.*'
     Priority:        2
-  - Regex:           '.*'
+  - Regex:           '<pybind11/.*>'
     Priority:        3
+  - Regex:           '^<.*'
+    Priority:        4
+  - Regex:           '.*'
+    Priority:        5
 IncludeIsMainRegex: '([-_](test|unittest))?$'
 IndentCaseLabels: false
 IndentWidth:     4
