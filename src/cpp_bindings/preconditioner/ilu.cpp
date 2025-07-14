@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2024 - 2025 pyGinkgo authors
 //
-// SPDX-FileCopyrightText: 2024 pyGinkgo authors
+// SPDX-License-Identifier: MIT
 
 #include "../python.hpp"
 #include "../utils.hpp"

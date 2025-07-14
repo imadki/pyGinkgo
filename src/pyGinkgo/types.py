@@ -1,6 +1,6 @@
-# SPDX-License-Identifier: MIT
-#
 # SPDX-FileCopyrightText: 2025 pyGinkgo authors
+#
+# SPDX-License-Identifier: MIT
 
 import enum
 import numpy as np

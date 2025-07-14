@@ -104,4 +104,3 @@ This will generate the stubs for the C++ code in the `pyGinkgoBindings` module i
 Here's a simple example demonstrating how to use PyGinkgo to perform matrix-vector multiplication:
 
 ## Benchmarking
-

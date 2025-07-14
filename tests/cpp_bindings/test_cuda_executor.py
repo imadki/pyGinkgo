@@ -1,6 +1,6 @@
-# SPDX-License-Identifier: MIT
+# SPDX-FileCopyrightText: 2024 - 2025 pyGinkgo authors
 #
-# SPDX-FileCopyrightText: 2024 pyGinkgo authors
+# SPDX-License-Identifier: MIT
 
 import pytest
 import numpy as np

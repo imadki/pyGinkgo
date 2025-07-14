@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2024 - 2025 pyGinkgo authors
 //
-// SPDX-FileCopyrightText: 2024 pyGinkgo authors
+// SPDX-License-Identifier: MIT
+
+#include <tuple>
 
 #include "../python.hpp"
 #include "../utils.hpp"
-
-#include <tuple>
 
 template <typename ValueType>
 void init_gmres(py::module_ &module_solver, const std::string value_type)
