@@ -53,9 +53,9 @@ void init_array(py::module_ &module, const std::string typestr)
              [](const gko::array<ValueType> &arr) {
                  // Deprecation in favor of .shape
                  // https://stackoverflow.com/a/62559865
-                 PyErr_WarnEx(PyExc_DeprecationWarning,
-                              ".get_size() is deprecated, use .shape instead",
-                              1);
+                 PyErr_WarnEx(
+                     PyExc_DeprecationWarning,
+                     ".get_size() is deprecated, use .shape[0] instead", 1);
                  return arr.get_size();
              })
         .def_property_readonly(
