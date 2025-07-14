@@ -199,3 +199,7 @@ cython_debug/
 
 # temporary vim files
 *.sw?
+
+src/pyGinkgo/pyGinkgoBindings/
+
+.venv_p

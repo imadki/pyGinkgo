@@ -8,6 +8,14 @@
 
 PyGinkgo is a Python binding for the Ginkgo framework, providing access to Ginkgo's powerful linear algebra capabilities from Python. Ginkgo is a high-performance numerical linear algebra library for sparse systems, primarily designed for developing efficient iterative solvers on complex HPC architectures.
 
+The tests successfully run on the following Python versions:
+- 3.8.20
+- 3.9.22
+- 3.10.17
+- 3.11.12
+- 3.12.3
+- 3.13.3
+
 ## Installation
 
 ### Prerequisites
@@ -33,8 +41,15 @@ PyGinkgo is a Python binding for the Ginkgo framework, providing access to Ginkg
    cmake ..
 
    # Build the project using the specified number of cores (replace "number of cores" with the desired value)
+   # (Here we are still within the build directory)
    cmake --build . -j=number_of_cores
    ```
+3. **Install the module**:
+   ```bash
+   # (Here we are still within the build directory)
+   cmake --install .
+   ```
+   - To install in the virtual environment, use `-DPython_ROOT_DIR=path_to_venv_bin_folder` flag during the project configuration.
 
 ### Running the tests
 You would need to install pytest to be able to run the tests. To run all tests:
@@ -76,6 +91,13 @@ In order to enable the stubs generation:
       def __init__(self, arg0: pyGinkgoBindings.Executor) -> None:
          ...
    ```
+
+#### Development stubs generation
+While working on the Python side of the project, it is also useful to have access to the stubs for the C++ code. This can be done by setting `ENABLE_PYGINKGOBINDINGS_DEV_STUBS=ON` when doing CMake configuration:
+```bash
+cmake .. -DENABLE_PYGINKGOBINDINGS_DEV_STUBS=ON
+```
+This will generate the stubs for the C++ code in the `pyGinkgoBindings` module inside the `./src/pyGinkgo/pyGinkgoBindings` folder, allowing for autocomplete and type checking by VSCode or other IDEs.
 
 ## Usage
 

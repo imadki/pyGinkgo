@@ -11,6 +11,7 @@ enable_testing()
 # Find Python interpreter and library
 set(Python_FIND_VIRTUALENV "FIRST")
 find_package(Python COMPONENTS Interpreter Development)
+set(PYTHON_EXECUTABLE ${Python_EXECUTABLE})
 
 # copy all generated files to pyGinkgo that makes testing and installing easier
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${PROJECT_NAME})
@@ -93,17 +94,46 @@ option(
   "Whether the stub (interface) files are to be generated for pyGinkgoBindings"
   OFF)
 message(
-  "Stubs generation for pyGinkgoBindings is: ${ENABLE_PYGINKGOBINDINGS_STUBS}")
+  STATUS
+    "Stubs generation for pyGinkgoBindings is: ${ENABLE_PYGINKGOBINDINGS_STUBS}"
+)
 if(${ENABLE_PYGINKGOBINDINGS_STUBS})
+  # Correct variable according to
+  # https://cmake.org/cmake/help/latest/module/FindPython.html
   add_custom_command(
     TARGET pyGinkgoBindings
     POST_BUILD
     WORKING_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
     VERBATIM
     COMMAND
-      ${PYTHON_EXECUTABLE} -c
+      ${Python_EXECUTABLE} -c
       "import pybind11_stubgen; pybind11_stubgen.main();" pyGinkgoBindings
       "-o./"
+    COMMENT "Generating stub files at ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
+endif()
+
+option(
+  ENABLE_PYGINKGOBINDINGS_DEV_STUBS
+  "Whether the stub (interface) files are to be generated for pyGinkgoBindings\
+   at src/pyGinkgo folder" OFF)
+if(${ENABLE_PYGINKGOBINDINGS_DEV_STUBS})
+  message(STATUS "Enabled stubs generation for pyGinkgoBindings at\
+     '${PROJECT_SOURCE_DIR}/src/pyGinkgo/pyGinkgoBindings'")
+  # Correct variable according to
+  # https://cmake.org/cmake/help/latest/module/FindPython.html
+  add_custom_command(
+    TARGET pyGinkgoBindings
+    POST_BUILD
+    WORKING_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+    VERBATIM
+    COMMAND
+      ${Python_EXECUTABLE} -c "import distutils.dir_util, os;\
+       os.path.exists('./types.py') and os.remove('./types.py'), \
+        'to resolve recompilation issue';\
+       import pybind11_stubgen; pybind11_stubgen.main();\
+       distutils.dir_util.copy_tree('./pyGinkgoBindings',\
+       '${PROJECT_SOURCE_DIR}/src/pyGinkgo/pyGinkgoBindings', update=1)"
+      pyGinkgoBindings "-o./"
     COMMENT "Generating stub files at ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 endif()
 
@@ -111,7 +141,13 @@ endif()
 set(PYGINKGO_PYTHON_FILES
     ${PROJECT_SOURCE_DIR}/src/pyGinkgo/__init__.py
     ${PROJECT_SOURCE_DIR}/src/pyGinkgo/core.py
-    ${PROJECT_SOURCE_DIR}/src/pyGinkgo/rayleigh_ritz.py)
+    ${PROJECT_SOURCE_DIR}/src/pyGinkgo/types.py
+    ${PROJECT_SOURCE_DIR}/src/pyGinkgo/device.py
+    ${PROJECT_SOURCE_DIR}/src/pyGinkgo/solver.py
+    ${PROJECT_SOURCE_DIR}/src/pyGinkgo/rayleigh_ritz.py
+    ${PROJECT_SOURCE_DIR}/src/pyGinkgo/preconditioner.py)
+# TODO: it seems reasonable to be to start using glob recuse above
+
 add_custom_target(
   pyGinkgo_virtual_installation ALL
   DEPENDS pyGinkgoBindings
@@ -122,6 +158,8 @@ add_custom_target(
 ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 
 # adding tests
+include(CTest) # https://cmake.org/pipermail/cmake/2015-January/059742.html -
+               # removing the issue with checking with dart availability
 add_subdirectory(tests/cpp_bindings)
 add_subdirectory(tests/pyGinkgo)
 
@@ -130,7 +168,7 @@ if(APPLE)
 endif()
 set(CMAKE_INSTALL_RPATH ${Python_SITELIB}/${PROJECT_NAME})
 
-message("Install path: ${Python_SITELIB}")
+message(STATUS "Install path: ${Python_SITELIB}")
 install(DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
         DESTINATION ${Python_SITELIB})
 install(

@@ -12,8 +12,7 @@ void init_sparse_all_types(py::module_ &);
 void init_logger_all_types(py::module_ &);
 void init_gmres_all_types(py::module_ &);
 void init_direct_all_types(py::module_ &);
-void init_LowerTrs_all_types(py::module_ &);
-void init_UpperTrs_all_types(py::module_ &);
+void init_trs_all_types(py::module_ &);
 void init_factorization(py::module_ &);
 void init_config_solver_all_types(py::module_ &);
 void init_ilu_all_types(py::module_ &);
@@ -43,7 +42,14 @@ PYBIND11_MODULE(pyGinkgoBindings, m)
             "apply",
             [](const gko::LinOp &m, std::shared_ptr<const gko::LinOp> b,
                std::shared_ptr<gko::LinOp> x) { m.apply(b, x); },
-            "");
+            py::arg("b"), py::arg("x"),
+            "Applies a linear operator to a vector (or a sequence of "
+            "vectors).\n\n"
+            "Performs the operation x = op(b), where op is this linear "
+            "operator.\n\n"
+            "@param b  the input vector(s) on which the operator is applied\n"
+            "@param x  the output vector(s) where the result is stored\n\n"
+            "@return this");
 
     py::class_<gko::dim<2>>(m, "dim2")
         .def(py::init<unsigned long, unsigned long>())
@@ -71,8 +77,7 @@ PYBIND11_MODULE(pyGinkgoBindings, m)
     init_gmres_all_types(module_solver);
     init_direct_all_types(module_solver);
     init_config_solver_all_types(module_solver);
-    init_LowerTrs_all_types(module_solver);
-    init_UpperTrs_all_types(module_solver);
+    init_trs_all_types(module_solver);
 
     py::module_ module_factorization = m.def_submodule(
         "factorization", "Submodule for Ginkgos factorization type bindings");

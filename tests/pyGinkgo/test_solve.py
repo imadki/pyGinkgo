@@ -29,7 +29,7 @@ class TestSolve:
 
         self.reader_cls = getattr(pGB.matrix, f"read_Coo_{data_type}_int32")
         self.mtx = self.reader_cls(self.fn, self.executor)
-        self.dim = self.mtx.get_size()
+        self.dim = self.mtx.shape
         self.rows = self.dim[0]
         self.cols = self.dim[1]
 

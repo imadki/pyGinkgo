@@ -2,9 +2,14 @@
 #
 # SPDX-FileCopyrightText: 2024 pyGinkgo authors
 
-from pyGinkgo import pyGinkgoBindings as pGB
+import os
 import json
 import numpy as np
+from typing import Optional, Union
+
+from . import types
+import pyGinkgo as pg
+from pyGinkgo import pyGinkgoBindings as pGB
 
 try:
     import torch
@@ -13,52 +18,40 @@ try:
 except ImportError:
     torch_avail = False
 
-valid_value_types = ["half", "float", "double"]
-valid_index_types = ["int32", "int64"]
-valid_dtypes = valid_value_types + valid_index_types
-valid_executor = ["Reference", "Cuda"]
 
+# TODO: add tests for the functions in this file
 
-def as_array(obj, executor: str = "Reference", dtype="float"):
+def as_array(obj, device: types.DeviceType = "cpu", dtype="float"):
     """create a ginkgo array from a given object"""
-    if not dtype in valid_dtypes:
+    if not dtype in types.dtype:
         raise ValueError(
-            "Not a valid dtype: "
-            + dtype
-            + " possible choices are: "
-            + str(valid_dtypes)
+            f"Not a valid dtype: {dtype}. " +
+            "Possible choices are: " +
+            ', '.join(t for t in types.dtype)
         )
-    if not executor in valid_executor:
-        raise ValueError(
-            "Not a valid executor: "
-            + dtype
-            + " possible choices are: "
-            + str(valid_executor)
-        )
-
+    
+    executor = pg.device(device)
+    
     array_cls = getattr(pGB.base, "array_" + dtype)
-    executor = getattr(pGB, executor + "Executor")()
     return array_cls(executor, obj)
 
 
-def as_tensor(obj=None, dim=None, executor: str = "Reference", dtype="float"):
+def as_tensor(
+    obj = None,
+    dim: Optional[tuple] = None,
+    device: types.DeviceType = "cpu",
+    dtype: Union[types.ValueType, str] = "float",
+    fill: Optional[float] = None,
+):
     """create a ginkgo array from a given object"""
-    if not dtype in valid_value_types:
+    if not dtype in types.ValueType.values():
         raise ValueError(
-            "Not a valid dtype: "
-            + dtype
-            + " possible choices are: "
-            + str(valid_value_types)
+            f"Not a valid dtype: {dtype}. " +
+            "Possible choices are: " +
+            ', '.join(t for t in types.ValueType)
         )
-    if isinstance(executor,str):
-        if not executor in valid_executor:
-            raise ValueError(
-                "Not a valid executor: "
-                + executor
-                + " possible choices are: "
-                + str(valid_executor)
-            )
-        executor = getattr(pGB, executor + "Executor")()
+    
+    executor = pg.device(device)
 
     if torch_avail:
         if isinstance(obj, torch.Tensor):
@@ -68,19 +61,75 @@ def as_tensor(obj=None, dim=None, executor: str = "Reference", dtype="float"):
     if obj:
         return array_cls(executor, obj)
     else:
-        return array_cls(executor, dim)
+        res = array_cls(executor, dim)
+        
+        if fill is not None:
+            res.fill(fill)
+        
+        return res
 
 
-def factor(A, kind="Upper", executor="Reference"):
-    if isinstance(executor,str) and  not executor in valid_executor:
+def read(
+    path: Union[str, bytes, os.PathLike],
+    format: Union[types.MatrixFormat, str] = "dense",
+    dtype: Union[types.ValueType, str] = "double",
+    itype: Union[types.IndexType, str] = "int32",
+    device: types.DeviceType = "cpu",
+):
+    """Read a matrix from a file
+
+    Parameters: path - The path to the file
+                format - The format of the file, eg. dense, Csr, Coo
+                dtype - The data type of the matrix, eg. float, double, etc.
+                itype - The index type of the matrix, eg. int32, int64, etc.
+                device - The device to use for the matrix
+    Returns: the matrix
+    """
+
+    # Processing filepath
+    filepath = os.path.abspath(path)
+    
+    executor = pg.device(device)
+
+    # Checking if the format is valid
+    if format not in types.MatrixFormat.values():
         raise ValueError(
-            "Not a valid executor: "
-            + executor
-            + " possible choices are: "
-            + str(valid_executor)
+            f"Not a valid matrix format: {format}. " +
+            "Possible choices are: " +
+            ', '.join(t for t in types.MatrixFormat)
         )
 
-    executor = getattr(pGB, executor + "Executor")()
+    # Checking if the format is dtype
+    if dtype not in types.ValueType.values():
+        raise ValueError(
+            f"Not a valid dtype: {dtype}. " +
+            "Possible choices are: " +
+            ', '.join(t for t in types.ValueType)
+        )
+
+    # Processing format
+    if format == "dense":
+        read_func = getattr(pGB.matrix, f"read_dense_{dtype}")
+    else:
+        # Checking if the itype is valid
+        if itype not in types.IndexType.values():
+            raise ValueError(
+                f"Not a valid itype: {itype}. " +
+                "Possible choices are: " +
+                ', '.join(t for t in types.IndexType)
+            )
+
+        read_func = getattr(pGB.matrix, f"read_{format}_{dtype}_{itype}")
+
+    return read_func(filepath, executor)
+
+
+def factor(A, kind="Upper", device: Union[str, pGB.Executor] = "cpu"):
+    if isinstance(device, str):
+        executor = pg.device(device)
+    else:
+        executor = device
+    
     factorization = pGB.factorization.factorization(executor, A)
     if kind == "Upper":
         return factorization.get_upper_factor()
@@ -91,7 +140,7 @@ def factor(A, kind="Upper", executor="Reference"):
 def eigen_solve(A,solver_args=None):
     exec_obj = A.get_executor()
     torchA = torch.as_tensor(np.array(A))
-    dtype = str(type(A)).split('_')[1]
+    dtype = type(A).__name__.split('_')[1]
     L, Q = torch.linalg.eigh(torchA)
     dense_cls = getattr(pGB.matrix, f"dense_float")
     Lambda = dense_cls(exec_obj, L.__array__())
@@ -122,7 +171,7 @@ def generate_solver(A, solver_args: dict = dict()):
         }
     solver_executor = A.get_executor()
      # TODO: Create a better way to check the dtype of the matrix
-    dtype = str(type(A)).split('_')[1]
+    dtype = type(A).__name__.split('_')[1]
     solver_cls = getattr(pGB.solver, "config_solver_" + dtype)
     solver = solver_cls(
         solver_executor, A, json.dumps(solver_args)
@@ -145,7 +194,7 @@ def config_solve(A,b,x,solver_args=None):
         }
 
     solver_executor = A.get_executor()
-    dtype = str(type(A)).split('_')[1]
+    dtype = type(A).__name__.split('_')[1]
     # TODO: Create a better way to check the dtype of the matrix
     solver_cls = getattr(pGB.solver, "config_solve_" + dtype)
     logger = solver_cls(
@@ -156,8 +205,8 @@ def config_solve(A,b,x,solver_args=None):
 
 def triangular_solve(A,b,x,solver_args):
     kind = solver_args["type"]
-    dtype = str(type(A)).split('_')[1]
-    itype = str(type(A)).split('_')[2]
+    dtype = type(A).__name__.split('_')[1]
+    itype = type(A).__name__.split('_')[2] # This might fix the TODO
     s = f"{kind}Trs_{dtype}_int32" # TODO why does it fail for + itype
     ctor = getattr(pGB.solver, s)
     exec_obj = A.get_executor()
@@ -181,9 +230,9 @@ def solve(A, b, initial_guess=None, solver_args: dict = dict(), kind="config"):
     ctor = globals()[kind+"_solve"]
 
     if not initial_guess:
-        dtype = str(type(A)).split('_')[1]
+        dtype = type(A).__name__.split('_')[1]
         dense_cls = getattr(pGB.matrix, f"dense_{dtype}")
-        dim = (A.get_size()[1], b.get_size()[1])
+        dim = (A.shape[1], b.shape[1])
         initial_guess = dense_cls(b.get_executor(), dim)
         initial_guess.fill(0.0)
 

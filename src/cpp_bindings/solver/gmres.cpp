@@ -5,11 +5,21 @@
 #include "../python.hpp"
 #include "../utils.hpp"
 
+#include <tuple>
+
 template <typename ValueType>
 void init_gmres(py::module_ &module_solver, const std::string value_type)
 {
     std::string pyclass_name = "gmres_" + value_type;
     std::string repr_str = "pygko.solver." + pyclass_name + " object";
+
+    auto initialize_logger = [](gko::solver::Gmres<ValueType> &o) {
+        std::shared_ptr<gko::log::Convergence<ValueType>> convergence_logger =
+            gko::log::Convergence<ValueType>::create();
+        o.add_logger(convergence_logger);
+        return convergence_logger;
+    };
+
     py::class_<gko::solver::Gmres<ValueType>,
                std::shared_ptr<gko::solver::Gmres<ValueType>>, gko::LinOp>(
         module_solver, pyclass_name.c_str())
@@ -33,7 +43,7 @@ void init_gmres(py::module_ &module_solver, const std::string value_type)
                  return gko::share(fact->generate(system_matrix));
              }),
              py::arg("exec"), py::arg("system_matrix"), py::arg("max_iters"),
-             py::arg("krylov_dim"), py::arg("tolerance"),
+             py::arg("krylov_dim"), py::arg("reduction_factor"),
              py::arg("relative_stop_mode"))
         .def(py::init([](std::shared_ptr<gko::Executor> exec,
                          std::shared_ptr<const gko::LinOp> system_matrix,
@@ -58,24 +68,25 @@ void init_gmres(py::module_ &module_solver, const std::string value_type)
              }),
              py::arg("exec"), py::arg("system_matrix"),
              py::arg("preconditioner"), py::arg("max_iters"),
-             py::arg("krylov_dim"), py::arg("tolerance"),
+             py::arg("krylov_dim"), py::arg("reduction_factor"),
              py::arg("relative_stop_mode"))
-        .def("initialize_logger",
-             [](gko::solver::Gmres<ValueType> &o) {
-                 std::shared_ptr<gko::log::Convergence<ValueType>>
-                     convergence_logger =
-                         gko::log::Convergence<ValueType>::create();
-                 o.add_logger(convergence_logger);
-                 return convergence_logger;
-             })
+        // TODO: not sure, whether we actually still need this function
+        .def("initialize_logger", initialize_logger)
         .def("__repr__",
              [=](const gko::solver::Gmres<ValueType> &o) { return repr_str; })
         .def(
             "apply",
-            [](const gko::solver::Gmres<ValueType> &d,
-               std::shared_ptr<const gko::LinOp> b,
-               std::shared_ptr<gko::LinOp> x) { d.apply(b, x); },
-            "");
+            [=](gko::solver::Gmres<ValueType> &d,
+                std::shared_ptr<const gko::LinOp> b,
+                std::shared_ptr<gko::LinOp> x) {
+                auto logger = initialize_logger(d);
+                d.apply(b, x);
+                return std::make_tuple(logger, x);
+            },
+            py::arg("b"), py::arg("x"),
+            "Applies the solver on b (rhs) and x (initial guess).\n"
+            "Changes the initial guess inplace.\n"
+            "Returns a tuple: (logger object, result)");
 }
 
 void init_gmres_all_types(py::module_ &module_solver)

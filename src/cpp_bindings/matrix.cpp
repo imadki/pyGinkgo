@@ -72,8 +72,44 @@ void init_matrix(py::module_ &module, const std::string matrix_type,
                 return gko::share(m.transpose());
             },
             "Computes the transpose of a matrix")
-        .def("get_size", &MatrixType<ValueType, IndexType>::get_size,
-             "Get the size of the matrix");
+        .def(
+            "get_size",
+            [](const MatrixType<ValueType, IndexType> &m) {
+                // Deprecation in favor of .shape
+                // https://stackoverflow.com/a/62559865
+                PyErr_WarnEx(PyExc_DeprecationWarning,
+                             ".get_size() is deprecated, use .shape instead",
+                             1);
+                return m.get_size();
+            },
+            "Get the size of the matrix")
+        .def_property_readonly(
+            "size",
+            [](const MatrixType<ValueType, IndexType> &m) {
+                // Deprecation in favor of .shape
+                // https://stackoverflow.com/a/62559865
+                PyErr_WarnEx(PyExc_DeprecationWarning,
+                             ".size is deprecated, use .shape instead", 1);
+                return m.get_size();
+            },
+            "Get the size of the matrix")
+        .def_property_readonly(
+            "shape",
+            [](const MatrixType<ValueType, IndexType> &m) {
+                auto size = m.get_size();
+                return py::make_tuple(size[0], size[1]);
+            },
+            "Get the size of the matrix")
+        .def(
+            "convert_to_dense",
+            [](MatrixType<ValueType, IndexType> &m) {
+                auto exec = m.get_executor();
+                auto dense =
+                    gko::share(gko::matrix::Dense<ValueType>::create(exec));
+                m.convert_to(dense);
+                return dense;
+            },
+            "Returns dense representation of the matrix");
 
     std::string read_fn = "read_" + matrix_type + "_" + value_index_str;
     module.def(read_fn.c_str(), [](const std::string &fn,
