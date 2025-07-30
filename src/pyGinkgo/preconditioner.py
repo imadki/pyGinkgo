@@ -2,13 +2,13 @@
 #
 # SPDX-License-Identifier: MIT
 
-from . import types
+from . import gko_types
 import pyGinkgo as pg
 from . import pyGinkgoBindings as pGB
 from .pyGinkgoBindings.preconditioner import *
 
 
-def Ilu(device: types.DeviceType, matrix: pGB.LinOp):
+def Ilu(device: gko_types.DeviceType, matrix: pGB.LinOp):
     executor = pg.device(device)
 
     # TODO: create a better way to check the type of the matrix

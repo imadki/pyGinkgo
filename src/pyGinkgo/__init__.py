@@ -9,6 +9,6 @@ from .core import *
 from .device import *
 from .rayleigh_ritz import *
 
-from . import types
+from . import gko_types
 from . import solver
 from . import preconditioner

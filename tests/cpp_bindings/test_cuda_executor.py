@@ -11,9 +11,9 @@ import pyGinkgo.pyGinkgoBindings as pGB
 from test_utils import verify_dense_vec
 
 
-@pytest.mark.parametrize("data_type", list(pg.types.ValueType))
+@pytest.mark.parametrize("data_type", list(pg.gko_types.ValueType))
 class TestCuda:
-    def test_array_cuda(self, data_type: pg.types.ValueType):
+    def test_array_cuda(self, data_type: pg.gko_types.ValueType):
         if pGB.CudaExecutor.get_num_devices() < 1:
             pytest.skip("CUDA is not available")
 
@@ -25,7 +25,7 @@ class TestCuda:
         assert arr.shape == arr_copy.shape
         assert pGB.base.reduce_add(arr, 0.0) == 15.0
 
-    def test_dense_copy_to_host(self, data_type: pg.types.ValueType):
+    def test_dense_copy_to_host(self, data_type: pg.gko_types.ValueType):
         if pGB.CudaExecutor.get_num_devices() < 1:
             pytest.skip("CUDA is not available")
 
@@ -40,7 +40,7 @@ class TestCuda:
         assert id(dense) != id(dense_on_master)
         verify_dense_vec(dense_on_master, np_array)
 
-    def test_device_id(self, data_type: pg.types.ValueType):
+    def test_device_id(self, data_type: pg.gko_types.ValueType):
         if pGB.CudaExecutor.get_num_devices() < 1:
             pytest.skip("CUDA is not available")
 
@@ -49,14 +49,14 @@ class TestCuda:
         with pytest.raises(AttributeError):
             executor.device_id = 1
 
-    def test_can_synchronize(self, data_type: pg.types.ValueType):
+    def test_can_synchronize(self, data_type: pg.gko_types.ValueType):
         if pGB.CudaExecutor.get_num_devices() < 1:
             pytest.skip("CUDA is not available")
 
         executor = pGB.CudaExecutor(0)
         executor.synchronize()
 
-    def test_master(self, data_type: pg.types.ValueType):
+    def test_master(self, data_type: pg.gko_types.ValueType):
         if pGB.CudaExecutor.get_num_devices() < 1:
             pytest.skip("CUDA is not available")
         master = pGB.ReferenceExecutor()
