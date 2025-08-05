@@ -10,7 +10,7 @@ import pyGinkgo.pyGinkgoBindings as pGB
 
 
 @pytest.mark.parametrize("solver_name", ["direct"])
-@pytest.mark.parametrize("data_type", list(pg.types.ValueType))
+@pytest.mark.parametrize("data_type", list(pg.gko_types.ValueType))
 class TestDirectSolverBinding:
     ref = pGB.ReferenceExecutor()
     values = [1.0, 0.0, 0.0, 0.0, 2.0, 0.0, 0.0, 0.0, 3.0]
@@ -18,7 +18,7 @@ class TestDirectSolverBinding:
 
     solver_args = {"direct": {"factorization": "Cholesky"}}
 
-    def test_direct_solver(self, solver_name, data_type: pg.types.ValueType):
+    def test_direct_solver(self, solver_name, data_type: pg.gko_types.ValueType):
         dense_cls = getattr(pGB.matrix, "dense_" + data_type)
         mtx = dense_cls(
             self.ref, (3, 3), np.array(self.values, dtype=data_type.numpy_type), 3

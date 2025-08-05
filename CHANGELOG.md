@@ -1,4 +1,5 @@
 # Version 0.1.0 (unreleased)
+- Fix circular import issue by renaming `types.py` to `gko_types.py` [#85](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/85)
 - Ensure the consistent format more automatically [#81](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/81)
 - Paper interface and example [#80](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/80)
 - update the config usage from ginkgo update [#82](https://github.com/Helmholtz-AI-Energy/pyGinkgo/pull/82)

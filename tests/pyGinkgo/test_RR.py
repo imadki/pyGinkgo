@@ -20,7 +20,7 @@ d_precision_map = {
 }
 
 
-@pytest.mark.parametrize("data_type", list(pg.types.ValueType))
+@pytest.mark.parametrize("data_type", list(pg.gko_types.ValueType))
 class TestSolve:
     executor = pGB.ReferenceExecutor()
     # TODO replace all dense_float
@@ -35,7 +35,7 @@ class TestSolve:
     exphX = [[-0.6748703, -0.7149942], [0.2473979, 0.37255105]]
     expLambda = [1.32522729, 4.07477271]
 
-    def test_can_default_solve(self, data_type: pg.types.ValueType):
+    def test_can_default_solve(self, data_type: pg.gko_types.ValueType):
         dense_cls = getattr(pGB.matrix, "dense_" + data_type)
         rhs = dense_cls(self.executor, (self.rows, 1))
         rhs.fill(1.0)

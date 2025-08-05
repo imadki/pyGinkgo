@@ -7,7 +7,7 @@ import json
 import numpy as np
 from typing import Optional, Union
 
-from . import types
+from . import gko_types
 import pyGinkgo as pg
 from pyGinkgo import pyGinkgoBindings as pGB
 
@@ -21,13 +21,13 @@ except ImportError:
 
 # TODO: add tests for the functions in this file
 
-def as_array(obj, device: types.DeviceType = "cpu", dtype="float"):
+def as_array(obj, device: gko_types.DeviceType = "cpu", dtype="float"):
     """create a ginkgo array from a given object"""
-    if not dtype in types.dtype:
+    if not dtype in gko_types.dtype:
         raise ValueError(
             f"Not a valid dtype: {dtype}. " +
             "Possible choices are: " +
-            ', '.join(t for t in types.dtype)
+            ', '.join(t for t in gko_types.dtype)
         )
     
     executor = pg.device(device)
@@ -39,16 +39,16 @@ def as_array(obj, device: types.DeviceType = "cpu", dtype="float"):
 def as_tensor(
     obj = None,
     dim: Optional[tuple] = None,
-    device: types.DeviceType = "cpu",
-    dtype: Union[types.ValueType, str] = "float",
+    device: gko_types.DeviceType = "cpu",
+    dtype: Union[gko_types.ValueType, str] = "float",
     fill: Optional[float] = None,
 ):
     """create a ginkgo array from a given object"""
-    if not dtype in types.ValueType.values():
+    if not dtype in gko_types.ValueType.values():
         raise ValueError(
             f"Not a valid dtype: {dtype}. " +
             "Possible choices are: " +
-            ', '.join(t for t in types.ValueType)
+            ', '.join(t for t in gko_types.ValueType)
         )
     
     executor = pg.device(device)
@@ -71,10 +71,10 @@ def as_tensor(
 
 def read(
     path: Union[str, bytes, os.PathLike],
-    format: Union[types.MatrixFormat, str] = "dense",
-    dtype: Union[types.ValueType, str] = "double",
-    itype: Union[types.IndexType, str] = "int32",
-    device: types.DeviceType = "cpu",
+    format: Union[gko_types.MatrixFormat, str] = "dense",
+    dtype: Union[gko_types.ValueType, str] = "double",
+    itype: Union[gko_types.IndexType, str] = "int32",
+    device: gko_types.DeviceType = "cpu",
 ):
     """Read a matrix from a file
 
@@ -92,19 +92,19 @@ def read(
     executor = pg.device(device)
 
     # Checking if the format is valid
-    if format not in types.MatrixFormat.values():
+    if format not in gko_types.MatrixFormat.values():
         raise ValueError(
             f"Not a valid matrix format: {format}. " +
             "Possible choices are: " +
-            ', '.join(t for t in types.MatrixFormat)
+            ', '.join(t for t in gko_types.MatrixFormat)
         )
 
     # Checking if the format is dtype
-    if dtype not in types.ValueType.values():
+    if dtype not in gko_types.ValueType.values():
         raise ValueError(
             f"Not a valid dtype: {dtype}. " +
             "Possible choices are: " +
-            ', '.join(t for t in types.ValueType)
+            ', '.join(t for t in gko_types.ValueType)
         )
 
     # Processing format
@@ -112,11 +112,11 @@ def read(
         read_func = getattr(pGB.matrix, f"read_dense_{dtype}")
     else:
         # Checking if the itype is valid
-        if itype not in types.IndexType.values():
+        if itype not in gko_types.IndexType.values():
             raise ValueError(
                 f"Not a valid itype: {itype}. " +
                 "Possible choices are: " +
-                ', '.join(t for t in types.IndexType)
+                ', '.join(t for t in gko_types.IndexType)
             )
 
         read_func = getattr(pGB.matrix, f"read_{format}_{dtype}_{itype}")

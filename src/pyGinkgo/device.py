@@ -2,12 +2,12 @@
 #
 # SPDX-License-Identifier: MIT
 
-from . import types
+from . import gko_types
 from . import pyGinkgoBindings as pGB
 from typing import Optional
     
 
-def device(type: types.DeviceType = "cpu", index: Optional[int] = None) -> pGB.Executor:
+def device(type: gko_types.DeviceType = "cpu", index: Optional[int] = None) -> pGB.Executor:
     """
     Get Ginkgo executor device.
 
@@ -38,24 +38,24 @@ def device(type: types.DeviceType = "cpu", index: Optional[int] = None) -> pGB.E
     
     # Making device type case independent
     type = params[0].lower()
-    if types.ExecutorType.cpu in type:
+    if gko_types.ExecutorType.cpu in type:
         return pGB.ReferenceExecutor()
-    elif types.ExecutorType.omp in type:
+    elif gko_types.ExecutorType.omp in type:
         return pGB.OmpExecutor()
     
     # All the other types require an index
     if index is None:
         index = 0
     
-    if types.ExecutorType.cuda in type:
+    if gko_types.ExecutorType.cuda in type:
         return pGB.CudaExecutor(
             device_id=index,
         )
-    elif types.ExecutorType.hip in type:
+    elif gko_types.ExecutorType.hip in type:
         return pGB.HipExecutor(
             device_id=index,
         )
-    elif types.ExecutorType.dpcpp in type:
+    elif gko_types.ExecutorType.dpcpp in type:
         return pGB.DpcppExecutor(
             device_id=index,
         )
@@ -63,5 +63,5 @@ def device(type: types.DeviceType = "cpu", index: Optional[int] = None) -> pGB.E
     raise ValueError(
         f"Unknown device type: {type}." +
         "Valid types are: " +
-        ', '.join(t for t in types.ExecutorType)
+        ', '.join(t for t in gko_types.ExecutorType)
     )

@@ -5,7 +5,7 @@
 from pyGinkgo import pyGinkgoBindings as pGB
 from .pyGinkgoBindings.solver import *
 import pyGinkgo as pg
-from . import types
+from . import gko_types
 import numpy as np
 
 
@@ -65,7 +65,7 @@ def lobpcg(A, X0, nev,
 
 
 def gmres(
-    device: types.DeviceType,
+    device: gko_types.DeviceType,
     matrix: pGB.LinOp,
     max_iters: int,
     krylov_dim: int,

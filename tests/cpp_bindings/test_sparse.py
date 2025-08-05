@@ -22,8 +22,8 @@ def coo_rows_to_csr_rows(coo_rows: list) -> list:
 
 
 @pytest.mark.parametrize("matrix_format", ["Coo", "Csr"])
-@pytest.mark.parametrize("value_type", list(pg.types.ValueType))
-@pytest.mark.parametrize("index_type", list(pg.types.IndexType))
+@pytest.mark.parametrize("value_type", list(pg.gko_types.ValueType))
+@pytest.mark.parametrize("index_type", list(pg.gko_types.IndexType))
 class TestSparseMatrix:
     # test a 5x5 symmetric matrix
     # A =
@@ -70,8 +70,8 @@ class TestSparseMatrix:
     def test_can_create_sparse_matrix(
         self,
         matrix_format,
-        value_type: pg.types.ValueType,
-        index_type: pg.types.IndexType,
+        value_type: pg.gko_types.ValueType,
+        index_type: pg.gko_types.IndexType,
     ):
         matrix_cls = getattr(pGB.matrix, f"{matrix_format}_{value_type}_{index_type}")
         sparse = matrix_cls(self.ref)
@@ -80,8 +80,8 @@ class TestSparseMatrix:
     def test_can_create_sparse_from_np_arrays(
         self,
         matrix_format,
-        value_type: pg.types.ValueType,
-        index_type: pg.types.IndexType,
+        value_type: pg.gko_types.ValueType,
+        index_type: pg.gko_types.IndexType,
     ):
         matrix_cls = getattr(pGB.matrix, f"{matrix_format}_{value_type}_{index_type}")
         coeffs = np.array(self.values, dtype=value_type.numpy_type)
@@ -94,8 +94,8 @@ class TestSparseMatrix:
     def test_can_create_sparse_from_gko_arrays(
         self,
         matrix_format,
-        value_type: pg.types.ValueType,
-        index_type: pg.types.IndexType,
+        value_type: pg.gko_types.ValueType,
+        index_type: pg.gko_types.IndexType,
     ):
         matrix_cls = getattr(pGB.matrix, f"{matrix_format}_{value_type}_{index_type}")
         val_arr_cls = getattr(pGB.base, f"array_{value_type}")
@@ -116,8 +116,8 @@ class TestSparseMatrix:
     def test_can_apply_to_dense(
         self,
         matrix_format,
-        value_type: pg.types.ValueType,
-        index_type: pg.types.IndexType,
+        value_type: pg.gko_types.ValueType,
+        index_type: pg.gko_types.IndexType,
     ):
         matrix_cls = getattr(pGB.matrix, f"{matrix_format}_{value_type}_{index_type}")
         coeffs = np.array(self.values, dtype=value_type.numpy_type)
@@ -142,8 +142,8 @@ class TestSparseMatrix:
     def test_can_read_from_mtx_file(
         self,
         matrix_format,
-        value_type: pg.types.ValueType,
-        index_type: pg.types.IndexType,
+        value_type: pg.gko_types.ValueType,
+        index_type: pg.gko_types.IndexType,
     ):
         reader = getattr(pGB.matrix, f"read_{matrix_format}_{value_type}_{index_type}")
         fn = os.path.dirname(os.path.realpath(__file__)) + "/sparse_example.mtx"
@@ -154,8 +154,8 @@ class TestSparseMatrix:
     def test_can_get_size(
         self,
         matrix_format,
-        value_type: pg.types.ValueType,
-        index_type: pg.types.IndexType,
+        value_type: pg.gko_types.ValueType,
+        index_type: pg.gko_types.IndexType,
     ):
         reader = getattr(pGB.matrix, f"read_{matrix_format}_{value_type}_{index_type}")
         fn = os.path.dirname(os.path.realpath(__file__)) + "/sparse_example.mtx"
@@ -168,8 +168,8 @@ class TestSparseMatrix:
     def test_size_property(
         self,
         matrix_format,
-        value_type: pg.types.ValueType,
-        index_type: pg.types.IndexType,
+        value_type: pg.gko_types.ValueType,
+        index_type: pg.gko_types.IndexType,
     ):
         reader = getattr(pGB.matrix, f"read_{matrix_format}_{value_type}_{index_type}")
         fn = os.path.dirname(os.path.realpath(__file__)) + "/sparse_example.mtx"
@@ -184,8 +184,8 @@ class TestSparseMatrix:
     def test_shape_property(
         self,
         matrix_format,
-        value_type: pg.types.ValueType,
-        index_type: pg.types.IndexType,
+        value_type: pg.gko_types.ValueType,
+        index_type: pg.gko_types.IndexType,
     ):
         reader = getattr(pGB.matrix, f"read_{matrix_format}_{value_type}_{index_type}")
         fn = os.path.dirname(os.path.realpath(__file__)) + "/sparse_example.mtx"
@@ -198,8 +198,8 @@ class TestSparseMatrix:
     def test_can_convert_to_dense(
         self,
         matrix_format,
-        value_type: pg.types.ValueType,
-        index_type: pg.types.IndexType,
+        value_type: pg.gko_types.ValueType,
+        index_type: pg.gko_types.IndexType,
     ):
         matrix_cls = getattr(pGB.matrix, f"{matrix_format}_{value_type}_{index_type}")
         coeffs = np.array(self.values, dtype=value_type.numpy_type)

@@ -86,10 +86,19 @@ target_link_libraries(pyGinkgoBindings PRIVATE Ginkgo::ginkgo)
 target_link_libraries(pyGinkgoBindings PUBLIC nlohmann_json::nlohmann_json)
 set_property(TARGET pyGinkgoBindings PROPERTY CXX_STANDARD 14)
 
-# Disable false postive warnings from GCC (>= 12.4 and < 13)(https://gcc.gnu.org/bugzilla/show_bug.cgi?id=115824 and https://github.com/pybind/pybind11/issues/5224)
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 12.4.0 AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 13.0.0)
-  target_compile_options(pyGinkgoBindings PRIVATE -Wno-array-bounds -Wno-stringop-overread)
-  message(WARNING "GCC >= 12.4.0 < 13 gives false positive warning, so we need to add `-Wno-array-bounds -Wno-stringop-overread`. Please refer to https://github.com/pybind/pybind11/issues/5224 for more details.")
+# Disable false positive warnings from GCC (>= 12.4 and <
+# 13)(https://gcc.gnu.org/bugzilla/show_bug.cgi?id=115824 and
+# https://github.com/pybind/pybind11/issues/5224)
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
+   AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 12.4.0
+   AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 13.0.0)
+  target_compile_options(pyGinkgoBindings PRIVATE -Wno-array-bounds
+                                                  -Wno-stringop-overread)
+  message(
+    WARNING
+      "GCC >= 12.4.0 < 13 gives false positive warning, so we need to add \
+      `-Wno-array-bounds -Wno-stringop-overread`. Please refer to \
+      https://github.com/pybind/pybind11/issues/5224 for more details.")
 endif()
 
 # Generating stubs for the library (interface annotation) using
@@ -133,10 +142,8 @@ if(${ENABLE_PYGINKGOBINDINGS_DEV_STUBS})
     WORKING_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
     VERBATIM
     COMMAND
-      ${Python_EXECUTABLE} -c "import distutils.dir_util, os;\
-       os.path.exists('./types.py') and os.remove('./types.py'), \
-        'to resolve recompilation issue';\
-       import pybind11_stubgen; pybind11_stubgen.main();\
+      ${Python_EXECUTABLE} -c
+      "import pybind11_stubgen, distutils.dir_util; pybind11_stubgen.main();\
        distutils.dir_util.copy_tree('./pyGinkgoBindings',\
        '${PROJECT_SOURCE_DIR}/src/pyGinkgo/pyGinkgoBindings', update=1)"
       pyGinkgoBindings "-o./"
@@ -147,7 +154,7 @@ endif()
 set(PYGINKGO_PYTHON_FILES
     ${PROJECT_SOURCE_DIR}/src/pyGinkgo/__init__.py
     ${PROJECT_SOURCE_DIR}/src/pyGinkgo/core.py
-    ${PROJECT_SOURCE_DIR}/src/pyGinkgo/types.py
+    ${PROJECT_SOURCE_DIR}/src/pyGinkgo/gko_types.py
     ${PROJECT_SOURCE_DIR}/src/pyGinkgo/device.py
     ${PROJECT_SOURCE_DIR}/src/pyGinkgo/solver.py
     ${PROJECT_SOURCE_DIR}/src/pyGinkgo/rayleigh_ritz.py
