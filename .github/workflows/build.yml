@@ -35,7 +35,7 @@ jobs:
       uses: actions/cache@v4
       with:
         path: build
-        key: ${{ github.event.pull_request.number }}
+        key: cmake_${{ github.event.pull_request.number }}
 
     - name: Configure CMake
       run: cmake --preset develop -DGINKGO_BUILD_OMP=OFF
@@ -61,7 +61,13 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y libopenmpi-dev
-        pip install pytest numpy torch
+        pip install pytest numpy torch build
+
+    - name: Set up cache
+      uses: actions/cache@v4
+      with:
+        path: .py-build-cmake_cache
+        key: pip_${{ github.event.pull_request.number }}
 
     - name: Pip install package
-      run: pip install .
+      run: python3 -m build  --config-setting "override=cmake.build_args=[\"-j\",\"2\"]"
