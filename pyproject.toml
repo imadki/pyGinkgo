@@ -7,7 +7,7 @@ authors = [
     {name = "Lukas Petermann", email = "lukas.petermann13@gmail.com"}
 ]
 license = {text = "BSD-2-Clause"}
-readme="Readme.md"
+readme="README.md"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
@@ -17,10 +17,27 @@ requires-python = ">=3.8"
 dependencies = [
 ]
 
+[build-system]
+requires = ["py-build-cmake~=0.5.0"]
+build-backend = "py_build_cmake.build"
+
+[tool.py-build-cmake.module]
+name = "pyGinkgo"
+
+
+[tool.py-build-cmake.sdist]
+include = ["CMakeLists.txt", "src/pyGinkgo/*.cpp"]
+
+[tool.py-build-cmake.cmake]
+minimum_version="3.20"
+preset="release"
+build_presets=["release"]
+
+
 [project_urls]
-Documentation= "https://obr.readthedocs.io/"
-Changelog= "https://obr.readthedocs.io/en/latest/changelog.html"
-Issues= "https://github.com/hpsim/obr/issues"
+Documentation= ""
+Changelog= ""
+Issues= ""
 
 [project.optional-dependencies]
 test = [
