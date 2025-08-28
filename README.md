@@ -26,7 +26,7 @@ The tests successfully run on the following Python versions:
 - Ninja # if you want to use cmake presets
 - [pybind11-stubgen](https://pypi.org/project/pybind11-stubgen/) # if you want to use [stubs generation](#stubs-generation)
 
-### Building the module
+### Building the module via Cmake
 
 1. **Clone the repository**:
    ```bash
@@ -59,6 +59,17 @@ ctest
 To run a particular test, say 'pyginkgo_import_test':
 ```bash
 ctest -R pyginkgo_import_test
+```
+
+### Building the module via pip
+You can invoke the build and installation process via pip, this however will require the same dependencies to be present as with the default Cmake installation.
+To install pyGinkgo from source use 
+```bash
+pip install .
+```
+or alternatively getting it from PyPi
+```bash
+pip install pyGinkgo
 ```
 
 ### Stubs generation
