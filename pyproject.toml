@@ -3,10 +3,12 @@ name = "pyGinkgo"
 version = "0.0.0"
 description = "PyGinkgo is a Python binding for the Ginkgo framework, providing access to Ginkgo's powerful linear algebra capabilities from Python."
 authors = [
-    {name = "Gregor Olenik", email = "go@hpsim.de"},
-    {name = "Lukas Petermann", email = "lukas.petermann13@gmail.com"}
+    {name = "Roman Mishchuk", email= "romamiykg@gmail.com"},
+    {name = "Keshvi Tuteja", email= "keshvi.tuteja@kit.edu"},
+    {name = "Yu-Hsiang M. Tsai", email= "yhmtsai@gmail.com"},
+    {name = "Gregor Olenik", email = "gregor.olenik@tum.de"},
 ]
-license = {text = "BSD-2-Clause"}
+license = {text = "MIT"}
 readme="README.md"
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -30,14 +32,13 @@ include = ["CMakeLists.txt", "src/pyGinkgo/*.cpp"]
 
 [tool.py-build-cmake.cmake]
 minimum_version="3.20"
-preset="release"
-build_presets=["release"]
-
+build_type="Release"
+build_args=["-j"]
 
 [project_urls]
-Documentation= ""
-Changelog= ""
-Issues= ""
+Documentation= "https://github.com/Helmholtz-AI-Energy/pyGinkgo/blob/main/README.md"
+Changelog= "https://github.com/Helmholtz-AI-Energy/pyGinkgo/blob/main/CHANGELOG.md"
+Issues= "https://github.com/Helmholtz-AI-Energy/pyGinkgo/issues"
 
 [project.optional-dependencies]
 test = [
