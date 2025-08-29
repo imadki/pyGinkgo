@@ -40,7 +40,7 @@ include = ["CMakeLists.txt", "src", "cmake/*", "tests"]
 [tool.py-build-cmake.cmake]
 minimum_version="3.20"
 build_type="Release"
-build_args=["-j"]
+build_args=["-j", "8"]
 
 [project_urls]
 Documentation= "https://github.com/Helmholtz-AI-Energy/pyGinkgo/blob/main/README.md"
