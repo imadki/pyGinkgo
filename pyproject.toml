@@ -3,20 +3,28 @@ name = "pyGinkgo"
 version = "0.0.0"
 description = "PyGinkgo is a Python binding for the Ginkgo framework, providing access to Ginkgo's powerful linear algebra capabilities from Python."
 authors = [
-    {name = "Roman Mishchuk", email= "romamiykg@gmail.com"},
     {name = "Keshvi Tuteja", email= "keshvi.tuteja@kit.edu"},
+    {name = "Roman Mishchuk", email= "romamiykg@gmail.com"},
     {name = "Yu-Hsiang M. Tsai", email= "yhmtsai@gmail.com"},
     {name = "Gregor Olenik", email = "gregor.olenik@tum.de"},
 ]
 license = {text = "MIT"}
 readme="README.md"
 classifiers = [
+    "Intended Audience :: Developers",
     "Programming Language :: Python :: 3",
+    "Programming Language :: C++",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
+    "Environment :: GPU",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Mathematics",
 ]
+keywords = ["sparse-linear-algebra", "high-performance-computing", "krylov-methods", "spmv", "gpu-computing"]
 requires-python = ">=3.8"
 dependencies = [
+    "pybind11==2.12.0"
 ]
 
 [build-system]
@@ -25,7 +33,6 @@ build-backend = "py_build_cmake.build"
 
 [tool.py-build-cmake.module]
 name = "pyGinkgo"
-
 
 [tool.py-build-cmake.sdist]
 include = ["CMakeLists.txt", "src", "cmake/*", "tests"]
@@ -44,3 +51,9 @@ Issues= "https://github.com/Helmholtz-AI-Energy/pyGinkgo/issues"
 test = [
     "pytest",
 ]
+
+[tool.cibuildwheel]
+build-verbosity = 1
+environment = { PY_BUILD_CMAKE_VERBOSE="1" }
+test-command = "pytest {package}/tests"
+test-extras = ["test"]
