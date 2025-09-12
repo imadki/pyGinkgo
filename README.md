@@ -20,13 +20,13 @@ The tests successfully run on the following Python versions:
 
 ### Prerequisites
 
-- Python 3.x
+- Python 3.8+
 - Ginkgo (preinstalled, otherwise it will be cloned during build)
 - Pybind11
 - Ninja # if you want to use cmake presets
 - [pybind11-stubgen](https://pypi.org/project/pybind11-stubgen/) # if you want to use [stubs generation](#stubs-generation)
 
-### Building the module via Cmake
+### Building the module via CMake
 
 1. **Clone the repository**:
    ```bash
