@@ -20,13 +20,13 @@ The tests successfully run on the following Python versions:
 
 ### Prerequisites
 
-- Python 3.x
-- Ginkgo
+- Python 3.8+
+- Ginkgo (preinstalled, otherwise it will be cloned during build)
 - Pybind11
 - Ninja # if you want to use cmake presets
 - [pybind11-stubgen](https://pypi.org/project/pybind11-stubgen/) # if you want to use [stubs generation](#stubs-generation)
 
-### Building the module
+### Building the module via CMake
 
 1. **Clone the repository**:
    ```bash
@@ -41,7 +41,7 @@ The tests successfully run on the following Python versions:
    cmake ..
 
    # Build the project using the specified number of cores (replace "number of cores" with the desired value)
-   # (Here we are still within the build directory)
+include/FoamAdapter/datastructures/expression.hpp   # (Here we are still within the build directory)
    cmake --build . -j=number_of_cores
    ```
 3. **Install the module**:
@@ -59,6 +59,22 @@ ctest
 To run a particular test, say 'pyginkgo_import_test':
 ```bash
 ctest -R pyginkgo_import_test
+```
+
+### Building the module via pip
+You can invoke the build and installation process via pip, this however will require the same dependencies to be present as with the default Cmake installation.
+To install pyGinkgo from source use 
+```bash
+pip install .
+```
+or alternatively getting it from PyPi
+```bash
+pip install pyGinkgo
+```
+**Warning**
+Building via pip currently will build Ginkgo, which depending on your system might take a considerable amount of time and memory. An example how to modify the cmake build flags to switch different compute backends on or off and modify the number of threads for compilation is given below. 
+```bash
+pip install .   --config-settings="override=cmake.args=[-DGINKGO_BUILD_OMP=OFF,-DGINKGO_BUILD_MPI=OFF,-DGINKGO_BUILD_CUDA=OFF,-DGINKGO_BUILD_HIP=OFF,-DGINKGO_BUILD_DPCPP=OFF]"   --config-settings=build_args="-j2"
 ```
 
 ### Stubs generation

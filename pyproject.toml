@@ -3,35 +3,57 @@ name = "pyGinkgo"
 version = "0.0.0"
 description = "PyGinkgo is a Python binding for the Ginkgo framework, providing access to Ginkgo's powerful linear algebra capabilities from Python."
 authors = [
-    {name = "Keshvi Tuteja ", email = "keshvi.tuteja@kit.edu"},
-    {name = "Gregor Olenik", email = "gregor.olenik@kit.edu"},
+    {name = "Keshvi Tuteja", email= "keshvi.tuteja@kit.edu"},
+    {name = "Roman Mishchuk", email= "romamiykg@gmail.com"},
+    {name = "Yu-Hsiang M. Tsai", email= "yhmtsai@gmail.com"},
+    {name = "Gregor Olenik", email = "gregor.olenik@tum.de"},
 ]
 license = {text = "MIT"}
-readme="Readme.md"
+readme="README.md"
 classifiers = [
+    "Intended Audience :: Developers",
     "Programming Language :: Python :: 3",
+    "Programming Language :: C++",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
+    "Environment :: GPU",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Mathematics",
 ]
-requires-python = ">=3.6"
+keywords = ["sparse-linear-algebra", "high-performance-computing", "krylov-methods", "spmv", "gpu-computing"]
+requires-python = ">=3.8"
 dependencies = [
-    "numpy",
-    "pybind11",
+    "pybind11==2.12.0"
 ]
 
+[build-system]
+requires = ["py-build-cmake~=0.5.0"]
+build-backend = "py_build_cmake.build"
+
+[tool.py-build-cmake.module]
+name = "pyGinkgo"
+
+[tool.py-build-cmake.sdist]
+include = ["CMakeLists.txt", "src", "cmake/*", "tests", "CTestConfig.cmake"]
+
+[tool.py-build-cmake.cmake]
+minimum_version="3.21"
+build_type="Release"
+build_args=["-j", "8"]
+
 [project_urls]
-Documentation= "https://obr.readthedocs.io/"
+Documentation= "https://github.com/Helmholtz-AI-Energy/pyGinkgo/blob/main/README.md"
 Changelog= "https://github.com/Helmholtz-AI-Energy/pyGinkgo/blob/main/CHANGELOG.md"
 Issues= "https://github.com/Helmholtz-AI-Energy/pyGinkgo/issues"
 
 [project.optional-dependencies]
-doc = [
-    "sphinx==6.2.1",
-    "sphinx-autoapi==3.0.0",
-    "sphinxcontrib.applehelp==1.0.7",
-    "furo",
-    "myst_parser",
-]
 test = [
     "pytest",
 ]
+
+[tool.cibuildwheel]
+build-verbosity = 1
+environment = { PY_BUILD_CMAKE_VERBOSE="1" }
+test-command = "pytest {package}/tests"
+test-extras = ["test"]
