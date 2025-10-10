@@ -41,7 +41,7 @@ The tests successfully run on the following Python versions:
    cmake ..
 
    # Build the project using the specified number of cores (replace "number of cores" with the desired value)
-   # (Here we are still within the build directory)
+include/FoamAdapter/datastructures/expression.hpp   # (Here we are still within the build directory)
    cmake --build . -j=number_of_cores
    ```
 3. **Install the module**:
@@ -70,6 +70,11 @@ pip install .
 or alternatively getting it from PyPi
 ```bash
 pip install pyGinkgo
+```
+**Warning**
+Building via pip currently will build Ginkgo, which depending on your system might take a considerable amount of time and memory. An example how to modify the cmake build flags to switch different compute backends on or off and modify the number of threads for compilation is given below. 
+```bash
+pip install .   --config-settings="override=cmake.args=[-DGINKGO_BUILD_OMP=OFF,-DGINKGO_BUILD_MPI=OFF,-DGINKGO_BUILD_CUDA=OFF,-DGINKGO_BUILD_HIP=OFF,-DGINKGO_BUILD_DPCPP=OFF]"   --config-settings=build_args="-j2"
 ```
 
 ### Stubs generation
