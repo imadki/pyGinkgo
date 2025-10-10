@@ -1,0 +1,84 @@
+version = 1
+SPDX-PackageName = "NeoFOAM"
+SPDX-PackageSupplier = "NeoFOAM authors"
+SPDX-PackageDownloadLocation = "https://github.com/exasim-project/NeoFOAM"
+
+[[annotations]]
+path = ".github/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2024 pyGinkgo authors"
+SPDX-License-Identifier = "Unlicense"
+
+[[annotations]]
+path = ".gitignore"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2024 pyGinkgo authors"
+SPDX-License-Identifier = "Unlicense"
+
+[[annotations]]
+path = ".clang-format"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2024 pyGinkgo authors"
+SPDX-License-Identifier = "Unlicense"
+
+[[annotations]]
+path = "**.yaml"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2024 pyGinkgo authors"
+SPDX-License-Identifier = "Unlicense"
+
+[[annotations]]
+path = "**.md"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2024 pyGinkgo authors"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = "**.jpg"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2024 pyGinkgo authors"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = "**.png"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2024 pyGinkgo authors"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = "**.json"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2024 pyGinkgo authors"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = "tests/**.mtx"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2024 pyGinkgo authors"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = "**.toml"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2024 pyGinkgo authors"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = "examples/**.ipynb"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2024 pyGinkgo authors"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = "examples/**.mtx"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2024 pyGinkgo authors"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = [
+    "examples/*.ipynb"
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2024 pyGinkgo authors"
+SPDX-License-Identifier = "MIT"
