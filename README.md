@@ -67,10 +67,7 @@ To install pyGinkgo from source use
 ```bash
 pip install .
 ```
-or alternatively getting it from PyPi
-```bash
-pip install pyGinkgo
-```
+
 **Warning**
 Building via pip currently will build Ginkgo, which depending on your system might take a considerable amount of time and memory. An example how to modify the cmake build flags to switch different compute backends on or off and modify the number of threads for compilation is given below. 
 ```bash
