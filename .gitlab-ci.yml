@@ -1,0 +1,71 @@
+# SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+#
+# SPDX-License-Identifier: Unlicense
+
+# ============================================================
+#  GPU-specific images and runner configuration
+# ============================================================
+.gpu-nvidia:
+  tags: ["nvidia-gpus"]
+  image: chihtaw/cuda-ginkgo:12.8.1-arch_89
+  variables:
+    GPU_VENDOR: nvidia
+ 
+.gpu-amd:
+  tags: ["amd-gpus"]
+  image: chihtaw/rocm-ginkgo:6.4.1-arch_gfx90a
+  variables:
+    GPU_VENDOR: amd
+
+.gpu-intel:
+  tags: ["intel-gpus"]
+  image: dheerajraghunathan/oneapi-openfoam-ginkgo:2025.3-v2412-arch_pvc
+  variables:
+    GPU_VENDOR: intel
+
+# ============================================================
+#  Rule blocks
+# ============================================================
+# testing
+.rules-neon-testing:
+  rules:
+    - if: '$GPU_VENDOR == "nvidia" && $SKIP_NVIDIA != "true" &&
+           $CI_PIPELINE_SOURCE == "trigger" && $BENCHMARK != "true"'
+      when: always
+
+    - if: '$GPU_VENDOR == "amd" && $SKIP_AMD != "true" &&
+           $CI_PIPELINE_SOURCE == "trigger" && $BENCHMARK != "true"'
+      when: always
+
+    - if: '$GPU_VENDOR == "intel" && $SKIP_INTEL != "true" &&
+           $CI_PIPELINE_SOURCE == "trigger" && $BENCHMARK != "true"'
+      when: always
+    - when: never
+
+# ============================================================
+#  Job templates
+# ============================================================
+.build-and-test:
+  script:
+    - ./ci/lrz-gitlab/build-and-test.sh
+
+# ============================================================
+#  pyGinkgo - testing jobs
+# ============================================================
+build-test-neon-nvidia:
+  extends:
+    - .gpu-nvidia
+    - .rules-neon-testing
+    - .build-and-test
+
+build-test-neon-amd:
+  extends:
+    - .gpu-amd
+    - .rules-neon-testing
+    - .build-and-test
+
+build-test-neon-intel:
+  extends:
+    - .gpu-intel
+    - .rules-neon-testing
+    - .build-and-test
