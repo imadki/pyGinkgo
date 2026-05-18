@@ -6,10 +6,14 @@
 #include "../utils.hpp"
 
 template <typename ValueType, typename IndexType>
+#if GKO_VERSION_MAJOR == 1
 using Ilu =
     gko::preconditioner::Ilu<gko::solver::LowerTrs<ValueType, IndexType>,
-                             gko::solver::UpperTrs<ValueType, IndexType>,
-                             false>;
+                             gko::solver::UpperTrs<ValueType, IndexType>, false,
+                             IndexType>;
+#else
+using Ilu = gko::preconditioner::Ilu<ValueType, false, IndexType>;
+#endif
 
 template <typename ValueType, typename IndexType>
 void init_ilu(py::module_ &module_preconditioner, const std::string value_type,
@@ -36,7 +40,7 @@ void init_ilu(py::module_ &module_preconditioner, const std::string value_type,
             return gko::share(ilu_pre_factory->generate(par_ilu));
         }))
         .def("__repr__",
-             [=](const gko::solver::Gmres<ValueType> &o) { return repr_str; });
+             [=](const Ilu<ValueType, IndexType> &o) { return repr_str; });
 }
 
 void init_ilu_all_types(py::module_ &module_preconditioner)
